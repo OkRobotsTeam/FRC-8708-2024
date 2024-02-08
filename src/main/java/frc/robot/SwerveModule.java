@@ -7,6 +7,7 @@ package frc.robot;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -27,11 +28,11 @@ public class SwerveModule {
     private static final double MODULE_MAX_ANGULAR_VELOCITY = SwerveDrivetrain.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND;
     private static final double MODULE_MAX_ANGULAR_ACCELERATION = 2 * Math.PI; // radians per second squared
 
-    private final PWMSparkMax driveMotor;
-    private final MotorController turningMotor;
+    private final TalonFX driveMotor;
+    private final CANSparkMax turningMotor;
 
-    private final Encoder driveEncoder;
-    private final Encoder turningEncoder;
+    private final CANcoder driveEncoder;
+    private final CANcoder turningEncoder;
 
     // Gains are for example purposes only - must be determined for your own robot!
     private final PIDController drivePIDController = new PIDController(1, 0, 0);
@@ -54,17 +55,19 @@ public class SwerveModule {
      * @param turningEncoderChannelA DIO input for the turning encoder channel A
      * @param turningEncoderChannelB DIO input for the turning encoder channel B
      */
-    public SwerveModule(int driveMotorChannel, int turningMotorChannel, int driveEncoderChannelA, int driveEncoderChannelB, int turningEncoderChannelA, int turningEncoderChannelB) {
-        driveMotor = new PWMSparkMax(driveMotorChannel);
-        turningMotor = new PWMSparkMax(turningMotorChannel);
+    public SwerveModule(int driveMotorChannel, int turningMotorChannel, int driveEncoderPort, int turningEncoderPort) {
+        driveMotor = new TalonFX(driveMotorChannel);
+        turningMotor = new CANSparkMax(turningMotorChannel);
 
-        driveEncoder = new Encoder(driveEncoderChannelA, driveEncoderChannelB);
-        turningEncoder = new Encoder(turningEncoderChannelA, turningEncoderChannelB);
+        
+        turningEncoder = new CANcoder(turningEncoderPort);
 
         // Set the distance per pulse for the drive encoder. We can simply use the
         // distance traveled for one rotation of the wheel divided by the encoder
         // resolution.
         driveEncoder.setDistancePerPulse((2 * Math.PI) * WHEEL_RADIUS_METERS / ENCODER_RESOLUTION_TICKS_PER_REV);
+        driveMotor.getPosition().getValueAsDouble();
+
 
         // Set the distance (in this case, angle) in radians per pulse for the turning encoder.
         // This is the angle through an entire rotation (2 * pi) divided by the
