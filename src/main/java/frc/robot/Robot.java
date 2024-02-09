@@ -1,8 +1,5 @@
 package frc.robot;
 
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -14,9 +11,6 @@ public class Robot extends TimedRobot {
     private final SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain();
 
     // Slew rate limiters to make joystick inputs less abrupt
-
-
-
     private final SlewRateLimiter xSpeedLimiter = new SlewRateLimiter(1d / Constants.MOVEMENT_MAX_ACCELERATION_METERS_PER_SECOND);
     private final SlewRateLimiter ySpeedLimiter = new SlewRateLimiter(1d / Constants.MOVEMENT_MAX_ACCELERATION_METERS_PER_SECOND);
     private final SlewRateLimiter rotateLimiter = new SlewRateLimiter(1d / Constants.TURNING_MAX_ACCELERATION_RADIANS_PER_SECOND);
@@ -50,8 +44,5 @@ public class Robot extends TimedRobot {
         final var rot = -rotateLimiter.calculate(MathUtil.applyDeadband(controller.getRightX(), Constants.CONTROLLER_DEADBAND)) * SwerveDrivetrain.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND;
 
         swerveDrivetrain.drive(xSpeed, ySpeed, rot, Constants.FIELD_ORIENTED);
-
-
-
     }
 }
