@@ -19,6 +19,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
 
+import java.util.Objects;
+
 
 public class SwerveModule {
     private static final double WHEEL_RADIUS_METERS = 0.0508;
@@ -141,7 +143,7 @@ public class SwerveModule {
         // Calculate the turning motor output from the turning PID controller.
         
         final double turnOutput = turningPIDController.calculate(getRotationRadians(), optimizedDesiredState.angle.getRadians());
-        if (i++%10==0 && name == "FL") {
+        if (i++%10==0 && Objects.equals(name, "FL")) {
             System.out.printf("%2.2f %2.2f\n",  Math.toDegrees(getRotationRadians()), optimizedDesiredState.angle.getDegrees());
         }
         final double turnFeedforward = this.turnFeedforward.calculate(turningPIDController.getSetpoint().velocity);
