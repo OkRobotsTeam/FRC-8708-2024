@@ -30,7 +30,6 @@ public class SwerveModule {
     private final TalonFX driveMotor;
     private final CANSparkMax turningMotor;
 
-    private final CANcoder driveEncoder;
     private final CANcoder turningEncoder;
 
     // Gains are for example purposes only - must be determined for your own robot!
@@ -97,7 +96,7 @@ public class SwerveModule {
      * @return The current state of the module.
      */
     public SwerveModuleState getState() {
-        return new SwerveModuleState(driveEncoder.getRate(), new Rotation2d(turningEncoder.getDistance()));
+        return new SwerveModuleState(getVelocityMetersPerSecond(), new Rotation2d(getRotationRadians()));
     }
 
 
@@ -127,7 +126,7 @@ public class SwerveModule {
      */
     public void setDesiredState(SwerveModuleState desiredState) {
         // Optimize the reference state to avoid spinning further than 90 degrees
-        SwerveModuleState state = SwerveModuleState.optimize(desiredState, new Rotation2d(turningEncoder.getDistance()));
+        SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(desiredState, new Rotation2d(getRotationRadians()));
 
         // Calculate the drive output from the drive PID controller.
         final double driveOutput = drivePIDController.calculate(getVelocityMetersPerSecond(), optimizedDesiredState.speedMetersPerSecond);
@@ -135,7 +134,7 @@ public class SwerveModule {
         final double driveFeedforward = this.driveFeedforward.calculate(optimizedDesiredState.speedMetersPerSecond);
 
         // Calculate the turning motor output from the turning PID controller.
-        final double turnOutput = turningPIDController.calculate(turningEncoder.getDistance(), state.angle.getRadians());
+        final double turnOutput = turningPIDController.calculate(getRotationRadians(), optimizedDesiredState.angle.getRadians());
 
         final double turnFeedforward = this.turnFeedforward.calculate(turningPIDController.getSetpoint().velocity);
 
