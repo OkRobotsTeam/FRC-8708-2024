@@ -41,6 +41,9 @@ public class SwerveModule {
     // Gains are for example purposes only - must be determined for your own robot!
     private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(1, 3);
     private final SimpleMotorFeedforward turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
+    private String name;
+    private int i;
+
 
 
     /**
@@ -50,9 +53,11 @@ public class SwerveModule {
      * @param turningMotorCANID     CAN ID for the turning motor.
      * @param turningEncoderCANID   CAN ID for turning encoder.
      */
-    public SwerveModule(int driveMotorCANID, int turningMotorCANID, int turningEncoderCANID) {
+    public SwerveModule(int driveMotorCANID, int turningMotorCANID, int turningEncoderCANID, String nameIn) {
+        name = nameIn;
         driveMotor = new TalonFX(driveMotorCANID);
         turningMotor = new CANSparkMax(turningMotorCANID, CANSparkLowLevel.MotorType.kBrushless);
+        turningMotor.setInverted(true);
 
         turningEncoder = new CANcoder(turningEncoderCANID);
 
@@ -134,8 +139,11 @@ public class SwerveModule {
         final double driveFeedforward = this.driveFeedforward.calculate(optimizedDesiredState.speedMetersPerSecond);
 
         // Calculate the turning motor output from the turning PID controller.
+        
         final double turnOutput = turningPIDController.calculate(getRotationRadians(), optimizedDesiredState.angle.getRadians());
-
+        if (i++%10==0 && name == "FL") {
+            System.out.printf("%2.2f %2.2f\n",  Math.toDegrees(getRotationRadians()), optimizedDesiredState.angle.getDegrees());
+        }
         final double turnFeedforward = this.turnFeedforward.calculate(turningPIDController.getSetpoint().velocity);
 
         driveMotor.setVoltage(driveOutput + driveFeedforward);
