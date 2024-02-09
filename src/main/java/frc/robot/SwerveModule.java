@@ -43,7 +43,7 @@ public class SwerveModule {
     // Gains are for example purposes only - must be determined for your own robot!
     private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(1, 3);
     private final SimpleMotorFeedforward turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
-    private String name;
+    private final String name;
     private int i;
 
 
