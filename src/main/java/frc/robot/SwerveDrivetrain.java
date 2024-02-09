@@ -25,10 +25,10 @@ public class SwerveDrivetrain {
     private final Translation2d backLeftLocation = new Translation2d(-Constants.WHEELBASE_METERS/2, Constants.WHEELBASE_METERS/2);
     private final Translation2d backRightLocation = new Translation2d(-Constants.WHEELBASE_METERS/2, -Constants.WHEELBASE_METERS/2);
 
-    private final SwerveModule frontLeft = new SwerveModule(Constants.FRONT_LEFT_DRIVE_MOTOR, Constants.FRONT_LEFT_ROTATION_MOTOR, Constants.FRONT_LEFT_DRIVE_ENCODER_CHANNEL_A, Constants.FRONT_LEFT_DRIVE_ENCODER_CHANNEL_B, Constants.FRONT_LEFT_ROTATION_ENCODER_CHANNEL_A, Constants.FRONT_LEFT_ROTATION_ENCODER_CHANNEL_B);
-    private final SwerveModule frontRight = new SwerveModule(Constants.FRONT_RIGHT_DRIVE_MOTOR, Constants.FRONT_RIGHT_ROTATION_MOTOR, Constants.FRONT_RIGHT_DRIVE_ENCODER_CHANNEL_A, Constants.FRONT_RIGHT_DRIVE_ENCODER_CHANNEL_B, Constants.FRONT_RIGHT_ROTATION_ENCODER_CHANNEL_A, Constants.FRONT_RIGHT_ROTATION_ENCODER_CHANNEL_B);
-    private final SwerveModule backLeft = new SwerveModule(Constants.BACK_LEFT_DRIVE_MOTOR, Constants.BACK_LEFT_ROTATION_MOTOR, Constants.BACK_LEFT_DRIVE_ENCODER_CHANNEL_A, Constants.BACK_LEFT_DRIVE_ENCODER_CHANNEL_B, Constants.BACK_LEFT_ROTATION_ENCODER_CHANNEL_A, Constants.BACK_LEFT_ROTATION_ENCODER_CHANNEL_B);
-    private final SwerveModule backRight = new SwerveModule(Constants.BACK_RIGHT_DRIVE_MOTOR, Constants.BACK_RIGHT_ROTATION_MOTOR, Constants.BACK_RIGHT_DRIVE_ENCODER_CHANNEL_A, Constants.BACK_RIGHT_DRIVE_ENCODER_CHANNEL_B, Constants.BACK_RIGHT_ROTATION_ENCODER_CHANNEL_A, Constants.BACK_RIGHT_ROTATION_ENCODER_CHANNEL_B);
+    private final SwerveModule frontLeft = new SwerveModule(Constants.FRONT_LEFT_DRIVE_MOTOR_CAN_ID, Constants.FRONT_LEFT_ROTATION_MOTOR_CAN_ID, Constants.FRONT_LEFT_ENCODER_ENCODER_CAN_ID);
+    private final SwerveModule frontRight = new SwerveModule(Constants.FRONT_RIGHT_DRIVE_MOTOR_CAN_ID, Constants.FRONT_RIGHT_ROTATION_MOTOR_CAN_ID, Constants.FRONT_RIGHT_ENCODER_ENCODER_CAN_ID);
+    private final SwerveModule backLeft = new SwerveModule(Constants.BACK_LEFT_DRIVE_MOTOR_CAN_ID, Constants.BACK_LEFT_ROTATION_MOTOR_CAN_ID, Constants.BACK_LEFT_ROTATION_ENCODER_CAN_ID);
+    private final SwerveModule backRight = new SwerveModule(Constants.BACK_RIGHT_DRIVE_MOTOR_CAN_ID, Constants.BACK_RIGHT_ROTATION_MOTOR_CAN_ID, Constants.BACK_RIGHT_ROTATION_ENCODER_CAN_ID);
 
     private final AnalogGyro gyro = new AnalogGyro(0);
 
