@@ -4,7 +4,7 @@ public class Constants {
 
     public static final double WHEELBASE_METERS = 0.56515;
 
-    public static final boolean FIELD_ORIENTED = true;
+    public static final boolean FIELD_ORIENTED = false;
     public static final double CONTROLLER_DEADBAND = 0.1d;
 
     // The amount of seconds it should take to accelerate from 0% to 100% speed
