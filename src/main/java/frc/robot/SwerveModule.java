@@ -17,7 +17,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.Encoder;
+
+import java.util.Objects;
 
 
 public class SwerveModule {
@@ -41,7 +42,7 @@ public class SwerveModule {
     // Gains are for example purposes only - must be determined for your own robot!
     private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(1, 3);
     private final SimpleMotorFeedforward turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
-    private String name;
+    private final String name;
     private int i;
 
 
@@ -141,7 +142,7 @@ public class SwerveModule {
         // Calculate the turning motor output from the turning PID controller.
         
         final double turnOutput = turningPIDController.calculate(getRotationRadians(), optimizedDesiredState.angle.getRadians());
-        if (i++%10==0 && name == "FL") {
+        if (i++%10==0 && Objects.equals(name, "FL")) {
             System.out.printf("%2.2f %2.2f\n",  Math.toDegrees(getRotationRadians()), optimizedDesiredState.angle.getDegrees());
         }
         final double turnFeedforward = this.turnFeedforward.calculate(turningPIDController.getSetpoint().velocity);
