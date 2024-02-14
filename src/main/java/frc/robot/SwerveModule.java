@@ -23,7 +23,6 @@ import java.util.Objects;
 
 public class SwerveModule {
     private static final double WHEEL_RADIUS_METERS = 0.0508;
-    private static final int ENCODER_RESOLUTION_TICKS_PER_REV = 4096;
 
     private static final double MODULE_MAX_ANGULAR_VELOCITY = SwerveDrivetrain.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND;
     private static final double MODULE_MAX_ANGULAR_ACCELERATION = 2 * Math.PI; // radians per second squared

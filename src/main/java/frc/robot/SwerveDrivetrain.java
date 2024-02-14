@@ -5,12 +5,13 @@
 
 package frc.robot;
 
+import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.SPI;
 
 
 /**
@@ -30,7 +31,7 @@ public class SwerveDrivetrain {
     private final SwerveModule backLeft = new SwerveModule(Constants.BACK_LEFT_DRIVE_MOTOR_CAN_ID, Constants.BACK_LEFT_ROTATION_MOTOR_CAN_ID, Constants.BACK_LEFT_ROTATION_ENCODER_CAN_ID, "BL");
     private final SwerveModule backRight = new SwerveModule(Constants.BACK_RIGHT_DRIVE_MOTOR_CAN_ID, Constants.BACK_RIGHT_ROTATION_MOTOR_CAN_ID, Constants.BACK_RIGHT_ROTATION_ENCODER_CAN_ID, "BR");
 
-    private final AnalogGyro gyro = new AnalogGyro(0);
+    private final AHRS gyro = new AHRS(SPI.Port.kMXP);
 
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
