@@ -1,48 +1,58 @@
 package frc.robot;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 
 public class Robot extends TimedRobot {
-    private final CommandXboxController controller = new CommandXboxController(0);
-    private final SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain();
+    private Command autonomousCommand;
+    private RobotContainer robotContainer;
 
-    // Slew rate limiters to make joystick inputs less abrupt
-    private final SlewRateLimiter xSpeedLimiter = new SlewRateLimiter(1d / Constants.MOVEMENT_MAX_ACCELERATION_METERS_PER_SECOND);
-    private final SlewRateLimiter ySpeedLimiter = new SlewRateLimiter(1d / Constants.MOVEMENT_MAX_ACCELERATION_METERS_PER_SECOND);
-    private final SlewRateLimiter rotateLimiter = new SlewRateLimiter(1d / Constants.TURNING_MAX_ACCELERATION_RADIANS_PER_SECOND);
 
+    // This function is run when the robot is first started up
+    @Override
+    public void robotInit() {
+        robotContainer = new RobotContainer();
+        robotContainer.robotInit();
+    }
+
+    // This function is called every 20 ms, no matter the mode.
+    @Override
+    public void robotPeriodic() {
+        CommandScheduler.getInstance().run();
+    }
+
+    // This function is called once each time the robot enters Disabled mode.
+    @Override
+    public void disabledInit() {
+        CommandScheduler.getInstance().cancelAll();
+    }
 
     @Override
-    public void autonomousPeriodic() {
+    public void teleopInit() {
+        // Cancels the autonomous task when teleop starts
+        if (autonomousCommand != null) {
+            autonomousCommand.cancel();
+        }
+        robotContainer.teleopInit();
     }
-
 
     @Override
-    public void teleopPeriodic() {
-        driveWithJoystick();
+    public void autonomousInit() {
+        robotContainer.autonomousInit();
+        autonomousCommand = robotContainer.getAutonomousCommand();
+        // if a valid command was received, schedule it
+        if (autonomousCommand != null) {
+            autonomousCommand.schedule();
+        }
     }
 
+    // This function is called periodically during autonomous.
+    @Override
+    public void autonomousPeriodic() {}
 
-    private void driveWithJoystick() {
-        // Get the x speed. We are inverting this because Xbox controllers return
-        // negative values when we push forward.
-        final var xSpeed = -xSpeedLimiter.calculate(MathUtil.applyDeadband(controller.getLeftX(), Constants.CONTROLLER_DEADBAND)) * SwerveDrivetrain.MAX_SPEED_METERS_PER_SECOND;
-
-        // Get the y speed or sideways/strafe speed. We are inverting this because
-        // we want a positive value when we pull to the left. The Xbox controller
-        // returns positive values when you pull to the right by default.
-        final var ySpeed = -ySpeedLimiter.calculate(MathUtil.applyDeadband(controller.getLeftY(), Constants.CONTROLLER_DEADBAND)) * SwerveDrivetrain.MAX_SPEED_METERS_PER_SECOND;
-
-        // Get the rate of angular rotation. We are inverting this because we want a
-        // positive value when we pull to the left (remember, CCW is positive in
-        // mathematics). The Xbox controller returns positive values when you pull to
-        // the right by default.
-        final var rot = -rotateLimiter.calculate(MathUtil.applyDeadband(controller.getRightX(), Constants.CONTROLLER_DEADBAND)) * SwerveDrivetrain.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND;
-
-        swerveDrivetrain.drive(xSpeed, ySpeed, rot, Constants.FIELD_ORIENTED);
-    }
+    // This function is called periodically during teleop
+    @Override
+    public void teleopPeriodic() {}
 }

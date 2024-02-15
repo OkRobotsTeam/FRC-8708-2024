@@ -1,8 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -17,13 +12,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import frc.robot.subsystems.SwerveDrivetrain;
 
 import java.util.Objects;
 
 
 public class SwerveModule {
-    private static final double WHEEL_RADIUS_METERS = 0.0508;
-
     private static final double MODULE_MAX_ANGULAR_VELOCITY = SwerveDrivetrain.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND;
     private static final double MODULE_MAX_ANGULAR_ACCELERATION = 2 * Math.PI; // radians per second squared
 
@@ -78,7 +72,7 @@ public class SwerveModule {
     private double getDistanceMeters() {
         double drivePositionRotations = driveMotor.getPosition().getValueAsDouble();
 
-        double drivePositionMeters = drivePositionRotations * (2 * Math.PI) * WHEEL_RADIUS_METERS;
+        double drivePositionMeters = drivePositionRotations * Constants.Drivetrain.WHEEL_CIRCUMFERENCE_METERS;
 
         return drivePositionMeters;
     }
@@ -89,7 +83,7 @@ public class SwerveModule {
 
         double driveVelocityRPS = driveVelocityRPM / 60;
 
-        double driveVelocityMetersPerSec = driveVelocityRPS * (2 * Math.PI) * WHEEL_RADIUS_METERS;
+        double driveVelocityMetersPerSec = driveVelocityRPS * Constants.Drivetrain.WHEEL_CIRCUMFERENCE_METERS;
 
         return driveVelocityMetersPerSec;
     }
