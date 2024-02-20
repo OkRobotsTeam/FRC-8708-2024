@@ -16,7 +16,6 @@ public class RobotContainer {
     private final SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain();
     private final SendableChooser<Command> autonomousSelector = new SendableChooser<>();
 
-
     public RobotContainer() {
         setupShuffleboard();
         configureControllerBindings();
@@ -40,7 +39,6 @@ public class RobotContainer {
 
         drivingTab.add(autonomousSelector).withPosition(4, 0).withSize(2, 1);
         drivingTab.add(driveMode).withPosition(4, 3).withSize(2, 1);
-//        m_objectInIntake = drivingTab.add("ObjectInIntake", false).withPosition(4, 1).withSize(2, 2).getEntry();
 
         Shuffleboard.selectTab("Driving");
         Shuffleboard.update();
@@ -62,18 +60,12 @@ public class RobotContainer {
         return autonomousSelector.getSelected();
     }
 
-
     public void robotInit() {
-        // Initialize things here
+        swerveDrivetrain.stop();
+        swerveDrivetrain.resetGyro();
     }
 
-    public void teleopInit() {
-//        m_arm.init();
-//        m_lights.init(m_safety_mode.getSelected());
-    }
+    public void teleopInit() {}
 
-    public void autonomousInit() {
-//        m_arm.init();
-//        m_lights.init(m_safety_mode.getSelected());
-    }
+    public void autonomousInit() {}
 }
