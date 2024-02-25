@@ -2,10 +2,12 @@ package frc.robot;
 
 import java.util.HashMap;
 import java.util.Map;
+
+
 public class Debug {
     private static int i = 0;
-    private static int[] ids = { 0,0,0,0,0,0,0,0,0};
-    private static Map<String, Integer> map = new HashMap<String, Integer>();
+    private static final int[] ids = { 0,0,0,0,0,0,0,0,0};
+    private static final Map<String, Integer> map = new HashMap<>();
 
     public static void debugPrint(String s) {
         if (i++%10==0) {

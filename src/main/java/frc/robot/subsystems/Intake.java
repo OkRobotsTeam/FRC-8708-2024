@@ -1,66 +1,74 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.controller.PIDController;
 
+import static com.revrobotics.CANSparkLowLevel.MotorType.kBrushless;
+import static frc.robot.Constants.Intake.*;
+
+
 public class Intake {
-    private final CANSparkMax topIntake = new CANSparkMax(0, CANSparkLowLevel.MotorType.kBrushless);
-    private final CANSparkMax bottomIntake = new CANSparkMax(1, CANSparkLowLevel.MotorType.kBrushless);
-    private final CANSparkMax wrist = new CANSparkMax(2, CANSparkLowLevel.MotorType.kBrushless);
+    private final CANSparkMax topIntake = new CANSparkMax(CANIds.TOP_INTAKE, kBrushless);
+    private final CANSparkMax bottomIntake = new CANSparkMax(CANIds.BOTTOM_INTAKE, kBrushless);
+    private final CANSparkMax wrist = new CANSparkMax(CANIds.WRIST, kBrushless);
+
     private final RelativeEncoder wristEncoder = wrist.getEncoder();
-    private final PIDController wristPID = new PIDController(1.0, 0.0, 0.0);
+    private final PIDController wristPID = new PIDController(WRIST_PID_KP, WRIST_PID_KI, WRIST_PID_KD);
 
     public Intake() {
         topIntake.setInverted(false);
         bottomIntake.setInverted(true);
         wrist.setInverted(false);
 
-        wristEncoder.setPositionConversionFactor((8.0 / 60.0) * (16.0 / 60.0) * (12.0 / 36.0));
-        wristEncoder.setVelocityConversionFactor((8.0 / 60.0) * (16.0 / 60.0) * (12.0 / 36.0));
+        wristEncoder.setPositionConversionFactor(GEAR_RATIO);
+        wristEncoder.setVelocityConversionFactor(GEAR_RATIO);
 
-        wristEncoder.setPosition(0.0);
-        wristPID.setSetpoint(0.0);
+        wristEncoder.setPosition(WRIST_STARTUP_POSITION);
+        wristPID.setSetpoint(WRIST_STARTUP_POSITION);
 
-        topIntake.setSmartCurrentLimit(2, 10);
-        bottomIntake.setSmartCurrentLimit(2, 10);
+        topIntake.setSmartCurrentLimit(TOP_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS, TOP_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS);
+        bottomIntake.setSmartCurrentLimit(BOTTOM_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS, BOTTOM_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS);
     }
 
-    void runTopIntake(double power) {
+    public void runTopIntake(double power) {
         topIntake.set(power);
     }
 
-    void runBottomIntake(double power) {
+    public void runBottomIntake(double power) {
         bottomIntake.set(power);
     }
 
-    void runIntake(double speed) {
+    public void runIntake(double speed) {
         runTopIntake(speed);
         runBottomIntake(speed);
     }
 
-    void runIntakeIn() {
-        runIntake(1.0);
+    public void runIntakeIn() {
+        runIntake(INTAKE_IN_POWER);
+        System.out.println("Info: Running intake in");
     }
 
-    void runIntakeOut() {
-        runIntake(-1.0);
+    public void runIntakeOut() {
+        runIntake(INTAKE_OUT_POWER);
+        System.out.println("Info: Running intake out");
     }
 
-    void extendWrist() {
-        wristPID.setSetpoint(0.5); // Rotations
+    public void extendWrist() {
+        wristPID.setSetpoint(WRIST_EXTENDED_SETPOINT_IN_ROTATIONS);
+        System.out.println("Info: Extending wrist");
     }
 
-    void foldWrist() {
-        wristPID.setSetpoint(0.0);
+    public void foldWrist() {
+        wristPID.setSetpoint(WRIST_FOLDED_SETPOINT_IN_ROTATIONS);
+        System.out.println("Info: Folding wrist");
     }
 
-    double getWristPositionInRotations() {
+    public double getWristPositionInRotations() {
         return wristEncoder.getPosition();
     }
 
-    void tickWrist() {
+    public void tickWrist() {
         double PIDOutput = wristPID.calculate(getWristPositionInRotations());
         wrist.set(PIDOutput);
     }

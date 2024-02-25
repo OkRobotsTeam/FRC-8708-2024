@@ -7,14 +7,25 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AutonomousTest;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SwerveDrivetrain;
 
 
 public class RobotContainer {
+    // Controllers
     private final CommandXboxController driveController = new CommandXboxController(0);
     private final CommandXboxController manipulatorController = new CommandXboxController(1);
+
+    // Subsystems
     private final SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain();
+    private final Intake intake = new Intake();
+
+    // Shuffleboard
+    private final SendableChooser<Boolean> driveMode = new SendableChooser<>();
+    private final SendableChooser<Double> maxDriveSpeed = new SendableChooser<>();
     private final SendableChooser<Command> autonomousSelector = new SendableChooser<>();
+
+
 
     public RobotContainer() {
         setupShuffleboard();
@@ -23,8 +34,6 @@ public class RobotContainer {
 
     private void setupShuffleboard() {
         ShuffleboardTab drivingTab = Shuffleboard.getTab("Driving");
-        SendableChooser<Double> maxDriveSpeed = new SendableChooser<>();
-        SendableChooser<Boolean> driveMode = new SendableChooser<>();
 
         autonomousSelector.setDefaultOption("Nothing", new InstantCommand());
         autonomousSelector.addOption("Test", new AutonomousTest(swerveDrivetrain));
@@ -43,14 +52,14 @@ public class RobotContainer {
         Shuffleboard.selectTab("Driving");
         Shuffleboard.update();
     }
-
-    private void configureControllerBindings() {
-        swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());
+//                new InstantCommand(() -> intake.runIntakeIn(), intake)
+//        );
+        private void configureControllerBindings() {
+            swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());
 
 //        manipulatorController.a().onTrue(
-//                new InstantCommand(() -> m_arm.manualAdjustTarget(1.0), m_arm)
-//        );
-    }
+
+        }
 
     public Command getSwerveDriveCommand() {
         return new InstantCommand(() -> swerveDrivetrain.driveWithController(driveController), swerveDrivetrain);

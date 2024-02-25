@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 
@@ -20,19 +21,11 @@ import java.util.Objects;
 public class SwerveModule {
     private static final double MODULE_MAX_ANGULAR_VELOCITY = SwerveDrivetrain.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND;
     private static final double MODULE_MAX_ANGULAR_ACCELERATION = 2 * Math.PI; // radians per second squared
-
     private final TalonFX driveMotor;
     private final CANSparkMax turningMotor;
-
     private final CANcoder turningEncoder;
-
-    // Gains are for example purposes only - must be determined for your own robot!
     private final PIDController drivePIDController = new PIDController(1, 0, 0);
-
-    // Gains are for example purposes only - must be determined for your own robot!
     private final ProfiledPIDController turningPIDController = new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(MODULE_MAX_ANGULAR_VELOCITY, MODULE_MAX_ANGULAR_ACCELERATION));
-
-    // Gains are for example purposes only - must be determined for your own robot!
     private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(1, 3);
     private final SimpleMotorFeedforward turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
     private final String name;
@@ -49,11 +42,11 @@ public class SwerveModule {
      */
     public SwerveModule(int driveMotorCANID, int turningMotorCANID, int turningEncoderCANID, String nameIn) {
         name = nameIn;
-        driveMotor = new TalonFX(driveMotorCANID);
+        driveMotor = new TalonFX(driveMotorCANID, "CTRE_BUS");
         turningMotor = new CANSparkMax(turningMotorCANID, CANSparkLowLevel.MotorType.kBrushless);
         turningMotor.setInverted(true);
 
-        turningEncoder = new CANcoder(turningEncoderCANID);
+        turningEncoder = new CANcoder(turningEncoderCANID, "CTRE_BUS");
 
         // Limit the PID Controller's input range between -pi and pi and set the input
         // to be continuous.
@@ -64,17 +57,13 @@ public class SwerveModule {
     private double getRotationRadians() {
         double rotationRevolutions = turningEncoder.getPosition().getValueAsDouble();
 
-        double rotationRadians = rotationRevolutions * (Math.PI * 2);
-
-        return rotationRadians;
+        return rotationRevolutions * (Math.PI * 2);
     }
 
     private double getDistanceMeters() {
         double drivePositionRotations = driveMotor.getPosition().getValueAsDouble();
 
-        double drivePositionMeters = drivePositionRotations * Constants.Drivetrain.WHEEL_CIRCUMFERENCE_METERS;
-
-        return drivePositionMeters;
+        return drivePositionRotations * Constants.Drivetrain.WHEEL_CIRCUMFERENCE_METERS;
     }
 
 
@@ -83,9 +72,7 @@ public class SwerveModule {
 
         double driveVelocityRPS = driveVelocityRPM / 60;
 
-        double driveVelocityMetersPerSec = driveVelocityRPS * Constants.Drivetrain.WHEEL_CIRCUMFERENCE_METERS;
-
-        return driveVelocityMetersPerSec;
+        return driveVelocityRPS * Constants.Drivetrain.WHEEL_CIRCUMFERENCE_METERS;
     }
 
 
@@ -142,5 +129,12 @@ public class SwerveModule {
 
         driveMotor.setVoltage(driveOutput + driveFeedforward);
         turningMotor.setVoltage(turnOutput + turnFeedforward);
+    }
+    public void setDriveMotorBraking(boolean braking) {
+        if (braking) {
+            driveMotor.setNeutralMode(NeutralModeValue.Brake);
+        } else {
+            driveMotor.setNeutralMode(NeutralModeValue.Coast);
+        }
     }
 }

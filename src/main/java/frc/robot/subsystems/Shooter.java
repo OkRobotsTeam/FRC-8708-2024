@@ -1,35 +1,39 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.controller.PIDController;
 
+import static com.revrobotics.CANSparkLowLevel.MotorType.kBrushless;
+import static frc.robot.Constants.Shooter.*;
+
+
 public class Shooter {
-    private final TalonFX topShooter = new TalonFX(1);
-    private final TalonFX bottomShooter = new TalonFX(2);
-    private final CANSparkMax shooterRotation = new CANSparkMax(3, CANSparkLowLevel.MotorType.kBrushless);
+    private final TalonFX topShooter = new TalonFX(CANIds.TOP_SHOOTER, "CTRE_BUS");
+    private final TalonFX bottomShooter = new TalonFX(CANIds.BOTTOM_SHOOTER, "CTRE_BUS");
+    private final CANSparkMax shooterRotation = new CANSparkMax(CANIds.SHOOTER_ROTATION, kBrushless);
+
     private final RelativeEncoder shooterRotationEncoder = shooterRotation.getEncoder();
-    private final PIDController shooterRotationPID = new PIDController(1.0, 0.0, 0.0);
+    private final PIDController shooterRotationPID = new PIDController(SHOOTER_ROTATION_PID_KP, SHOOTER_ROTATION_PID_KI, SHOOTER_ROTATION_PID_KD);
 
     public Shooter() {
-        topShooter.setInverted(false);
-        bottomShooter.setInverted(false);
+        topShooter.setInverted(SHOOTER_TOP_INVERTED);
+        bottomShooter.setInverted(SHOOTER_BOTTOM_INVERTED);
 
-        shooterRotationEncoder.setPositionConversionFactor(10.0 / 64.0);
-        shooterRotationEncoder.setVelocityConversionFactor(10.0 / 64.0);
+        shooterRotationEncoder.setPositionConversionFactor(SHOOTER_ROTATION_GEAR_RATIO);
+        shooterRotationEncoder.setVelocityConversionFactor(SHOOTER_ROTATION_GEAR_RATIO);
 
-        shooterRotationEncoder.setPosition(0);
-        shooterRotationPID.setSetpoint(0);
+        shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION);
+        shooterRotationPID.setSetpoint(SHOOTER_ROTATION_STARTUP_POSITION);
     }
 
     public double getTopPositionInRotations() {
-        return topShooter.getPosition().getValueAsDouble() * (10.0 / 64.0);
+        return topShooter.getPosition().getValueAsDouble() * SHOOTER_WHEELS_GEAR_RATIO;
     }
 
     public double getBottomPositionInRotations() {
-        return topShooter.getPosition().getValueAsDouble() * (10.0 / 64.0);
+        return bottomShooter.getPosition().getValueAsDouble() * SHOOTER_WHEELS_GEAR_RATIO;
     }
 
     public double getShooterRotationPositionInRotations() {
@@ -50,15 +54,18 @@ public class Shooter {
     }
 
     public void runShooterForward() {
-        setShooterSpeed(1.0);
+        setShooterSpeed(SHOOTER_FORWARD_SPEED);
+        System.out.println("Info: Running shooter forward");
     }
 
     public void runShooterBackward() {
-        setShooterSpeed(-0.5);
+        setShooterSpeed(SHOOTER_REVERSE_SPEED);
+        System.out.println("Info: Running shooter backward");
     }
 
     public void stopShooter() {
         setShooterSpeed(0.0);
+        System.out.println("Info: Stopping shooter");
     }
 
     public void setTargetShooterDegreesFromHorizon(double angle) {

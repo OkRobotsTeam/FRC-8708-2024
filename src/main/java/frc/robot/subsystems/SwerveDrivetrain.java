@@ -1,18 +1,10 @@
-// Copyright (c) FIRST and other WPILib contributors.
-
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -27,15 +19,15 @@ public class SwerveDrivetrain extends SubsystemBase {
     public static final double MAX_SPEED_METERS_PER_SECOND = 3.0;
     public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = Math.PI;
 
-    private final Translation2d frontLeftLocation = new Translation2d(Constants.Drivetrain.WHEELBASE_METERS/2, Constants.Drivetrain.WHEELBASE_METERS/2);
-    private final Translation2d frontRightLocation = new Translation2d(Constants.Drivetrain.WHEELBASE_METERS/2, -Constants.Drivetrain.WHEELBASE_METERS/2);
-    private final Translation2d backLeftLocation = new Translation2d(-Constants.Drivetrain.WHEELBASE_METERS/2, Constants.Drivetrain.WHEELBASE_METERS/2);
-    private final Translation2d backRightLocation = new Translation2d(-Constants.Drivetrain.WHEELBASE_METERS/2, -Constants.Drivetrain.WHEELBASE_METERS/2);
+    private final Translation2d frontLeftLocation = new Translation2d(Constants.Drivetrain.WHEELBASE_METERS / 2, Constants.Drivetrain.WHEELBASE_METERS / 2);
+    private final Translation2d frontRightLocation = new Translation2d(Constants.Drivetrain.WHEELBASE_METERS / 2, -Constants.Drivetrain.WHEELBASE_METERS / 2);
+    private final Translation2d backLeftLocation = new Translation2d(-Constants.Drivetrain.WHEELBASE_METERS / 2, Constants.Drivetrain.WHEELBASE_METERS / 2);
+    private final Translation2d backRightLocation = new Translation2d(-Constants.Drivetrain.WHEELBASE_METERS / 2, -Constants.Drivetrain.WHEELBASE_METERS / 2);
 
-    private final SwerveModule frontLeft = new SwerveModule(Constants.Drivetrain.CANIds.FRONT_LEFT_DRIVE_MOTOR_CAN_ID, Constants.Drivetrain.CANIds.FRONT_LEFT_ROTATION_MOTOR_CAN_ID, Constants.Drivetrain.CANIds.FRONT_LEFT_ENCODER_ENCODER_CAN_ID, "FL");
-    private final SwerveModule frontRight = new SwerveModule(Constants.Drivetrain.CANIds.FRONT_RIGHT_DRIVE_MOTOR_CAN_ID, Constants.Drivetrain.CANIds.FRONT_RIGHT_ROTATION_MOTOR_CAN_ID, Constants.Drivetrain.CANIds.FRONT_RIGHT_ENCODER_ENCODER_CAN_ID, "FR");
-    private final SwerveModule backLeft = new SwerveModule(Constants.Drivetrain.CANIds.BACK_LEFT_DRIVE_MOTOR_CAN_ID, Constants.Drivetrain.CANIds.BACK_LEFT_ROTATION_MOTOR_CAN_ID, Constants.Drivetrain.CANIds.BACK_LEFT_ROTATION_ENCODER_CAN_ID, "BL");
-    private final SwerveModule backRight = new SwerveModule(Constants.Drivetrain.CANIds.BACK_RIGHT_DRIVE_MOTOR_CAN_ID, Constants.Drivetrain.CANIds.BACK_RIGHT_ROTATION_MOTOR_CAN_ID, Constants.Drivetrain.CANIds.BACK_RIGHT_ROTATION_ENCODER_CAN_ID, "BR");
+    private final SwerveModule frontLeft = new SwerveModule(Constants.Drivetrain.CANIds.FRONT_LEFT_DRIVE_MOTOR, Constants.Drivetrain.CANIds.FRONT_LEFT_ROTATION_MOTOR, Constants.Drivetrain.CANIds.FRONT_LEFT_ENCODER_ENCODER, "FL");
+    private final SwerveModule frontRight = new SwerveModule(Constants.Drivetrain.CANIds.FRONT_RIGHT_DRIVE_MOTOR, Constants.Drivetrain.CANIds.FRONT_RIGHT_ROTATION_MOTOR, Constants.Drivetrain.CANIds.FRONT_RIGHT_ENCODER_ENCODER, "FR");
+    private final SwerveModule backLeft = new SwerveModule(Constants.Drivetrain.CANIds.BACK_LEFT_DRIVE_MOTOR, Constants.Drivetrain.CANIds.BACK_LEFT_ROTATION_MOTOR, Constants.Drivetrain.CANIds.BACK_LEFT_ROTATION_ENCODER, "BL");
+    private final SwerveModule backRight = new SwerveModule(Constants.Drivetrain.CANIds.BACK_RIGHT_DRIVE_MOTOR, Constants.Drivetrain.CANIds.BACK_RIGHT_ROTATION_MOTOR, Constants.Drivetrain.CANIds.BACK_RIGHT_ROTATION_ENCODER, "BR");
 
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);
 
@@ -44,11 +36,9 @@ public class SwerveDrivetrain extends SubsystemBase {
     private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), new SwerveModulePosition[]{frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
 
     // Slew rate limiters to make joystick inputs less abrupt
-    private final SlewRateLimiter xSpeedLimiter = new SlewRateLimiter(1d / Constants.Drivetrain.MOVEMENT_MAX_ACCELERATION_METERS_PER_SECOND);
-    private final SlewRateLimiter ySpeedLimiter = new SlewRateLimiter(1d / Constants.Drivetrain.MOVEMENT_MAX_ACCELERATION_METERS_PER_SECOND);
-    private final SlewRateLimiter rotateLimiter = new SlewRateLimiter(1d / Constants.Drivetrain.TURNING_MAX_ACCELERATION_RADIANS_PER_SECOND);
-
-
+    private final SlewRateLimiter xSpeedLimiter = new SlewRateLimiter(Constants.Drivetrain.MOVEMENT_MAX_ACCELERATION_METERS_PER_SECOND);
+    private final SlewRateLimiter ySpeedLimiter = new SlewRateLimiter(Constants.Drivetrain.MOVEMENT_MAX_ACCELERATION_METERS_PER_SECOND);
+    private final SlewRateLimiter rotateLimiter = new SlewRateLimiter(Constants.Drivetrain.TURNING_MAX_ACCELERATION_RADIANS_PER_SECOND);
 
     public SwerveDrivetrain() {
         resetGyro();
@@ -59,6 +49,10 @@ public class SwerveDrivetrain extends SubsystemBase {
         frontRight.stop();
         backLeft.stop();
         backRight.stop();
+    }
+
+    public void setBraking(boolean braking) {
+        frontLeft.setDriveMotorBraking(braking);
     }
 
     public void resetGyro() {
@@ -102,11 +96,19 @@ public class SwerveDrivetrain extends SubsystemBase {
         backRight.setDesiredState(swerveModuleStates[3]);
     }
 
-
     /**
      * Updates the field relative position of the robot.
      */
     public void updateOdometry() {
         odometry.update(gyro.getRotation2d(), new SwerveModulePosition[]{frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
     }
+
+    public Translation2d getOdometryPosition() {
+        return odometry.getPoseMeters().getTranslation();
+    }
+
+    public double getGyroAngle(){
+        return gyro.getRotation2d().getDegrees();
+    }
 }
+
