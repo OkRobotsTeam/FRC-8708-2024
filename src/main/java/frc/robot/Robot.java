@@ -21,6 +21,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+        robotContainer.periodic();
     }
 
     // This function is called once each time the robot enters Disabled mode.
@@ -50,7 +51,8 @@ public class Robot extends TimedRobot {
 
     // This function is called periodically during autonomous.
     @Override
-    public void autonomousPeriodic() {}
+    public void autonomousPeriodic() {
+    }
 
     // This function is called periodically during teleop
     @Override
