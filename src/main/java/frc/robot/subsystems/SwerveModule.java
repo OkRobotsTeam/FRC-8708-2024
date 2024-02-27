@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import frc.robot.Constants;
 import frc.robot.subsystems.SwerveDrivetrain;
 
 import java.util.Objects;
@@ -42,11 +43,11 @@ public class SwerveModule {
      */
     public SwerveModule(int driveMotorCANID, int turningMotorCANID, int turningEncoderCANID, String nameIn) {
         name = nameIn;
-        driveMotor = new TalonFX(driveMotorCANID, "CTRE_BUS");
+        driveMotor = new TalonFX(driveMotorCANID, "CTRE");
         turningMotor = new CANSparkMax(turningMotorCANID, CANSparkLowLevel.MotorType.kBrushless);
         turningMotor.setInverted(true);
 
-        turningEncoder = new CANcoder(turningEncoderCANID, "CTRE_BUS");
+        turningEncoder = new CANcoder(turningEncoderCANID, "CTRE");
 
         // Limit the PID Controller's input range between -pi and pi and set the input
         // to be continuous.
