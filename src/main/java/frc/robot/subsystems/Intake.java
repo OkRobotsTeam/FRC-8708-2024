@@ -54,6 +54,11 @@ public class Intake {
         System.out.println("Info: Running intake out");
     }
 
+    public void stopIntake() {
+        runIntake(0.0);
+        System.out.println("Info: Stopping intake");
+    }
+
     public void extendWrist() {
         wristPID.setSetpoint(WRIST_EXTENDED_SETPOINT_IN_ROTATIONS);
         System.out.println("Info: Extending wrist");

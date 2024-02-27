@@ -4,10 +4,13 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AutonomousTest;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SwerveDrivetrain;
 
 
@@ -18,7 +21,9 @@ public class RobotContainer {
 
     // Subsystems
     private final SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain();
+    private final Climber climber = new Climber();
     private final Intake intake = new Intake();
+    private final Shooter shooter = new Shooter();
 
     // Shuffleboard
     private final SendableChooser<Boolean> driveMode = new SendableChooser<>();
@@ -26,9 +31,9 @@ public class RobotContainer {
     private final SendableChooser<Command> autonomousSelector = new SendableChooser<>();
 
 
-
     public RobotContainer() {
         setupShuffleboard();
+        swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());
         configureControllerBindings();
     }
 
@@ -52,17 +57,21 @@ public class RobotContainer {
         Shuffleboard.selectTab("Driving");
         Shuffleboard.update();
     }
-//                new InstantCommand(() -> intake.runIntakeIn(), intake)
-//        );
-        private void configureControllerBindings() {
-            swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());
 
-//        manipulatorController.a().onTrue(
+    private void configureControllerBindings() {
+        swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());
 
-        }
+        manipulatorController.a().onTrue(Commands.runOnce(intake::runIntakeIn));
+        manipulatorController.a().onFalse(Commands.runOnce(intake::stopIntake));
+
+        manipulatorController.b().onTrue(Commands.runOnce(intake::runIntakeOut));
+        manipulatorController.b().onFalse(Commands.runOnce(intake::stopIntake));
+
+
+    }
 
     public Command getSwerveDriveCommand() {
-        return new InstantCommand(() -> swerveDrivetrain.driveWithController(driveController), swerveDrivetrain);
+        return Commands.runOnce(() -> swerveDrivetrain.driveWithController(driveController));
     }
 
     public Command getAutonomousCommand() {
@@ -74,7 +83,13 @@ public class RobotContainer {
         swerveDrivetrain.resetGyro();
     }
 
-    public void teleopInit() {}
+    public void teleopInit() {
+    }
 
-    public void autonomousInit() {}
+    public void autonomousInit() {
+    }
+
+    public void periodic() {
+        swerveDrivetrain.updateOdometry();
+    }
 }
