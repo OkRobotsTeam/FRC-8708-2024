@@ -24,8 +24,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     private final Translation2d backLeftLocation = new Translation2d(-Constants.Drivetrain.WHEELBASE_METERS / 2, Constants.Drivetrain.WHEELBASE_METERS / 2);
     private final Translation2d backRightLocation = new Translation2d(-Constants.Drivetrain.WHEELBASE_METERS / 2, -Constants.Drivetrain.WHEELBASE_METERS / 2);
 
-    private final SwerveModule frontLeft = new SwerveModule(Constants.Drivetrain.CANIds.FRONT_LEFT_DRIVE_MOTOR, Constants.Drivetrain.CANIds.FRONT_LEFT_ROTATION_MOTOR, Constants.Drivetrain.CANIds.FRONT_LEFT_ENCODER_ENCODER, "FL");
-    private final SwerveModule frontRight = new SwerveModule(Constants.Drivetrain.CANIds.FRONT_RIGHT_DRIVE_MOTOR, Constants.Drivetrain.CANIds.FRONT_RIGHT_ROTATION_MOTOR, Constants.Drivetrain.CANIds.FRONT_RIGHT_ENCODER_ENCODER, "FR");
+    private final SwerveModule frontLeft = new SwerveModule(Constants.Drivetrain.CANIds.FRONT_LEFT_DRIVE_MOTOR, Constants.Drivetrain.CANIds.FRONT_LEFT_ROTATION_MOTOR, Constants.Drivetrain.CANIds.FRONT_LEFT_ROTATION_ENCODER, "FL");
+    private final SwerveModule frontRight = new SwerveModule(Constants.Drivetrain.CANIds.FRONT_RIGHT_DRIVE_MOTOR, Constants.Drivetrain.CANIds.FRONT_RIGHT_ROTATION_MOTOR, Constants.Drivetrain.CANIds.FRONT_RIGHT_ROTATION_ENCODER, "FR");
     private final SwerveModule backLeft = new SwerveModule(Constants.Drivetrain.CANIds.BACK_LEFT_DRIVE_MOTOR, Constants.Drivetrain.CANIds.BACK_LEFT_ROTATION_MOTOR, Constants.Drivetrain.CANIds.BACK_LEFT_ROTATION_ENCODER, "BL");
     private final SwerveModule backRight = new SwerveModule(Constants.Drivetrain.CANIds.BACK_RIGHT_DRIVE_MOTOR, Constants.Drivetrain.CANIds.BACK_RIGHT_ROTATION_MOTOR, Constants.Drivetrain.CANIds.BACK_RIGHT_ROTATION_ENCODER, "BR");
 

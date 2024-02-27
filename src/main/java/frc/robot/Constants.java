@@ -23,21 +23,21 @@ public class Constants {
         public static final double ALLOWED_ROTATION_FROM_TARGET_PRECISE_DEGREES = 1;
 
         public static class CANIds {
-            public static final int FRONT_LEFT_DRIVE_MOTOR = 2;
-            public static final int FRONT_LEFT_ROTATION_MOTOR = 3;
-            public static final int FRONT_LEFT_ENCODER_ENCODER = 10;
+            public static final int FRONT_LEFT_DRIVE_MOTOR = 1;  // On can bus "CTRE"
+            public static final int FRONT_LEFT_ROTATION_MOTOR = 2;  // On can bus "rio"
+            public static final int FRONT_LEFT_ROTATION_ENCODER = 2;  // On can bus "CTRE"
 
-            public static final int FRONT_RIGHT_DRIVE_MOTOR = 4;
-            public static final int FRONT_RIGHT_ROTATION_MOTOR = 5;
-            public static final int FRONT_RIGHT_ENCODER_ENCODER = 11;
+            public static final int FRONT_RIGHT_DRIVE_MOTOR = 3;  // On can bus "CTRE"
+            public static final int FRONT_RIGHT_ROTATION_MOTOR = 3;  // On can bus "rio"
+            public static final int FRONT_RIGHT_ROTATION_ENCODER = 4;  // On can bus "CTRE"
 
-            public static final int BACK_LEFT_DRIVE_MOTOR = 6;
-            public static final int BACK_LEFT_ROTATION_MOTOR = 7;
-            public static final int BACK_LEFT_ROTATION_ENCODER = 12;
+            public static final int BACK_LEFT_DRIVE_MOTOR = 5;  // On can bus "CTRE"
+            public static final int BACK_LEFT_ROTATION_MOTOR = 4;  // On can bus "rio"
+            public static final int BACK_LEFT_ROTATION_ENCODER = 6;  // On can bus "CTRE"
 
-            public static final int BACK_RIGHT_DRIVE_MOTOR = 8;
-            public static final int BACK_RIGHT_ROTATION_MOTOR = 9;
-            public static final int BACK_RIGHT_ROTATION_ENCODER = 13;
+            public static final int BACK_RIGHT_DRIVE_MOTOR = 7;  // On can bus "CTRE"
+            public static final int BACK_RIGHT_ROTATION_MOTOR = 5;  // On can bus "rio"
+            public static final int BACK_RIGHT_ROTATION_ENCODER = 8;  // On can bus "CTRE"
         }
     }
 
@@ -62,9 +62,9 @@ public class Constants {
         public static final double INTAKE_OUT_POWER = -0.5;
 
         public static class CANIds {
-            public static final int TOP_INTAKE = -1;
-            public static final int BOTTOM_INTAKE = -1;
-            public static final int WRIST = -1;
+            public static final int TOP_INTAKE = 6;  // On can bus "rio"
+            public static final int BOTTOM_INTAKE = 7;  // On can bus "rio"
+            public static final int WRIST = 8;  // On can bus "rio"
         }
     }
 
@@ -85,9 +85,9 @@ public class Constants {
         public static final double SHOOTER_REVERSE_SPEED = -0.2;
 
         public static class CANIds {
-            public static final int TOP_SHOOTER = -1;
-            public static final int BOTTOM_SHOOTER = -1;
-            public static final int SHOOTER_ROTATION = -1;
+            public static final int TOP_SHOOTER = 9;  // On can bus "CTRE"
+            public static final int BOTTOM_SHOOTER = 10;  // On can bus "CTRE"
+            public static final int SHOOTER_ROTATION = 9;  // On can bus "rio"
         }
     }
 
@@ -111,8 +111,8 @@ public class Constants {
         public static final double CLIMBER_UP_POSITION = 10.0;
 
         public static class CANIds {
-            public static final int LEFT_CLIMBER = -1;
-            public static final int RIGHT_CLIMBER = -1;
+            public static final int LEFT_CLIMBER = 11;  // On can bus "CTRE"
+            public static final int RIGHT_CLIMBER = 12;  // On can bus "CTRE"
         }
     }
 
