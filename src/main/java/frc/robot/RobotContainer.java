@@ -21,7 +21,7 @@ public class RobotContainer {
 
     // Subsystems
     private final SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain();
-    private final Climber climber = new Climber();
+//    private final Climber climber = new Climber();
     private final Intake intake = new Intake();
     private final Shooter shooter = new Shooter();
 
@@ -53,6 +53,7 @@ public class RobotContainer {
 
         drivingTab.add(autonomousSelector).withPosition(4, 0).withSize(2, 1);
         drivingTab.add(driveMode).withPosition(4, 3).withSize(2, 1);
+        drivingTab.add(maxDriveSpeed).withPosition(6, 3).withSize(2, 1);
 
         Shuffleboard.selectTab("Driving");
         Shuffleboard.update();
@@ -67,11 +68,22 @@ public class RobotContainer {
         manipulatorController.b().onTrue(Commands.runOnce(intake::runIntakeOut));
         manipulatorController.b().onFalse(Commands.runOnce(intake::stopIntake));
 
+        manipulatorController.x().onTrue(Commands.runOnce(intake::extendWrist));
+        manipulatorController.x().onFalse(Commands.runOnce(intake::foldWrist));
+
+        manipulatorController.y().onTrue(Commands.runOnce(shooter::runShooterForward));
+        manipulatorController.y().onFalse(Commands.runOnce(shooter::stopShooter));
+
+        manipulatorController.povUp().onTrue(Commands.runOnce(shooter::shooterManualAdjustUp));
+        manipulatorController.povDown().onFalse(Commands.runOnce(shooter::shooterManualAdjustDown));
+
+        driveController.a().onTrue(Commands.runOnce(swerveDrivetrain::resetGyro));
 
     }
 
     public Command getSwerveDriveCommand() {
-        return Commands.runOnce(() -> swerveDrivetrain.driveWithController(driveController));
+        return new InstantCommand(() -> swerveDrivetrain.driveWithController(driveController), swerveDrivetrain);
+//        return Commands.runOnce(() -> swerveDrivetrain.driveWithController(driveController));
     }
 
     public Command getAutonomousCommand() {
@@ -84,6 +96,7 @@ public class RobotContainer {
     }
 
     public void teleopInit() {
+//        climber.recalibrateClimber();
     }
 
     public void autonomousInit() {
@@ -91,5 +104,8 @@ public class RobotContainer {
 
     public void periodic() {
         swerveDrivetrain.updateOdometry();
+//        climber.tickClimber();
+        shooter.tickShooterRotation();
+        intake.tickWrist();
     }
 }

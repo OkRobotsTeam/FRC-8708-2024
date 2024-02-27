@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.controller.PIDController;
@@ -10,8 +11,8 @@ import static frc.robot.Constants.Shooter.*;
 
 
 public class Shooter {
-    private final TalonFX topShooter = new TalonFX(CANIds.TOP_SHOOTER, "CTRE_BUS");
-    private final TalonFX bottomShooter = new TalonFX(CANIds.BOTTOM_SHOOTER, "CTRE_BUS");
+    private final TalonFX topShooter = new TalonFX(CANIds.TOP_SHOOTER, "CTRE");
+    private final TalonFX bottomShooter = new TalonFX(CANIds.BOTTOM_SHOOTER, "CTRE");
     private final CANSparkMax shooterRotation = new CANSparkMax(CANIds.SHOOTER_ROTATION, kBrushless);
 
     private final RelativeEncoder shooterRotationEncoder = shooterRotation.getEncoder();
@@ -23,6 +24,8 @@ public class Shooter {
 
         shooterRotationEncoder.setPositionConversionFactor(SHOOTER_ROTATION_GEAR_RATIO);
         shooterRotationEncoder.setVelocityConversionFactor(SHOOTER_ROTATION_GEAR_RATIO);
+
+        shooterRotation.setIdleMode(CANSparkBase.IdleMode.kBrake);
 
         shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION);
         shooterRotationPID.setSetpoint(SHOOTER_ROTATION_STARTUP_POSITION);
@@ -70,6 +73,18 @@ public class Shooter {
 
     public void setTargetShooterDegreesFromHorizon(double angle) {
         shooterRotationPID.setSetpoint(angle / 360.0);
+    }
+
+    public void shooterRotationReset() {
+        setTargetShooterDegreesFromHorizon(0);
+    }
+
+    public void shooterManualAdjustUp() {
+        shooterRotationPID.setSetpoint(shooterRotationPID.getSetpoint() + (15/360.0));
+    }
+
+    public void shooterManualAdjustDown() {
+        shooterRotationPID.setSetpoint(shooterRotationPID.getSetpoint() - (15/360.0));
     }
 
     public void tickShooterRotation() {

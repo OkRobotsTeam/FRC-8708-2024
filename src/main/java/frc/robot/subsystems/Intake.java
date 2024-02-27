@@ -6,6 +6,7 @@ import edu.wpi.first.math.controller.PIDController;
 
 import static com.revrobotics.CANSparkLowLevel.MotorType.kBrushless;
 import static frc.robot.Constants.Intake.*;
+import static java.lang.Double.*;
 
 
 public class Intake {
@@ -17,9 +18,9 @@ public class Intake {
     private final PIDController wristPID = new PIDController(WRIST_PID_KP, WRIST_PID_KI, WRIST_PID_KD);
 
     public Intake() {
-        topIntake.setInverted(false);
-        bottomIntake.setInverted(true);
-        wrist.setInverted(false);
+        topIntake.setInverted(TOP_INTAKE_REVERSED);
+        bottomIntake.setInverted(BOTTOM_INTAKE_REVERSED);
+        wrist.setInverted(WRIST_REVERSED);
 
         wristEncoder.setPositionConversionFactor(GEAR_RATIO);
         wristEncoder.setVelocityConversionFactor(GEAR_RATIO);
@@ -75,6 +76,8 @@ public class Intake {
 
     public void tickWrist() {
         double PIDOutput = wristPID.calculate(getWristPositionInRotations());
+        PIDOutput = min(max(-0.6, PIDOutput), 0.6);
+
         wrist.set(PIDOutput);
     }
 }

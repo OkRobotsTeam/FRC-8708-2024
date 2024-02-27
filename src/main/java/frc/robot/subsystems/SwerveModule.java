@@ -14,19 +14,18 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.Constants;
-import frc.robot.subsystems.SwerveDrivetrain;
 
 import java.util.Objects;
 
 
 public class SwerveModule {
-    private static final double MODULE_MAX_ANGULAR_VELOCITY = SwerveDrivetrain.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND;
-    private static final double MODULE_MAX_ANGULAR_ACCELERATION = 2 * Math.PI; // radians per second squared
+    private static final double MODULE_MAX_ANGULAR_VELOCITY = SwerveDrivetrain.POD_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND;
+    private static final double MODULE_MAX_ANGULAR_ACCELERATION = 200 * Math.PI; // radians per second squared
     private final TalonFX driveMotor;
     private final CANSparkMax turningMotor;
     private final CANcoder turningEncoder;
     private final PIDController drivePIDController = new PIDController(1, 0, 0);
-    private final ProfiledPIDController turningPIDController = new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(MODULE_MAX_ANGULAR_VELOCITY, MODULE_MAX_ANGULAR_ACCELERATION));
+    private final ProfiledPIDController turningPIDController = new ProfiledPIDController(6, 0, 0.1, new TrapezoidProfile.Constraints(MODULE_MAX_ANGULAR_VELOCITY, MODULE_MAX_ANGULAR_ACCELERATION));
     private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(1, 3);
     private final SimpleMotorFeedforward turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
     private final String name;
@@ -129,7 +128,7 @@ public class SwerveModule {
         final double turnFeedforward = this.turnFeedforward.calculate(turningPIDController.getSetpoint().velocity);
 
         driveMotor.setVoltage(driveOutput + driveFeedforward);
-        turningMotor.setVoltage(turnOutput + turnFeedforward);
+        turningMotor.setVoltage(turnOutput);
     }
     public void setDriveMotorBraking(boolean braking) {
         if (braking) {

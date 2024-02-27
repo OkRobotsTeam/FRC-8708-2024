@@ -11,8 +11,8 @@ public class Constants {
         public static final boolean FIELD_ORIENTED = false;
         public static final double CONTROLLER_DEADBAND = 0.1;
 
-        public static final double MOVEMENT_MAX_ACCELERATION_METERS_PER_SECOND = 0.1;
-        public static final double TURNING_MAX_ACCELERATION_RADIANS_PER_SECOND = 0.1;
+        public static final double MOVEMENT_MAX_ACCELERATION_METERS_PER_SECOND = 3;
+        public static final double TURNING_MAX_ACCELERATION_RADIANS_PER_SECOND = 1000;
 
         public static final double TURNING_KP = 1;
         public static final double TURNING_KI = 0;
@@ -43,20 +43,26 @@ public class Constants {
 
     public static class Intake {
         public static final double GEAR_RATIO = (8.0 / 60.0) * (16.0 / 60.0) * (12.0 / 36.0);
+        public static final boolean TOP_INTAKE_REVERSED = false;
+        public static final boolean BOTTOM_INTAKE_REVERSED = false;
+        public static final boolean WRIST_REVERSED = true;
+
+
 
         public static final double WRIST_STARTUP_POSITION = 0.0;
 
-        public static final double WRIST_PID_KP = 0.2;
+
+        public static final double WRIST_PID_KP = 8;
         public static final double WRIST_PID_KI = 0.0;
-        public static final double WRIST_PID_KD = 0.0;
+        public static final double WRIST_PID_KD = 0.1;
 
         public static final double WRIST_FOLDED_SETPOINT_IN_ROTATIONS = 0.0;
-        public static final double WRIST_EXTENDED_SETPOINT_IN_ROTATIONS = 0.5;
+        public static final double WRIST_EXTENDED_SETPOINT_IN_ROTATIONS = 0.297;
 
-        public static final int TOP_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS = 10;
-        public static final int TOP_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS = 2;
-        public static final int BOTTOM_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS = 10;
-        public static final int BOTTOM_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS = 2;
+        public static final int TOP_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS = 15;
+        public static final int TOP_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS = 15;
+        public static final int BOTTOM_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS = 15;
+        public static final int BOTTOM_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS = 15;
 
         public static final double INTAKE_IN_POWER = 1.0;
         public static final double INTAKE_OUT_POWER = -0.5;
@@ -72,16 +78,16 @@ public class Constants {
         public static final double SHOOTER_ROTATION_GEAR_RATIO = (10.0 / 64.0);
         public static final double SHOOTER_WHEELS_GEAR_RATIO = (10.0 / 64.0);
 
-        public static final boolean SHOOTER_TOP_INVERTED = false;
-        public static final boolean SHOOTER_BOTTOM_INVERTED = false;
+        public static final boolean SHOOTER_TOP_INVERTED = true;
+        public static final boolean SHOOTER_BOTTOM_INVERTED = true;
 
-        public static final double SHOOTER_ROTATION_PID_KP = 0.2;
+        public static final double SHOOTER_ROTATION_PID_KP = 2.8;
         public static final double SHOOTER_ROTATION_PID_KI = 0.0;
-        public static final double SHOOTER_ROTATION_PID_KD = 0.0;
+        public static final double SHOOTER_ROTATION_PID_KD = 0.03;
 
         public static final double SHOOTER_ROTATION_STARTUP_POSITION = 0.0;
 
-        public static final double SHOOTER_FORWARD_SPEED = 1.0;
+        public static final double SHOOTER_FORWARD_SPEED = 1;
         public static final double SHOOTER_REVERSE_SPEED = -0.2;
 
         public static class CANIds {
@@ -97,6 +103,9 @@ public class Constants {
 
         public static final boolean CLIMBER_LEFT_INVERTED = false;
         public static final boolean CLIMBER_RIGHT_INVERTED = false;
+
+        public static final double CALIBRATION_DELAY_MS = 500;
+
 
         public static final double CLIMBER_PID_KP = 0.2;
         public static final double CLIMBER_PID_KI = 0.0;
@@ -115,6 +124,4 @@ public class Constants {
             public static final int RIGHT_CLIMBER = 12;  // On can bus "CTRE"
         }
     }
-
-
 }

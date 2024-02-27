@@ -5,7 +5,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
@@ -15,8 +17,8 @@ import frc.robot.Constants;
  * Represents a swerve drive style drivetrain.
  */
 public class SwerveDrivetrain extends SubsystemBase {
-    public static final double MAX_SPEED_METERS_PER_SECOND = 3.0;
-    public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = Math.PI;
+    public static final double MAX_SPEED_METERS_PER_SECOND = 1.5;  // 3.0
+    public static final double POD_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = Math.PI * 4;
 
     private final Translation2d frontLeftLocation = new Translation2d(Constants.Drivetrain.WHEELBASE_METERS / 2, Constants.Drivetrain.WHEELBASE_METERS / 2);
     private final Translation2d frontRightLocation = new Translation2d(Constants.Drivetrain.WHEELBASE_METERS / 2, -Constants.Drivetrain.WHEELBASE_METERS / 2);
@@ -28,7 +30,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     private final SwerveModule backLeft = new SwerveModule(Constants.Drivetrain.CANIds.BACK_LEFT_DRIVE_MOTOR, Constants.Drivetrain.CANIds.BACK_LEFT_ROTATION_MOTOR, Constants.Drivetrain.CANIds.BACK_LEFT_ROTATION_ENCODER, "BL");
     private final SwerveModule backRight = new SwerveModule(Constants.Drivetrain.CANIds.BACK_RIGHT_DRIVE_MOTOR, Constants.Drivetrain.CANIds.BACK_RIGHT_ROTATION_MOTOR, Constants.Drivetrain.CANIds.BACK_RIGHT_ROTATION_ENCODER, "BR");
 
-    private final AHRS gyro = new AHRS(SPI.Port.kMXP);
+    private final AHRS gyro = new AHRS(I2C.Port.kMXP);
 
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
@@ -61,18 +63,18 @@ public class SwerveDrivetrain extends SubsystemBase {
     public void driveWithController(CommandXboxController controller) {
         // Get the x speed. We are inverting this because Xbox controllers return
         // negative values when we push forward.
-        final var xSpeed = -xSpeedLimiter.calculate(MathUtil.applyDeadband(controller.getLeftX(), Constants.Drivetrain.CONTROLLER_DEADBAND)) * SwerveDrivetrain.MAX_SPEED_METERS_PER_SECOND;
+        final var xSpeed = -xSpeedLimiter.calculate(MathUtil.applyDeadband(controller.getLeftY(), Constants.Drivetrain.CONTROLLER_DEADBAND)) * SwerveDrivetrain.MAX_SPEED_METERS_PER_SECOND;
 
         // Get the y speed or sideways/strafe speed. We are inverting this because
         // we want a positive value when we pull to the left. The Xbox controller
         // returns positive values when you pull to the right by default.
-        final var ySpeed = -ySpeedLimiter.calculate(MathUtil.applyDeadband(controller.getLeftY(), Constants.Drivetrain.CONTROLLER_DEADBAND)) * SwerveDrivetrain.MAX_SPEED_METERS_PER_SECOND;
+        final var ySpeed = -ySpeedLimiter.calculate(MathUtil.applyDeadband(controller.getLeftX(), Constants.Drivetrain.CONTROLLER_DEADBAND)) * SwerveDrivetrain.MAX_SPEED_METERS_PER_SECOND;
 
         // Get the rate of angular rotation. We are inverting this because we want a
         // positive value when we pull to the left (remember, CCW is positive in
         // mathematics). The Xbox controller returns positive values when you pull to
         // the right by default.
-        final var rot = -rotateLimiter.calculate(MathUtil.applyDeadband(controller.getRightX(), Constants.Drivetrain.CONTROLLER_DEADBAND)) * SwerveDrivetrain.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND;
+        final var rot = -rotateLimiter.calculate(MathUtil.applyDeadband(controller.getRightX(), Constants.Drivetrain.CONTROLLER_DEADBAND)) * SwerveDrivetrain.POD_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND;
 
         drive(xSpeed, ySpeed, rot, Constants.Drivetrain.FIELD_ORIENTED);
     }
@@ -87,6 +89,9 @@ public class SwerveDrivetrain extends SubsystemBase {
      * @param fieldRelative Whether the provided x and y speeds are relative to the field.
      */
     public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldRelative) {
+        if (fieldRelative) {
+            System.out.println("Gyro: " + gyro.getRotation2d().getDegrees());
+        }
         var swerveModuleStates = kinematics.toSwerveModuleStates(fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotation, gyro.getRotation2d()) : new ChassisSpeeds(xSpeed, ySpeed, rotation));
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED_METERS_PER_SECOND);
         frontLeft.setDesiredState(swerveModuleStates[0]);
