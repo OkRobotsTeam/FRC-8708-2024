@@ -76,28 +76,28 @@ public class RobotContainer {
         manipulatorController.a().onTrue(Commands.runOnce(intake::runIntakeIn));
         manipulatorController.a().onFalse(Commands.runOnce(intake::stopIntake));
 
-        manipulatorController.b().onTrue(Commands.runOnce(intake::runIntakeOut));
+        // If the B button is pressed while the wrist should be all the way out, run the intake out at the normal speed
+        manipulatorController.b().and(manipulatorController.rightBumper().negate()).onTrue(Commands.runOnce(intake::runIntakeOut));
+        // If the B button is pressed while the wrist should be halfway out, run the intake out at full speed
+        manipulatorController.b().and(manipulatorController.rightBumper()).onTrue(Commands.runOnce(intake::fullSpeedOut));
+        // If the B button is released, stop the intake
         manipulatorController.b().onFalse(Commands.runOnce(intake::stopIntake));
 
         manipulatorController.x().onTrue(Commands.runOnce(intake::extendWrist));
         manipulatorController.x().onFalse(Commands.runOnce(intake::foldWrist));
 
-        manipulatorController.rightBumper().onTrue(Commands.runOnce(intake::halfExtendWrist));
-        manipulatorController.rightBumper().onFalse(Commands.runOnce(intake::foldWrist));
-
         manipulatorController.y().onTrue(Commands.runOnce(shooter::runShooterForward));
         manipulatorController.y().onFalse(Commands.runOnce(shooter::stopShooter));
 
-        manipulatorController.povUp().onTrue(Commands.runOnce(shooter::shooterManualAdjustUp));
-        manipulatorController.povDown().onFalse(Commands.runOnce(shooter::shooterManualAdjustDown));
-
-        manipulatorController.povRight().onFalse(Commands.runOnce(shooter::shooterRotationReset));
-
-        manipulatorController.povLeft().onTrue(Commands.runOnce(intake::fullSpeedOut));
-        manipulatorController.povLeft().onFalse(Commands.runOnce(intake::stopIntake));
+        manipulatorController.rightBumper().onTrue(Commands.runOnce(intake::halfExtendWrist));
+        manipulatorController.rightBumper().onFalse(Commands.runOnce(intake::foldWrist));
 
         manipulatorController.leftBumper().onTrue(Commands.runOnce(shooter::runShooterSlow));
         manipulatorController.leftBumper().onFalse(Commands.runOnce(shooter::stopShooter));
+
+        manipulatorController.povUp().onTrue(Commands.runOnce(shooter::shooterManualAdjustUp));
+        manipulatorController.povDown().onFalse(Commands.runOnce(shooter::shooterManualAdjustDown));
+        manipulatorController.povRight().onFalse(Commands.runOnce(shooter::shooterRotationReset));
 
         driveController.a().onTrue(
                 Commands.runOnce(swerveDrivetrain::resetGyro).andThen(
