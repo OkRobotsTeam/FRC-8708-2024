@@ -41,7 +41,7 @@ public class Intake {
     }
 
     public void runIntake(double speed) {
-        runTopIntake(speed);
+        runTopIntake(speed * 0.25);
         runBottomIntake(speed);
     }
 
@@ -55,6 +55,11 @@ public class Intake {
         System.out.println("Info: Running intake out");
     }
 
+    public void fullSpeedOut() {
+        runIntake(-1);
+        System.out.println("Info: Running intake out full speed");
+    }
+
     public void stopIntake() {
         runIntake(0.0);
         System.out.println("Info: Stopping intake");
@@ -63,6 +68,11 @@ public class Intake {
     public void extendWrist() {
         wristPID.setSetpoint(WRIST_EXTENDED_SETPOINT_IN_ROTATIONS);
         System.out.println("Info: Extending wrist");
+    }
+
+    public void halfExtendWrist() {
+        wristPID.setSetpoint(WRIST_HALF_EXTENDED_SETPOINT_IN_ROTATIONS);
+        System.out.println("Info: Extending wrist halfway");
     }
 
     public void foldWrist() {
@@ -76,7 +86,7 @@ public class Intake {
 
     public void tickWrist() {
         double PIDOutput = wristPID.calculate(getWristPositionInRotations());
-        PIDOutput = min(max(-0.6, PIDOutput), 0.6);
+        PIDOutput = min(max(-WRIST_MAX_SPEED, PIDOutput), WRIST_MAX_SPEED);
 
         wrist.set(PIDOutput);
     }
