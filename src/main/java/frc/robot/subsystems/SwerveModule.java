@@ -15,22 +15,17 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.Constants;
 
-import java.util.Objects;
+import static frc.robot.Constants.SwerveDrivetrain.*;
 
 
 public class SwerveModule {
-    private static final double MODULE_MAX_ANGULAR_VELOCITY = SwerveDrivetrain.POD_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND;
-    private static final double MODULE_MAX_ANGULAR_ACCELERATION = 200 * Math.PI; // radians per second squared
     private final TalonFX driveMotor;
     private final CANSparkMax turningMotor;
     private final CANcoder turningEncoder;
     private final PIDController drivePIDController = new PIDController(1, 0, 0);
-    private final ProfiledPIDController turningPIDController = new ProfiledPIDController(6, 0, 0.1, new TrapezoidProfile.Constraints(MODULE_MAX_ANGULAR_VELOCITY, MODULE_MAX_ANGULAR_ACCELERATION));
+    private final ProfiledPIDController turningPIDController = new ProfiledPIDController(6, 0, 0.1, new TrapezoidProfile.Constraints(WHEEL_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND_SQUARED, WHEEL_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED));
     private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(1, 3);
-    private final SimpleMotorFeedforward turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
     private final String name;
-    private int i;
-
 
 
     /**
@@ -40,11 +35,14 @@ public class SwerveModule {
      * @param turningMotorCANID     CAN ID for the turning motor.
      * @param turningEncoderCANID   CAN ID for turning encoder.
      */
-    public SwerveModule(int driveMotorCANID, int turningMotorCANID, int turningEncoderCANID, String nameIn) {
-        name = nameIn;
+    public SwerveModule(int driveMotorCANID, int turningMotorCANID, int turningEncoderCANID, String name) {
+        this.name = name;
+
         driveMotor = new TalonFX(driveMotorCANID, "CTRE");
+        driveMotor.setInverted(DRIVE_MOTORS_INVERTED);
+
         turningMotor = new CANSparkMax(turningMotorCANID, CANSparkLowLevel.MotorType.kBrushless);
-        turningMotor.setInverted(true);
+        turningMotor.setInverted(TURNING_MOTORS_INVERTED);
 
         turningEncoder = new CANcoder(turningEncoderCANID, "CTRE");
 
@@ -63,7 +61,7 @@ public class SwerveModule {
     private double getDistanceMeters() {
         double drivePositionRotations = driveMotor.getPosition().getValueAsDouble();
 
-        return drivePositionRotations * Constants.Drivetrain.WHEEL_CIRCUMFERENCE_METERS;
+        return drivePositionRotations * Constants.SwerveDrivetrain.WHEEL_CIRCUMFERENCE_IN_METERS;
     }
 
 
@@ -72,7 +70,7 @@ public class SwerveModule {
 
         double driveVelocityRPS = driveVelocityRPM / 60;
 
-        return driveVelocityRPS * Constants.Drivetrain.WHEEL_CIRCUMFERENCE_METERS;
+        return driveVelocityRPS * Constants.SwerveDrivetrain.WHEEL_CIRCUMFERENCE_IN_METERS;
     }
 
 
@@ -86,7 +84,8 @@ public class SwerveModule {
     }
 
 
-    /**
+    /**import edu.wpi.first.math.controller.PIDController;
+
      * Returns the current position of the module.
      *
      * @return The current position of the module.
@@ -122,10 +121,6 @@ public class SwerveModule {
         // Calculate the turning motor output from the turning PID controller.
         
         final double turnOutput = turningPIDController.calculate(getRotationRadians(), optimizedDesiredState.angle.getRadians());
-        if (i++%10==0 && Objects.equals(name, "FL")) {
-            System.out.printf("%2.2f %2.2f\n",  Math.toDegrees(getRotationRadians()), optimizedDesiredState.angle.getDegrees());
-        }
-        final double turnFeedforward = this.turnFeedforward.calculate(turningPIDController.getSetpoint().velocity);
 
         driveMotor.setVoltage(driveOutput + driveFeedforward);
         turningMotor.setVoltage(turnOutput);
