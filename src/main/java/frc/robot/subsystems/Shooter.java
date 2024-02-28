@@ -32,14 +32,6 @@ public class Shooter {
         shooterRotationPID.setSetpoint(SHOOTER_ROTATION_STARTUP_POSITION);
     }
 
-    public double getTopPositionInRotations() {
-        return topShooter.getPosition().getValueAsDouble() * SHOOTER_WHEELS_GEAR_RATIO;
-    }
-
-    public double getBottomPositionInRotations() {
-        return bottomShooter.getPosition().getValueAsDouble() * SHOOTER_WHEELS_GEAR_RATIO;
-    }
-
     public double getShooterRotationPositionInRotations() {
         return shooterRotationEncoder.getPosition();
     }
