@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.CANSparkLowLevel.MotorType.kBrushless;
@@ -138,9 +139,14 @@ public class Shooter {
         } else {
             setShooterRotationBraking(false);
             double PIDOutput = shooterRotationPID.calculate(getShooterRotationPositionInRotations());
-            double gravityCompensationCoefficient = (getTargetShooterDegreesFromHorizon() / 90);
+            PIDOutput= PIDOutput* 0.1;
+            Math.min(0.1,PIDOutput);
+            Math.max(-0.01,PIDOutput);
 
-            shooterRotation.set(PIDOutput + (gravityCompensationCoefficient * 0.1 ));
+            double gravityCompensationCoefficient = Math.sin(Units.degreesToRadians(getTargetShooterDegreesFromHorizon() ));
+            PIDOutput = PIDOutput + gravityCompensationCoefficient * 0.8;
+
+            shooterRotation.set(PIDOutput);
             SmartDashboard.putNumber("Gravity compensation: ", (gravityCompensationCoefficient * 0.1));
             SmartDashboard.putNumber("PID Output: ", PIDOutput);
         }
