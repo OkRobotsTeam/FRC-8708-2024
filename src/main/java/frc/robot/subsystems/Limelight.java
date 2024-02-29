@@ -3,10 +3,12 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.DriverStation;
 
-import java.util.Arrays;
+
 import java.util.Optional;
 import java.util.OptionalDouble;
 import static frc.robot.Constants.Limelight.*;
@@ -21,7 +23,7 @@ public class Limelight {
         double[] botpose = NetworkTableInstance.getDefault().getTable("limelight").getEntry("botpose").getDoubleArray(defaultBotpose);
 
         if (botpose.length == 0) {
-            System.out.println("Couldn't get position from limelight");
+//            System.out.println("Couldn't get position from limelight");
             return Optional.empty();
         }
 
@@ -41,7 +43,7 @@ public class Limelight {
         return robotPose.map(Pose2d::getRotation);
     }
 
-    public OptionalDouble getDistanceFromGoalInMeters() {
+    public Optional<Translation2d> getOffsetFromGoalInMeters() {
         Optional<DriverStation.Alliance> ally = DriverStation.getAlliance();
 
         // goal is 2.2m off the ground
@@ -50,10 +52,10 @@ public class Limelight {
 
         if (ally.isPresent()) {
             if (ally.get() == DriverStation.Alliance.Red) {
-                targetPosition = new Translation2d(0.457, 2.616);
+                targetPosition = new Translation2d(16.788 - (Units.inchesToMeters(26)), 6.013 - (Units.inchesToMeters(20)));
             }
             if (ally.get() == DriverStation.Alliance.Blue) {
-                targetPosition = new Translation2d(0.457, -16.074);
+                targetPosition = new Translation2d(1.169 - (Units.inchesToMeters(26)), 6.013 - (Units.inchesToMeters(20)));
             }
         } else {
             System.out.println("Warning: No alliance Selected, please select alliance");
@@ -61,10 +63,12 @@ public class Limelight {
 
         Optional<Translation2d> robotPose = getRobotPosition();
 
+
+
         if (robotPose.isPresent()) {
-            return OptionalDouble.of(robotPose.get().getDistance(targetPosition));
+            return Optional.of(robotPose.get().minus(targetPosition));
         } else {
-            return OptionalDouble.empty();
+            return Optional.empty();
         }
     }
 }

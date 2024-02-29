@@ -1,6 +1,9 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -14,9 +17,6 @@ import frc.robot.commands.AutonomousTest;
 import frc.robot.subsystems.*;
 
 import java.util.Optional;
-
-import static frc.robot.Constants.SwerveDrivetrain.*;
-
 
 public class RobotContainer {
     // Controllers
@@ -51,7 +51,7 @@ public class RobotContainer {
         ShuffleboardTab drivingTab = Shuffleboard.getTab("Driving");
 
         autonomousSelector.setDefaultOption("Nothing", new InstantCommand());
-        autonomousSelector.addOption("Test", new AutonomousTest(swerveDrivetrain));
+        autonomousSelector.addOption("Test", new AutonomousTest(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
 
         driveSpeed.setDefaultOption("100%", 1.0);
         driveSpeed.addOption("50%", 0.5);
@@ -156,7 +156,27 @@ public class RobotContainer {
         odometryField.setRobotPose(swerveDrivetrain.getOdometryPose());
         Optional<Pose2d> limelightPose = limelight.getRobotPose();
         limelightPose.ifPresent(cameraPositioningField::setRobotPose);
+
+        Optional<Translation2d> goalOffset = limelight.getOffsetFromGoalInMeters();
+
+        if (goalOffset.isPresent()) {
+
+            double goalDistanceInMeters = goalOffset.get().getNorm();
+            Rotation2d angleFromRobotToGoal = goalOffset.get().getAngle();
+
+            double GOAL_HEIGHT_METERS = 2.2;
+            double SHOOTER_HEIGHT = 0.4826;
+
+            Rotation2d angleFromShooterToGoal = Rotation2d.fromRadians(Math.atan((GOAL_HEIGHT_METERS - SHOOTER_HEIGHT) / goalDistanceInMeters));
+
+            SmartDashboard.putString("Offset from Goal (in): ", goalOffset.get().times(39.3701).toString());
+            SmartDashboard.putNumber("Distance from Goal (in): ", Units.metersToInches(goalDistanceInMeters));
+            SmartDashboard.putNumber("Angle to goal from robot (deg): ", angleFromRobotToGoal.getDegrees());
+            SmartDashboard.putNumber("Shooter angle (deg): ", angleFromShooterToGoal.getDegrees());
+
+            shooter.setTargetShooterDegreesFromHorizon(angleFromShooterToGoal.getDegrees());
+        }
+
         poseEstimatorField.setRobotPose(poseEstimator.getCurrentPose());
-//        System.out.println(limelight.getDistanceFromGoalInMeters());
     }
 }
