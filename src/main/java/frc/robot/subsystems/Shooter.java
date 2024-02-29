@@ -5,6 +5,8 @@ import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.CANSparkLowLevel.MotorType.kBrushless;
@@ -30,6 +32,10 @@ public class Shooter {
 
         shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION);
         shooterRotationPID.setSetpoint(SHOOTER_ROTATION_STARTUP_POSITION);
+
+        shooterRotationPID.setTolerance(0);
+
+        SmartDashboard.putData("Rotation PID: ", shooterRotationPID);
     }
 
     public void init() {
