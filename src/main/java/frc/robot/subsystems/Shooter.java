@@ -4,9 +4,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.CANSparkLowLevel.MotorType.kBrushless;
@@ -20,6 +19,8 @@ public class Shooter {
 
     private final RelativeEncoder shooterRotationEncoder = shooterRotation.getEncoder();
     private PIDController shooterRotationPID = new PIDController(SHOOTER_ROTATION_PID_KP, SHOOTER_ROTATION_PID_KI, SHOOTER_ROTATION_PID_KD);
+    // Create a new ArmFeedforward with gains kS, kG, kV, and kA
+//    ArmFeedforward feedforward = new ArmFeedforward(kS, kG, kV, kA);
     private int adjustment = -1;
     private int resetCount = 0;
 

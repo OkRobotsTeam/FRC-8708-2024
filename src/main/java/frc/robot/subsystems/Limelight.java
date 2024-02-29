@@ -25,7 +25,7 @@ public class Limelight {
             return Optional.empty();
         }
 
-        Translation2d robotPosition = new Translation2d(botpose[1] + (FIELD_WIDTH_IN_METERS / 2), botpose[0]);
+        Translation2d robotPosition = new Translation2d(botpose[0] + (FIELD_WIDTH_IN_METERS / 2), botpose[1] + (FIELD_HEIGHT_IN_METERS / 2));
         Rotation2d robotRotation = Rotation2d.fromDegrees(botpose[5]);
 
         return Optional.of(new Pose2d(robotPosition, robotRotation));
