@@ -1,7 +1,9 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -9,9 +11,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AutonomousTest;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.SwerveDrivetrain;
+import frc.robot.subsystems.*;
+
+import java.util.Optional;
 
 import static frc.robot.Constants.SwerveDrivetrain.*;
 
@@ -26,12 +28,18 @@ public class RobotContainer {
     //    private final Climber climber = new Climber();
     private final Intake intake = new Intake();
     private final Shooter shooter = new Shooter();
+    private final Limelight limelight = new Limelight();
+    private final PoseEstimator poseEstimator = new PoseEstimator(swerveDrivetrain, limelight);
 
     // Shuffleboard
 //    private final SendableChooser<Boolean> driveMode = new SendableChooser<>();
     private final SendableChooser<Double> driveSpeed = new SendableChooser<>();
     private final SendableChooser<Double> turnSpeed = new SendableChooser<>();
     private final SendableChooser<Command> autonomousSelector = new SendableChooser<>();
+
+    private final Field2d cameraPositioningField = new Field2d();
+    private final Field2d odometryField = new Field2d();
+    private final Field2d poseEstimatorField = new Field2d();
 
     public RobotContainer() {
         setupShuffleboard();
@@ -50,19 +58,25 @@ public class RobotContainer {
         driveSpeed.addOption("25%", 0.25);
         driveSpeed.addOption("10%", 0.1);
 
+
         turnSpeed.setDefaultOption("100%", 1.0);
         turnSpeed.addOption("50%", 0.5);
         turnSpeed.addOption("25%", 0.25);
         turnSpeed.addOption("10%", 0.1);
 
+
 //        driveMode.setDefaultOption("Competition Mode", false);
 //        driveMode.addOption("Demonstration Mode", true);
 
-        drivingTab.add(autonomousSelector).withPosition(4, 0).withSize(2, 1);
-//        drivingTab.add(driveMode).withPosition(4, 3).withSize(2, 1);
-        drivingTab.add(driveSpeed).withPosition(6, 3).withSize(2, 1);
-        drivingTab.add(turnSpeed).withPosition(8, 3).withSize(2, 1);
 
+        drivingTab.add("Autonomous", autonomousSelector).withPosition(4, 0).withSize(2, 1);
+//        drivingTab.add(driveMode).withPosition(4, 3).withSize(2, 1);
+        drivingTab.add("Drive Speed", driveSpeed).withPosition(6, 3).withSize(2, 1);
+        drivingTab.add("Turning Speed", turnSpeed).withPosition(8, 3).withSize(2, 1);
+
+        SmartDashboard.putData("Limelight Position", cameraPositioningField);
+        SmartDashboard.putData("Odometry Position", odometryField);
+        SmartDashboard.putData("Odometry Position", poseEstimatorField);
 
         SmartDashboard.putNumber("Shooter Angle", shooter.getTargetShooterDegreesFromHorizon());
 
@@ -105,6 +119,8 @@ public class RobotContainer {
                 )
         );
 
+        driveController.rightBumper().onTrue(Commands.runOnce(swerveDrivetrain::toggleFieldOriented));
+
     }
 
     public Command getSwerveDriveCommand() {
@@ -122,11 +138,14 @@ public class RobotContainer {
 
     public void teleopInit() {
         // Reset the braking state in case autonomous exited uncleanly
-        swerveDrivetrain.setBraking(BRAKING_DURING_TELEOP);
+        shooter.init();
+        swerveDrivetrain.init();
 //        climber.recalibrateClimber();
     }
 
+
     public void autonomousInit() {
+        shooter.init();
     }
 
     public void periodic() {
@@ -134,5 +153,10 @@ public class RobotContainer {
 //        climber.tickClimber();
         shooter.tickShooterRotation();
         intake.tickWrist();
+        odometryField.setRobotPose(swerveDrivetrain.getOdometryPose());
+        Optional<Pose2d> limelightPose = limelight.getRobotPose();
+        limelightPose.ifPresent(cameraPositioningField::setRobotPose);
+        poseEstimatorField.setRobotPose(poseEstimator.getCurrentPose());
+//        System.out.println(limelight.getDistanceFromGoalInMeters());
     }
 }

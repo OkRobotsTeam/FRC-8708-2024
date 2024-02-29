@@ -2,16 +2,21 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
+import java.util.Arrays;
 
 import static frc.robot.Constants.SwerveDrivetrain.*;
 import static frc.robot.MathUtils.cubicFilter;
@@ -21,29 +26,24 @@ import static frc.robot.MathUtils.cubicFilter;
  * Represents a swerve drive style drivetrain.
  */
 public class SwerveDrivetrain extends SubsystemBase {
+    public final PIDController turningPID = new PIDController(TURNING_KP, TURNING_KI, TURNING_KD);
     private final Translation2d frontLeftLocation = new Translation2d(WHEELBASE_IN_METERS / 2, WHEELBASE_IN_METERS / 2);
     private final Translation2d frontRightLocation = new Translation2d(WHEELBASE_IN_METERS / 2, -WHEELBASE_IN_METERS / 2);
     private final Translation2d backLeftLocation = new Translation2d(-WHEELBASE_IN_METERS / 2, WHEELBASE_IN_METERS / 2);
     private final Translation2d backRightLocation = new Translation2d(-WHEELBASE_IN_METERS / 2, -WHEELBASE_IN_METERS / 2);
-
     private final SwerveModule frontLeft = new SwerveModule(CANIds.FRONT_LEFT_DRIVE_MOTOR, CANIds.FRONT_LEFT_ROTATION_MOTOR, CANIds.FRONT_LEFT_ROTATION_ENCODER, "FL");
     private final SwerveModule frontRight = new SwerveModule(CANIds.FRONT_RIGHT_DRIVE_MOTOR, CANIds.FRONT_RIGHT_ROTATION_MOTOR, CANIds.FRONT_RIGHT_ROTATION_ENCODER, "FR");
     private final SwerveModule backLeft = new SwerveModule(CANIds.BACK_LEFT_DRIVE_MOTOR, CANIds.BACK_LEFT_ROTATION_MOTOR, CANIds.BACK_LEFT_ROTATION_ENCODER, "BL");
     private final SwerveModule backRight = new SwerveModule(CANIds.BACK_RIGHT_DRIVE_MOTOR, CANIds.BACK_RIGHT_ROTATION_MOTOR, CANIds.BACK_RIGHT_ROTATION_ENCODER, "BR");
-
     private final AHRS gyro = new AHRS(I2C.Port.kMXP);
-
-    private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
-
-    private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), new SwerveModulePosition[]{frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
-
+    public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
+    public final SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), new SwerveModulePosition[]{frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
     // Slew rate limiters to make joystick inputs less abrupt
     private final SlewRateLimiter xSpeedLimiter = new SlewRateLimiter(MOVEMENT_MAX_ACCELERATION_IN_METERS_PER_SECOND_SQUARED);
     private final SlewRateLimiter ySpeedLimiter = new SlewRateLimiter(MOVEMENT_MAX_ACCELERATION_IN_METERS_PER_SECOND_SQUARED);
     private final SlewRateLimiter rotateLimiter = new SlewRateLimiter(TURNING_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED);
 
-    public final PIDController turningPID = new PIDController(TURNING_KP, TURNING_KI, TURNING_KD);
-
+    private boolean fieldOriented = false;
 
     public SwerveDrivetrain() {
         resetGyro();
@@ -67,8 +67,17 @@ public class SwerveDrivetrain extends SubsystemBase {
         backRight.setDriveMotorBraking(braking);
     }
 
+    public void init() {
+        fieldOriented = false;
+        setBraking(BRAKING_DURING_TELEOP);
+    }
+
     public void resetGyro() {
         gyro.reset();
+    }
+
+    public void toggleFieldOriented() {
+        fieldOriented = !fieldOriented;
     }
 
     public void resetOdometry() {
@@ -136,7 +145,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
         } else {
             // Otherwise drive normally
-            drive(xSpeed, ySpeed, rot, FIELD_ORIENTED);
+            drive(xSpeed, ySpeed, rot, fieldOriented);
         }
     }
 
@@ -150,15 +159,23 @@ public class SwerveDrivetrain extends SubsystemBase {
      * @param fieldRelative Whether the provided x and y speeds are relative to the field.
      */
     public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldRelative) {
-        if (fieldRelative) {
-            System.out.println("Gyro: " + gyro.getRotation2d().getDegrees());
-        }
+//        if (fieldRelative) {
+//            System.out.println("Gyro: " + gyro.getRotation2d().getDegrees());
+//        }
         var swerveModuleStates = kinematics.toSwerveModuleStates(fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotation, gyro.getRotation2d()) : new ChassisSpeeds(xSpeed, ySpeed, rotation));
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MOVEMENT_MAX_SPEED_IN_METERS_PER_SECOND);
         frontLeft.setDesiredState(swerveModuleStates[0]);
         frontRight.setDesiredState(swerveModuleStates[1]);
         backLeft.setDesiredState(swerveModuleStates[2]);
         backRight.setDesiredState(swerveModuleStates[3]);
+    }
+
+    /**
+     * Gets the current drivetrain position, as reported by the modules themselves.
+     * @return current drivetrain state. Array orders are frontLeft, frontRight, backLeft, backRight
+     */
+    public SwerveModulePosition[] getModulePositions() {
+        return new SwerveModulePosition[]{frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()};
     }
 
     /**

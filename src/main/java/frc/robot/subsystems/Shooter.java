@@ -17,9 +17,9 @@ public class Shooter {
     private final CANSparkMax shooterRotation = new CANSparkMax(CANIds.SHOOTER_ROTATION, kBrushless);
 
     private final RelativeEncoder shooterRotationEncoder = shooterRotation.getEncoder();
-    private final PIDController shooterRotationPID = new PIDController(SHOOTER_ROTATION_PID_KP, SHOOTER_ROTATION_PID_KI, SHOOTER_ROTATION_PID_KD);
-
-    private int adjustment = 0;
+    private PIDController shooterRotationPID = new PIDController(SHOOTER_ROTATION_PID_KP, SHOOTER_ROTATION_PID_KI, SHOOTER_ROTATION_PID_KD);
+    private int adjustment = -1;
+    private int resetCount = 0;
 
     public Shooter() {
         topShooter.setInverted(SHOOTER_TOP_INVERTED);
@@ -30,6 +30,17 @@ public class Shooter {
 
         shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION);
         shooterRotationPID.setSetpoint(SHOOTER_ROTATION_STARTUP_POSITION);
+    }
+
+    public void init() {
+        adjustment = -1;
+        setTargetShooterDegreesFromHorizon(0.0);
+        shooterRotationPID.reset();
+        shooterRotationPID = new PIDController(SHOOTER_ROTATION_PID_KP, SHOOTER_ROTATION_PID_KI, SHOOTER_ROTATION_PID_KD);
+
+        resetCount++;
+        SmartDashboard.putNumber("Reset count: ", resetCount);
+
     }
 
     public double getShooterRotationPositionInRotations() {
@@ -101,7 +112,7 @@ public class Shooter {
         if (adjustment == -1) {
             setTargetShooterDegreesFromHorizon(0.0);
         } else {
-            setTargetShooterDegreesFromHorizon(SHOOTER_ROTATION_MANUAL_ADJUST_START_DEGREES + (adjustment * 5));
+            setTargetShooterDegreesFromHorizon(SHOOTER_ROTATION_MANUAL_ADJUST_START_DEGREES + (adjustment * 5.0));
         }
     }
 
@@ -123,7 +134,13 @@ public class Shooter {
             double PIDOutput = shooterRotationPID.calculate(getShooterRotationPositionInRotations());
             double gravityCompensationCoefficient = (getTargetShooterDegreesFromHorizon() / 90);
 
-            shooterRotation.set(PIDOutput + gravityCompensationCoefficient);
+            shooterRotation.set(PIDOutput + (gravityCompensationCoefficient * 0.1 ));
+            SmartDashboard.putNumber("Gravity compensation: ", (gravityCompensationCoefficient * 0.1));
+            SmartDashboard.putNumber("PID Output: ", PIDOutput);
         }
+
+
+        SmartDashboard.putNumber("Rotation motor position: ", Math.round(shooterRotationEncoder.getPosition() * 360));
+        SmartDashboard.putNumber("Rotation PID setpoint: ", Math.round(shooterRotationPID.getSetpoint() * 360));
     }
 }

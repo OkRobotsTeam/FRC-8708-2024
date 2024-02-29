@@ -12,7 +12,7 @@ public class Constants {
 
 
         // Control flags
-        public static final boolean FIELD_ORIENTED = true;
+        public static final boolean FIELD_ORIENTED = false;
         public static final boolean BRAKING_DURING_AUTONOMOUS = true;
         public static final boolean BRAKING_DURING_TELEOP = false;
 
@@ -30,7 +30,7 @@ public class Constants {
 
 
         // Wheel rotation speed and acceleration limiters
-        public static final double WHEEL_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND_SQUARED = Math.PI;
+        public static final double WHEEL_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND_SQUARED = Math.PI * 2;
         public static final double WHEEL_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED = Math.PI * 200;
 
 
@@ -107,9 +107,9 @@ public class Constants {
         public static final boolean SHOOTER_TOP_INVERTED = true;
         public static final boolean SHOOTER_BOTTOM_INVERTED = true;
 
-        public static final double SHOOTER_ROTATION_PID_KP = 2.8;
-        public static final double SHOOTER_ROTATION_PID_KI = 0.0;
-        public static final double SHOOTER_ROTATION_PID_KD = 0.03;
+        public static final double SHOOTER_ROTATION_PID_KP = 0;
+        public static final double SHOOTER_ROTATION_PID_KI = 0;
+        public static final double SHOOTER_ROTATION_PID_KD = 0.0;
 
         public static final double SHOOTER_ROTATION_STARTUP_POSITION = 0.15;
         public static final double SHOOTER_ROTATION_MANUAL_ADJUST_START_DEGREES = 20.0;
@@ -153,5 +153,10 @@ public class Constants {
             public static final int LEFT_CLIMBER = 11;  // On can bus "CTRE"
             public static final int RIGHT_CLIMBER = 12;  // On can bus "CTRE"
         }
+    }
+
+    public static class Limelight {
+        public static final double FIELD_WIDTH_IN_METERS = 16.4592;
+        public static final double FIELD_HEIGHT_IN_METERS = 8.21055;
     }
 }
