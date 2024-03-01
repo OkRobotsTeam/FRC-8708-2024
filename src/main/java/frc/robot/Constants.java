@@ -12,7 +12,6 @@ public class Constants {
 
 
         // Control flags
-        public static final boolean FIELD_ORIENTED = false;
         public static final boolean BRAKING_DURING_AUTONOMOUS = true;
         public static final boolean BRAKING_DURING_TELEOP = false;
 
@@ -107,11 +106,11 @@ public class Constants {
         public static final boolean SHOOTER_TOP_INVERTED = true;
         public static final boolean SHOOTER_BOTTOM_INVERTED = true;
 
-        public static final double SHOOTER_ROTATION_PID_KP = 0;
-        public static final double SHOOTER_ROTATION_PID_KI = 0;
-        public static final double SHOOTER_ROTATION_PID_KD = 0.0;
+        public static final double SHOOTER_ROTATION_PID_KP = 2.8;
+        public static final double SHOOTER_ROTATION_PID_KI = 0.1;
+        public static final double SHOOTER_ROTATION_PID_KD = 0;
 
-        public static final double SHOOTER_ROTATION_STARTUP_POSITION = 0.15;
+        public static final double SHOOTER_ROTATION_STARTUP_POSITION = 0;
         public static final double SHOOTER_ROTATION_MANUAL_ADJUST_START_DEGREES = 20.0;
 
 

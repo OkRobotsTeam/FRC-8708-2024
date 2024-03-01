@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveDrivetrain;
 
@@ -15,7 +16,6 @@ public class MoveToPosition extends Command {
     private final boolean precise;
     private final boolean resetPID;
     private final SwerveDrivetrain drivetrain;
-    private final PIDController turningPID = new PIDController(TURNING_KP, TURNING_KI, TURNING_KD);
     private final Translation2d targetPosition;
 
     public MoveToPosition(double targetHeading, Translation2d targetPosition, double speed, SwerveDrivetrain drivetrain, boolean precise, boolean resetPID) {
@@ -45,7 +45,7 @@ public class MoveToPosition extends Command {
         System.out.println("MoveToPosition: Started moving");
         System.out.println("MoveToPosition: Remaining distance: " + getRemainingDistance());
         System.out.println("MoveToPosition: Current rotation: " + drivetrain.getGyroAngle());
-        System.out.println("MoveToPosition: Target rotation: " + turningPID.getSetpoint());
+        System.out.println("MoveToPosition: Target rotation: " + drivetrain.turningPID.getSetpoint());
         drivetrain.setBraking(BRAKING_DURING_AUTONOMOUS);
     }
 
@@ -54,25 +54,30 @@ public class MoveToPosition extends Command {
         Rotation2d moveDirection = targetPosition.minus(drivetrain.getOdometryPosition()).getAngle();
         double xSpeed = moveDirection.getCos() * speed;
         double ySpeed = moveDirection.getSin() * speed;
-        drivetrain.drive(xSpeed, ySpeed, turningPID.calculate(drivetrain.getGyroAngle().getRadians()), true);
+        double rotationPIDOutput = drivetrain.turningPID.calculate(drivetrain.getOdometryRotation().getDegrees());
+
+        SmartDashboard.putNumber("Rotation PID output: ", rotationPIDOutput * 0.005);
+
+        drivetrain.drive(xSpeed, ySpeed, 0, true);
     }
 
     @Override
     public boolean isFinished() {
         double distanceToTarget = getRemainingDistance();
-        double angleToTarget = targetPosition.minus(drivetrain.getOdometryPosition()).getAngle().getDegrees();
+        double angleToTarget = targetHeading - drivetrain.getGyroAngle().getDegrees();
+
         System.out.println("MoveToPosition: Remaining distance: " + distanceToTarget);
         System.out.println("MoveToPosition: Remaining rotation: " + angleToTarget);
 
         boolean movementComplete = (distanceToTarget < ALLOWED_DISTANCE_FROM_TARGET_IN_METERS);
         boolean turningComplete;
         if (precise) {
-            turningComplete =  (angleToTarget < ALLOWED_ROTATION_FROM_TARGET_IN_RADIANS);
+            turningComplete =  (Math.abs(angleToTarget) <= ALLOWED_ROTATION_FROM_TARGET_IN_RADIANS);
         } else {
-            turningComplete =  (angleToTarget < ALLOWED_ROTATION_FROM_TARGET_PRECISE_IN_RADIANS);
+            turningComplete =  (Math.abs(angleToTarget) <= ALLOWED_ROTATION_FROM_TARGET_PRECISE_IN_RADIANS);
         }
 
-        return movementComplete && turningComplete;
+        return movementComplete;
     }
 
     @Override

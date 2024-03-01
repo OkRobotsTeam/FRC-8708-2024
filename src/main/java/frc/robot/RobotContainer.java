@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AutonomousTest;
+import frc.robot.commands.JustShootAutonomous;
+import frc.robot.commands.TwoRingAutonomous;
 import frc.robot.subsystems.*;
 
 import java.util.Optional;
@@ -52,6 +54,8 @@ public class RobotContainer {
 
         autonomousSelector.setDefaultOption("Nothing", new InstantCommand());
         autonomousSelector.addOption("Test", new AutonomousTest(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
+        autonomousSelector.addOption("Just Shoot", new JustShootAutonomous(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
+        autonomousSelector.addOption("Two Ring", new TwoRingAutonomous(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
 
         driveSpeed.setDefaultOption("100%", 1.0);
         driveSpeed.addOption("50%", 0.5);
@@ -78,7 +82,7 @@ public class RobotContainer {
         SmartDashboard.putData("Odometry Position", odometryField);
         SmartDashboard.putData("Odometry Position", poseEstimatorField);
 
-        SmartDashboard.putNumber("Shooter Angle", shooter.getTargetShooterDegreesFromHorizon());
+//        SmartDashboard.putNumber("Shooter Angle", shooter.getTargetShooterDegreesFromHorizon());
 
         Shuffleboard.selectTab("Driving");
         Shuffleboard.update();
@@ -169,12 +173,12 @@ public class RobotContainer {
 
             Rotation2d angleFromShooterToGoal = Rotation2d.fromRadians(Math.atan((GOAL_HEIGHT_METERS - SHOOTER_HEIGHT) / goalDistanceInMeters));
 
-            SmartDashboard.putString("Offset from Goal (in): ", goalOffset.get().times(39.3701).toString());
-            SmartDashboard.putNumber("Distance from Goal (in): ", Units.metersToInches(goalDistanceInMeters));
-            SmartDashboard.putNumber("Angle to goal from robot (deg): ", angleFromRobotToGoal.getDegrees());
-            SmartDashboard.putNumber("Shooter angle (deg): ", angleFromShooterToGoal.getDegrees());
+//            SmartDashboard.putString("Offset from Goal (in): ", goalOffset.get().times(39.3701).toString());
+//            SmartDashboard.putNumber("Distance from Goal (in): ", Units.metersToInches(goalDistanceInMeters));
+//            SmartDashboard.putNumber("Angle to goal from robot (deg): ", angleFromRobotToGoal.getDegrees());
+//            SmartDashboard.putNumber("Shooter angle (deg): ", angleFromShooterToGoal.getDegrees());
 
-            shooter.setTargetShooterDegreesFromHorizon(angleFromShooterToGoal.getDegrees());
+//            shooter.setTargetShooterDegreesFromHorizon(angleFromShooterToGoal.getDegrees());
         }
 
         poseEstimatorField.setRobotPose(poseEstimator.getCurrentPose());

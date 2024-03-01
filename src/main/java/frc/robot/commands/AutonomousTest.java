@@ -17,7 +17,9 @@ public class AutonomousTest extends SequentialCommandGroup {
         addCommands(
                 new InstantCommand(drivetrain::resetGyro, drivetrain),
                 new InstantCommand(drivetrain::resetOdometry),
-                new MoveToPosition(90, new Translation2d(0,0), 0.05, drivetrain, false, false)
+//                new InstantCommand(intake::runIntakeIn),
+//                new InstantCommand(intake::extendWrist),
+                new MoveToPosition(90, new Translation2d(0,0), 0.05, drivetrain, false, true)
 
 //                new MoveToPosition(0, new Translation2d(-10,-10), 0.05, drivetrain, false, false),
 //                new MoveToPosition(0, new Translation2d(10, 10), 0.05, drivetrain, false, false)

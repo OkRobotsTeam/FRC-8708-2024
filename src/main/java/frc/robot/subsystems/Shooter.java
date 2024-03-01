@@ -34,9 +34,9 @@ public class Shooter {
         shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION);
         shooterRotationPID.setSetpoint(SHOOTER_ROTATION_STARTUP_POSITION);
 
-        shooterRotationPID.setTolerance(0);
+        shooterRotationPID.setTolerance(0.01);
 
-        SmartDashboard.putData("Rotation PID: ", shooterRotationPID);
+//        SmartDashboard.putData("Rotation PID: ", shooterRotationPID);
     }
 
     public void init() {
@@ -46,7 +46,7 @@ public class Shooter {
         shooterRotationPID = new PIDController(SHOOTER_ROTATION_PID_KP, SHOOTER_ROTATION_PID_KI, SHOOTER_ROTATION_PID_KD);
 
         resetCount++;
-        SmartDashboard.putNumber("Reset count: ", resetCount);
+//        SmartDashboard.putNumber("Reset count: ", resetCount);
 
     }
 
@@ -89,7 +89,7 @@ public class Shooter {
 
     public void setTargetShooterDegreesFromHorizon(double angle) {
         shooterRotationPID.setSetpoint(angle / 360.0 + SHOOTER_ROTATION_STARTUP_POSITION);
-        SmartDashboard.putNumber("Shooter Angle", getTargetShooterDegreesFromHorizon());
+//        SmartDashboard.putNumber("Shooter Angle", getTargetShooterDegreesFromHorizon());
     }
 
     public double getTargetShooterDegreesFromHorizon() {
@@ -132,24 +132,27 @@ public class Shooter {
     }
 
     public void tickShooterRotation() {
-        if (adjustment == -1 && shooterRotationPID.atSetpoint()) {
-            // If we are in the docked position (position -1), we want to lock the shooter
-            SmartDashboard.putNumber("Shooter Angle Current", 0);
-            setShooterRotationBraking(true);
-        } else {
+//        if (adjustment == -1 && shooterRotationPID.atSetpoint()) {
+//            // If we are in the docked position (position -1), we want to lock the shooter
+////            SmartDashboard.putNumber("Shooter Angle Current", 0);
+//            setShooterRotationBraking(true);
+//        } else {
             setShooterRotationBraking(false);
             double PIDOutput = shooterRotationPID.calculate(getShooterRotationPositionInRotations());
-            PIDOutput= PIDOutput* 0.1;
-            Math.min(0.1,PIDOutput);
-            Math.max(-0.01,PIDOutput);
+            PIDOutput= PIDOutput * 0.6;
+            PIDOutput = Math.min(0.2,PIDOutput);
+            PIDOutput = Math.max(-0.2,PIDOutput);
 
-            double gravityCompensationCoefficient = Math.sin(Units.degreesToRadians(getTargetShooterDegreesFromHorizon() ));
-            PIDOutput = PIDOutput + gravityCompensationCoefficient * 0.8;
+            double gravityCompensationCoefficient = Math.sin(Units.degreesToRadians(getTargetShooterDegreesFromHorizon()));
+
+            SmartDashboard.putNumber("Gravity compensation: ", (gravityCompensationCoefficient * 0.08));
+            SmartDashboard.putNumber("PID Output: ", PIDOutput);
+
+            PIDOutput = PIDOutput + gravityCompensationCoefficient * 0.05;
+
 
             shooterRotation.set(PIDOutput);
-            SmartDashboard.putNumber("Gravity compensation: ", (gravityCompensationCoefficient * 0.1));
-            SmartDashboard.putNumber("PID Output: ", PIDOutput);
-        }
+//        }
 
 
         SmartDashboard.putNumber("Rotation motor position: ", Math.round(shooterRotationEncoder.getPosition() * 360));
