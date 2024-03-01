@@ -199,6 +199,8 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     public void pathPlannerDrive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MOVEMENT_MAX_SPEED_IN_METERS_PER_SECOND);
+
         System.out.println("pathPlannerDrive:" + Arrays.toString(kinematics.toSwerveModuleStates(chassisSpeeds)));
 
         frontLeft.setDesiredState(swerveModuleStates[0]);

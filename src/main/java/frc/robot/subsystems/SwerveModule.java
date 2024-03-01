@@ -52,10 +52,10 @@ public class SwerveModule {
     }
 
 
-    private double getRotationRadians() {
+    private Rotation2d getRotation() {
         double rotationRevolutions = turningEncoder.getPosition().getValueAsDouble();
 
-        return rotationRevolutions * (Math.PI * 2);
+        return Rotation2d.fromRotations(rotationRevolutions);
     }
 
     private double getDistanceMeters() {
@@ -80,7 +80,7 @@ public class SwerveModule {
      * @return The current state of the module.
      */
     public SwerveModuleState getState() {
-        return new SwerveModuleState(getVelocityMetersPerSecond(), new Rotation2d(getRotationRadians()));
+        return new SwerveModuleState(getVelocityMetersPerSecond(), getRotation());
     }
 
 
@@ -91,7 +91,7 @@ public class SwerveModule {
      * @return The current position of the module.
      */
     public SwerveModulePosition getPosition() {
-        return new SwerveModulePosition(getDistanceMeters() * DRIVE_GEAR_RATIO, new Rotation2d(getRotationRadians()));
+        return new SwerveModulePosition(getDistanceMeters() * DRIVE_GEAR_RATIO, getRotation());
     }
 
 
@@ -111,7 +111,7 @@ public class SwerveModule {
      */
     public void setDesiredState(SwerveModuleState desiredState) {
         // Optimize the reference state to avoid spinning further than 90 degrees
-        SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(desiredState, new Rotation2d(getRotationRadians()));
+        SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(desiredState, getRotation());
 
         // Calculate the drive output from the drive PID controller.
         final double driveOutput = drivePIDController.calculate(getVelocityMetersPerSecond(), optimizedDesiredState.speedMetersPerSecond);
@@ -120,7 +120,7 @@ public class SwerveModule {
 
         // Calculate the turning motor output from the turning PID controller.
         
-        final double turnOutput = turningPIDController.calculate(getRotationRadians(), optimizedDesiredState.angle.getRadians());
+        final double turnOutput = turningPIDController.calculate(getRotation().getRadians(), optimizedDesiredState.angle.getRadians());
 
         driveMotor.setVoltage(driveOutput + driveFeedforward);
         turningMotor.setVoltage(turnOutput);
