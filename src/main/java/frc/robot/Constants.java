@@ -1,11 +1,17 @@
 package frc.robot;
 
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 public class Constants {
 
     public static class SwerveDrivetrain {
         // Physical Attributes
         public static final double WHEELBASE_IN_METERS = 0.56515;
-        public static final double WHEEL_RADIUS_IN_METERS = 0.0508;
+        public static final double DRIVEBASE_RADIUS_IN_METERS = (WHEELBASE_IN_METERS / 2) * Math.sqrt(2);
+        public static final double WHEEL_RADIUS_IN_METERS = 0.051;
+        public static final double DRIVE_GEAR_RATIO = 5.60;
         public static final double WHEEL_CIRCUMFERENCE_IN_METERS = WHEEL_RADIUS_IN_METERS * (Math.PI * 2);
         public static final boolean TURNING_MOTORS_INVERTED = true;
         public static final boolean DRIVE_MOTORS_INVERTED = false;
@@ -32,19 +38,13 @@ public class Constants {
         public static final double WHEEL_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND_SQUARED = Math.PI * 2;
         public static final double WHEEL_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED = Math.PI * 200;
 
-
-        // PID for rotating the robot during auto, disabled during TeleOp
-        public static final double TURNING_KP = 1;
-        public static final double TURNING_KI = 0;
-        public static final double TURNING_KD = 0;
-
-
-        // Thresholds for movement and turning in auto to allow for navigating to positions that are "close enough"
-        public static final double ALLOWED_DISTANCE_FROM_TARGET_IN_METERS = 0.125;
-        // The standard allowed rotation is for when we want to be less precise about our angle (when driving)
-        public static final double ALLOWED_ROTATION_FROM_TARGET_IN_RADIANS = Math.toRadians(3);
-        // The precise allowed rotation is for when we want to be more precise about our angle (when shooting)
-        public static final double ALLOWED_ROTATION_FROM_TARGET_PRECISE_IN_RADIANS = Math.toRadians(1);
+        public static final HolonomicPathFollowerConfig HOLONOMIC_PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
+                new PIDConstants(3.0, 0.0, 0.0), // Translation PID constants
+                new PIDConstants(3.0, 0.0, 0.0), // Rotation PID constants
+                MOVEMENT_MAX_SPEED_IN_METERS_PER_SECOND, // Max module speed, in m/s
+                DRIVEBASE_RADIUS_IN_METERS, // Drive base radius in meters. Distance from robot center to the furthest module.
+                new ReplanningConfig() // Default path re-planning config. See the API for the options here
+        );
 
 
         public static class CANIds {

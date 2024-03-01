@@ -33,11 +33,11 @@ public class TwoRingAutonomous extends SequentialCommandGroup {
                 // Go pickup second disk
                 new InstantCommand(intake::extendWrist),
                 new InstantCommand(intake::runIntakeIn),
-                new MoveToPosition(0, new Translation2d(1,0), 0.05, drivetrain, false, true),
-                new MoveToPosition(0, new Translation2d(0.5,0), 0.05, drivetrain, false, true),
+//                new MoveToPosition(0, new Translation2d(1,0), 0.05, drivetrain, false, true),
+//                new MoveToPosition(0, new Translation2d(0.5,0), 0.05, drivetrain, false, true),
                 new InstantCommand(intake::foldWrist),
                 new InstantCommand(intake::stopIntake),
-                new MoveToPosition(0, new Translation2d(0,0), 0.05, drivetrain, false, true),
+//                new MoveToPosition(0, new Translation2d(0,0), 0.05, drivetrain, false, true),
 
                 // Shoot
                 new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(30)),

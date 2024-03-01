@@ -91,7 +91,7 @@ public class SwerveModule {
      * @return The current position of the module.
      */
     public SwerveModulePosition getPosition() {
-        return new SwerveModulePosition(getDistanceMeters(), new Rotation2d(getRotationRadians()));
+        return new SwerveModulePosition(getDistanceMeters() * DRIVE_GEAR_RATIO, new Rotation2d(getRotationRadians()));
     }
 
 

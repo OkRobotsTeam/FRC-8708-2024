@@ -1,5 +1,7 @@
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -37,13 +39,30 @@ public class RobotContainer {
 //    private final SendableChooser<Boolean> driveMode = new SendableChooser<>();
     private final SendableChooser<Double> driveSpeed = new SendableChooser<>();
     private final SendableChooser<Double> turnSpeed = new SendableChooser<>();
-    private final SendableChooser<Command> autonomousSelector = new SendableChooser<>();
+    private final SendableChooser<Command> autonomousSelector = AutoBuilder.buildAutoChooser();;
 
     private final Field2d cameraPositioningField = new Field2d();
     private final Field2d odometryField = new Field2d();
     private final Field2d poseEstimatorField = new Field2d();
 
     public RobotContainer() {
+
+        // Register Named Commands
+        NamedCommands.registerCommand("extendWrist", new InstantCommand(intake::extendWrist));
+        NamedCommands.registerCommand("foldWrist", new InstantCommand(intake::foldWrist));
+        NamedCommands.registerCommand("runIntakeIn", new InstantCommand(intake::runIntakeIn));
+        NamedCommands.registerCommand("runIntakeOut", new InstantCommand(intake::runIntakeOut));
+        NamedCommands.registerCommand("stopIntake", new InstantCommand(intake::stopIntake));
+        NamedCommands.registerCommand("runShooterForward", new InstantCommand(shooter::runShooterForward));
+        NamedCommands.registerCommand("runShooterBackward", new InstantCommand(shooter::runShooterBackward));
+        NamedCommands.registerCommand("stopShooter", new InstantCommand(shooter::stopShooter));
+        NamedCommands.registerCommand("shooterTo55degrees", new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(55)));
+        NamedCommands.registerCommand("shooterTo60degrees", new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(60)));
+        NamedCommands.registerCommand("shooterTo65degrees", new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(65)));
+        NamedCommands.registerCommand("shooterManualAdjustUp", new InstantCommand(shooter::shooterManualAdjustUp));
+        NamedCommands.registerCommand("shooterManualAdjustDown", new InstantCommand(shooter::shooterManualAdjustDown));
+
+
         setupShuffleboard();
         swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());
         configureControllerBindings();
@@ -52,10 +71,10 @@ public class RobotContainer {
     private void setupShuffleboard() {
         ShuffleboardTab drivingTab = Shuffleboard.getTab("Driving");
 
-        autonomousSelector.setDefaultOption("Nothing", new InstantCommand());
-        autonomousSelector.addOption("Test", new AutonomousTest(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
-        autonomousSelector.addOption("Just Shoot", new JustShootAutonomous(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
-        autonomousSelector.addOption("Two Ring", new TwoRingAutonomous(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
+//        autonomousSelector.setDefaultOption("Nothing", new InstantCommand());
+//        autonomousSelector.addOption("Test", new AutonomousTest(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
+//        autonomousSelector.addOption("Just Shoot", new JustShootAutonomous(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
+//        autonomousSelector.addOption("Two Ring", new TwoRingAutonomous(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
 
         driveSpeed.setDefaultOption("100%", 1.0);
         driveSpeed.addOption("50%", 0.5);
@@ -117,6 +136,10 @@ public class RobotContainer {
         manipulatorController.povDown().onFalse(Commands.runOnce(shooter::shooterManualAdjustDown));
         manipulatorController.povRight().onFalse(Commands.runOnce(shooter::shooterRotationReset));
 
+        manipulatorController.leftStick().onTrue(new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(65)));
+
+        manipulatorController.rightStick().whileTrue(new InstantCommand(() -> shooter.autoAngle(limelight)));
+
         driveController.a().onTrue(
                 Commands.runOnce(swerveDrivetrain::resetGyro).andThen(
                 Commands.runOnce(swerveDrivetrain::resetOdometry)
@@ -128,7 +151,7 @@ public class RobotContainer {
     }
 
     public Command getSwerveDriveCommand() {
-        return new InstantCommand(() -> swerveDrivetrain.driveWithController(driveController, driveSpeed.getSelected(), turnSpeed.getSelected()), swerveDrivetrain);
+        return new InstantCommand(() -> swerveDrivetrain.driveWithController(driveController, driveSpeed.getSelected(), turnSpeed.getSelected(), driveController.leftBumper().getAsBoolean()), swerveDrivetrain);
     }
 
     public Command getAutonomousCommand() {
@@ -161,25 +184,6 @@ public class RobotContainer {
         Optional<Pose2d> limelightPose = limelight.getRobotPose();
         limelightPose.ifPresent(cameraPositioningField::setRobotPose);
 
-        Optional<Translation2d> goalOffset = limelight.getOffsetFromGoalInMeters();
-
-        if (goalOffset.isPresent()) {
-
-            double goalDistanceInMeters = goalOffset.get().getNorm();
-            Rotation2d angleFromRobotToGoal = goalOffset.get().getAngle();
-
-            double GOAL_HEIGHT_METERS = 2.2;
-            double SHOOTER_HEIGHT = 0.4826;
-
-            Rotation2d angleFromShooterToGoal = Rotation2d.fromRadians(Math.atan((GOAL_HEIGHT_METERS - SHOOTER_HEIGHT) / goalDistanceInMeters));
-
-//            SmartDashboard.putString("Offset from Goal (in): ", goalOffset.get().times(39.3701).toString());
-//            SmartDashboard.putNumber("Distance from Goal (in): ", Units.metersToInches(goalDistanceInMeters));
-//            SmartDashboard.putNumber("Angle to goal from robot (deg): ", angleFromRobotToGoal.getDegrees());
-//            SmartDashboard.putNumber("Shooter angle (deg): ", angleFromShooterToGoal.getDegrees());
-
-//            shooter.setTargetShooterDegreesFromHorizon(angleFromShooterToGoal.getDegrees());
-        }
 
         poseEstimatorField.setRobotPose(poseEstimator.getCurrentPose());
     }

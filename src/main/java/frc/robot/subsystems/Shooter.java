@@ -5,8 +5,13 @@ import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
+
+import java.util.Optional;
 
 import static com.revrobotics.CANSparkLowLevel.MotorType.kBrushless;
 import static frc.robot.Constants.Shooter.*;
@@ -143,12 +148,13 @@ public class Shooter {
             PIDOutput = Math.min(0.2,PIDOutput);
             PIDOutput = Math.max(-0.2,PIDOutput);
 
-            double gravityCompensationCoefficient = Math.sin(Units.degreesToRadians(getTargetShooterDegreesFromHorizon()));
+            double gravityCompensationCoefficient = Math.sin(Units.degreesToRadians(getTargetShooterDegreesFromHorizon())) * 0.07;
 
-            SmartDashboard.putNumber("Gravity compensation: ", (gravityCompensationCoefficient * 0.08));
+
+            SmartDashboard.putNumber("Gravity compensation: ", (gravityCompensationCoefficient));
             SmartDashboard.putNumber("PID Output: ", PIDOutput);
 
-            PIDOutput = PIDOutput + gravityCompensationCoefficient * 0.05;
+            PIDOutput = PIDOutput + gravityCompensationCoefficient;
 
 
             shooterRotation.set(PIDOutput);
@@ -157,5 +163,27 @@ public class Shooter {
 
         SmartDashboard.putNumber("Rotation motor position: ", Math.round(shooterRotationEncoder.getPosition() * 360));
         SmartDashboard.putNumber("Rotation PID setpoint: ", Math.round(shooterRotationPID.getSetpoint() * 360));
+    }
+
+    public void autoAngle(Limelight limelight) {
+        Optional<Translation2d> goalOffset = limelight.getOffsetFromGoalInMeters();
+
+        if (goalOffset.isPresent()) {
+
+            double goalDistanceInMeters = goalOffset.get().getNorm();
+            Rotation2d angleFromRobotToGoal = goalOffset.get().getAngle();
+
+            double GOAL_HEIGHT_METERS = 2.2;
+            double SHOOTER_HEIGHT = 0.4826;
+
+            Rotation2d angleFromShooterToGoal = Rotation2d.fromRadians(Math.atan((GOAL_HEIGHT_METERS - SHOOTER_HEIGHT) / goalDistanceInMeters));
+
+            SmartDashboard.putString("Offset from Goal (in): ", goalOffset.get().times(39.3701).toString());
+            SmartDashboard.putNumber("Distance from Goal (in): ", Units.metersToInches(goalDistanceInMeters));
+            SmartDashboard.putNumber("Angle to goal from robot (deg): ", angleFromRobotToGoal.getDegrees());
+            SmartDashboard.putNumber("Shooter angle (deg): ", angleFromShooterToGoal.getDegrees());
+
+            setTargetShooterDegreesFromHorizon(angleFromShooterToGoal.getDegrees());
+        }
     }
 }

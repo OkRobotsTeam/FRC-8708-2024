@@ -1,9 +1,6 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -26,7 +23,6 @@ import static frc.robot.MathUtils.cubicFilter;
  * Represents a swerve drive style drivetrain.
  */
 public class SwerveDrivetrain extends SubsystemBase {
-    public final PIDController turningPID = new PIDController(TURNING_KP, TURNING_KI, TURNING_KD);
     private final Translation2d frontLeftLocation = new Translation2d(WHEELBASE_IN_METERS / 2, WHEELBASE_IN_METERS / 2);
     private final Translation2d frontRightLocation = new Translation2d(WHEELBASE_IN_METERS / 2, -WHEELBASE_IN_METERS / 2);
     private final Translation2d backLeftLocation = new Translation2d(-WHEELBASE_IN_METERS / 2, WHEELBASE_IN_METERS / 2);
@@ -48,22 +44,13 @@ public class SwerveDrivetrain extends SubsystemBase {
     public SwerveDrivetrain() {
         resetGyro();
         resetOdometry();
-        turningPID.enableContinuousInput(-180, 180);
-        turningPID.reset();
-        turningPID.setSetpoint(0);
 
         AutoBuilder.configureHolonomic(
                 this::getOdometryPose, // Robot pose supplier
                 this::setOdometryPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::pathPlannerDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                        4.5, // Max module speed, in m/s
-                        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-                        new ReplanningConfig() // Default path replanning config. See the API for the options here
-                ),
+                HOLONOMIC_PATH_FOLLOWER_CONFIG,
                 () -> {
                     // Boolean supplier that controls when the path will be mirrored for the red alliance
                     // This will flip the path being followed to the red side of the field.
@@ -74,7 +61,6 @@ public class SwerveDrivetrain extends SubsystemBase {
                 },
                 this // Reference to this subsystem to set requirements
         );
-
     }
 
     public void stop() {
@@ -116,7 +102,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         odometry.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
     }
 
-    public void driveWithController(CommandXboxController controller, double driveSpeedScalar, double rotationSpeedScalar) {
+    public void driveWithController(CommandXboxController controller, double driveSpeedScalar, double rotationSpeedScalar, boolean autoAdjust) {
         boolean fast = controller.getRightTriggerAxis() > 0.25;
         boolean slow = controller.getLeftTriggerAxis() > 0.25;
         boolean wheelsCrossed = controller.leftBumper().getAsBoolean();
@@ -148,6 +134,10 @@ public class SwerveDrivetrain extends SubsystemBase {
         // mathematics). The Xbox controller returns positive values when you pull to
         // the right by default.
         double rot = -rightStickXWithRateLimit * TURNING_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND;
+
+        if (autoAdjust) {
+            rot = 0.0;
+        }
 
         // Apply the drive speed selector from ShuffleBoard
         xSpeed *= driveSpeedScalar;
