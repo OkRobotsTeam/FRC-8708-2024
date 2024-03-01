@@ -39,7 +39,7 @@ public class RobotContainer {
 //    private final SendableChooser<Boolean> driveMode = new SendableChooser<>();
     private final SendableChooser<Double> driveSpeed = new SendableChooser<>();
     private final SendableChooser<Double> turnSpeed = new SendableChooser<>();
-    private final SendableChooser<Command> autonomousSelector = AutoBuilder.buildAutoChooser();;
+    private SendableChooser<Command> autonomousSelector;
 
     private final Field2d cameraPositioningField = new Field2d();
     private final Field2d odometryField = new Field2d();
@@ -61,7 +61,9 @@ public class RobotContainer {
         NamedCommands.registerCommand("shooterTo65degrees", new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(65)));
         NamedCommands.registerCommand("shooterManualAdjustUp", new InstantCommand(shooter::shooterManualAdjustUp));
         NamedCommands.registerCommand("shooterManualAdjustDown", new InstantCommand(shooter::shooterManualAdjustDown));
+        NamedCommands.registerCommand("done", new InstantCommand(() -> System.out.println("Done autonomous")));
 
+        autonomousSelector = AutoBuilder.buildAutoChooser();
 
         setupShuffleboard();
         swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());

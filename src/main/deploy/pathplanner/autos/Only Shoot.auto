@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.35,
-      "y": 5.57
+      "x": 1.3609682931816596,
+      "y": 5.546077374068987
     },
     "rotation": 0
   },
@@ -68,14 +68,14 @@
                 "data": {
                   "name": "stopIntake"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "done"
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "PickupCenter"
           }
         }
       ]
