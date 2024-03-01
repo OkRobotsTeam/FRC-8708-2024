@@ -54,9 +54,9 @@ public class SwerveDrivetrain extends SubsystemBase {
 
         AutoBuilder.configureHolonomic(
                 this::getOdometryPose, // Robot pose supplier
-                odometry::resetPosition, // Method to reset odometry (will be called if your auto has a starting pose)
+                this::setOdometryPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                this::pathPlannerDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                         new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                         new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
@@ -74,6 +74,7 @@ public class SwerveDrivetrain extends SubsystemBase {
                 },
                 this // Reference to this subsystem to set requirements
         );
+
     }
 
     public void stop() {
@@ -81,6 +82,10 @@ public class SwerveDrivetrain extends SubsystemBase {
         frontRight.stop();
         backLeft.stop();
         backRight.stop();
+    }
+
+    public ChassisSpeeds getRobotRelativeSpeeds() {
+        return kinematics.toChassisSpeeds(getModuleStates());
     }
 
     public void setBraking(boolean braking) {
@@ -104,7 +109,11 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public void resetOdometry() {
-        odometry.resetPosition(gyro.getRotation2d(), new SwerveModulePosition[]{frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()}, new Pose2d(0, 0, new Rotation2d(0)));
+        setOdometryPose(new Pose2d());
+    }
+
+    public void setOdometryPose(Pose2d pose) {
+        odometry.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
     }
 
     public void driveWithController(CommandXboxController controller, double driveSpeedScalar, double rotationSpeedScalar) {
@@ -193,12 +202,24 @@ public class SwerveDrivetrain extends SubsystemBase {
         backRight.setDesiredState(swerveModuleStates[3]);
     }
 
+    public void pathPlannerDrive(ChassisSpeeds chassisSpeeds) {
+        SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
+        frontLeft.setDesiredState(swerveModuleStates[0]);
+        frontRight.setDesiredState(swerveModuleStates[1]);
+        backLeft.setDesiredState(swerveModuleStates[2]);
+        backRight.setDesiredState(swerveModuleStates[3]);
+    }
+
     /**
      * Gets the current drivetrain position, as reported by the modules themselves.
      * @return current drivetrain state. Array orders are frontLeft, frontRight, backLeft, backRight
      */
     public SwerveModulePosition[] getModulePositions() {
         return new SwerveModulePosition[]{frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()};
+    }
+
+    public SwerveModuleState[] getModuleStates() {
+        return new SwerveModuleState[]{frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()};
     }
 
     /**
