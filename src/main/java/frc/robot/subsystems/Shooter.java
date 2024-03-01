@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
@@ -26,10 +27,13 @@ public class Shooter {
     private PIDController shooterRotationPID = new PIDController(SHOOTER_ROTATION_PID_KP, SHOOTER_ROTATION_PID_KI, SHOOTER_ROTATION_PID_KD);
     // Create a new ArmFeedforward with gains kS, kG, kV, and kA
 //    ArmFeedforward feedforward = new ArmFeedforward(kS, kG, kV, kA);
-    private int adjustment = -1;
+    private GenericEntry shooterAngleEntry;
+    public int adjustment = -1;
     private int resetCount = 0;
 
-    public Shooter() {
+    public Shooter(GenericEntry shooterAngleEntry) {
+        this.shooterAngleEntry = shooterAngleEntry;
+
         topShooter.setInverted(SHOOTER_TOP_INVERTED);
         bottomShooter.setInverted(SHOOTER_BOTTOM_INVERTED);
 
@@ -160,6 +164,7 @@ public class Shooter {
             shooterRotation.set(PIDOutput);
 //        }
 
+        shooterAngleEntry.setDouble(Math.round(shooterRotationEncoder.getPosition() * 360));
 
         SmartDashboard.putNumber("Rotation motor position: ", Math.round(shooterRotationEncoder.getPosition() * 360));
         SmartDashboard.putNumber("Rotation PID setpoint: ", Math.round(shooterRotationPID.getSetpoint() * 360));
@@ -178,10 +183,10 @@ public class Shooter {
 
             Rotation2d angleFromShooterToGoal = Rotation2d.fromRadians(Math.atan((GOAL_HEIGHT_METERS - SHOOTER_HEIGHT) / goalDistanceInMeters));
 
-            SmartDashboard.putString("Offset from Goal (in): ", goalOffset.get().times(39.3701).toString());
-            SmartDashboard.putNumber("Distance from Goal (in): ", Units.metersToInches(goalDistanceInMeters));
-            SmartDashboard.putNumber("Angle to goal from robot (deg): ", angleFromRobotToGoal.getDegrees());
-            SmartDashboard.putNumber("Shooter angle (deg): ", angleFromShooterToGoal.getDegrees());
+//            SmartDashboard.putString("Offset from Goal (in): ", goalOffset.get().times(39.3701).toString());
+//            SmartDashboard.putNumber("Distance from Goal (in): ", Units.metersToInches(goalDistanceInMeters));
+//            SmartDashboard.putNumber("Angle to goal from robot (deg): ", angleFromRobotToGoal.getDegrees());
+//            SmartDashboard.putNumber("Shooter angle (deg): ", angleFromShooterToGoal.getDegrees());
 
             setTargetShooterDegreesFromHorizon(angleFromShooterToGoal.getDegrees());
         }

@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import java.util.Arrays;
+
 import static frc.robot.Constants.SwerveDrivetrain.*;
 import static frc.robot.MathUtils.cubicFilter;
 
@@ -71,6 +73,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public ChassisSpeeds getRobotRelativeSpeeds() {
+        System.out.println("getRobotRelativeSpeeds returning:" + kinematics.toChassisSpeeds(getModuleStates()).toString());
         return kinematics.toChassisSpeeds(getModuleStates());
     }
 
@@ -99,6 +102,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public void setOdometryPose(Pose2d pose) {
+
+        System.out.println("Just set odometry pose to: " + pose.toString());
         odometry.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
     }
 
@@ -194,6 +199,8 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     public void pathPlannerDrive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
+        System.out.println("pathPlannerDrive:" + Arrays.toString(kinematics.toSwerveModuleStates(chassisSpeeds)));
+
         frontLeft.setDesiredState(swerveModuleStates[0]);
         frontRight.setDesiredState(swerveModuleStates[1]);
         backLeft.setDesiredState(swerveModuleStates[2]);
@@ -230,6 +237,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public Pose2d getOdometryPose() {
+        System.out.println("getOdometryPose: " + odometry.getPoseMeters().toString());
         return odometry.getPoseMeters();
     }
 

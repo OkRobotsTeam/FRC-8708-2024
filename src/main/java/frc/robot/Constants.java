@@ -106,9 +106,9 @@ public class Constants {
         public static final boolean SHOOTER_TOP_INVERTED = true;
         public static final boolean SHOOTER_BOTTOM_INVERTED = true;
 
-        public static final double SHOOTER_ROTATION_PID_KP = 2.8;
-        public static final double SHOOTER_ROTATION_PID_KI = 0.1;
-        public static final double SHOOTER_ROTATION_PID_KD = 0;
+        public static final double SHOOTER_ROTATION_PID_KP = 1.4;
+        public static final double SHOOTER_ROTATION_PID_KI = 0.08;
+        public static final double SHOOTER_ROTATION_PID_KD = 0.08;
 
         public static final double SHOOTER_ROTATION_STARTUP_POSITION = 0;
         public static final double SHOOTER_ROTATION_MANUAL_ADJUST_START_DEGREES = 20.0;

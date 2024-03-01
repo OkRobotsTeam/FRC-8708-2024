@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -31,7 +32,7 @@ public class RobotContainer {
     private final SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain();
     //    private final Climber climber = new Climber();
     private final Intake intake = new Intake();
-    private final Shooter shooter = new Shooter();
+    private Shooter shooter;
     private final Limelight limelight = new Limelight();
     private final PoseEstimator poseEstimator = new PoseEstimator(swerveDrivetrain, limelight);
 
@@ -46,6 +47,13 @@ public class RobotContainer {
     private final Field2d poseEstimatorField = new Field2d();
 
     public RobotContainer() {
+
+        ShuffleboardTab drivingTab = Shuffleboard.getTab("Driving");
+
+
+        GenericEntry ShooterAngleEntry = drivingTab.add("Shooter angle", 0).withPosition(0, 0).withSize(2, 1).getEntry();
+
+        shooter = new Shooter(ShooterAngleEntry);
 
         // Register Named Commands
         NamedCommands.registerCommand("extendWrist", new InstantCommand(intake::extendWrist));
@@ -65,13 +73,12 @@ public class RobotContainer {
 
         autonomousSelector = AutoBuilder.buildAutoChooser();
 
-        setupShuffleboard();
+        setupShuffleboard(drivingTab);
         swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());
         configureControllerBindings();
     }
 
-    private void setupShuffleboard() {
-        ShuffleboardTab drivingTab = Shuffleboard.getTab("Driving");
+    private void setupShuffleboard(ShuffleboardTab drivingTab) {
 
 //        autonomousSelector.setDefaultOption("Nothing", new InstantCommand());
 //        autonomousSelector.addOption("Test", new AutonomousTest(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
@@ -102,6 +109,8 @@ public class RobotContainer {
         SmartDashboard.putData("Limelight Position", cameraPositioningField);
         SmartDashboard.putData("Odometry Position", odometryField);
         SmartDashboard.putData("Odometry Position", poseEstimatorField);
+
+
 
 //        SmartDashboard.putNumber("Shooter Angle", shooter.getTargetShooterDegreesFromHorizon());
 
@@ -138,7 +147,8 @@ public class RobotContainer {
         manipulatorController.povDown().onFalse(Commands.runOnce(shooter::shooterManualAdjustDown));
         manipulatorController.povRight().onFalse(Commands.runOnce(shooter::shooterRotationReset));
 
-        manipulatorController.leftStick().onTrue(new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(65)));
+//        manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(60)));
+        manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> shooter.adjustment = 8).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
 
         manipulatorController.rightStick().whileTrue(new InstantCommand(() -> shooter.autoAngle(limelight)));
 
