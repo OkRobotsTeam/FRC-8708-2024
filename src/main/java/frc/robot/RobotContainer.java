@@ -16,9 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.AutonomousTest;
-import frc.robot.commands.JustShootAutonomous;
-import frc.robot.commands.TwoRingAutonomous;
+import frc.robot.commands.Shoot;
 import frc.robot.subsystems.*;
 
 import java.util.Optional;
@@ -56,6 +54,7 @@ public class RobotContainer {
         shooter = new Shooter(ShooterAngleEntry);
 
         // Register Named Commands
+        NamedCommands.registerCommand("shoot", new Shoot(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
         NamedCommands.registerCommand("extendWrist", new InstantCommand(intake::extendWrist));
         NamedCommands.registerCommand("foldWrist", new InstantCommand(intake::foldWrist));
         NamedCommands.registerCommand("runIntakeIn", new InstantCommand(intake::runIntakeIn));
@@ -64,6 +63,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("runShooterForward", new InstantCommand(shooter::runShooterForward));
         NamedCommands.registerCommand("runShooterBackward", new InstantCommand(shooter::runShooterBackward));
         NamedCommands.registerCommand("stopShooter", new InstantCommand(shooter::stopShooter));
+        NamedCommands.registerCommand("shooterTo50degrees", new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(50)));
         NamedCommands.registerCommand("shooterTo55degrees", new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(55)));
         NamedCommands.registerCommand("shooterTo60degrees", new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(60)));
         NamedCommands.registerCommand("shooterTo65degrees", new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(65)));
@@ -148,7 +148,7 @@ public class RobotContainer {
         manipulatorController.povRight().onFalse(Commands.runOnce(shooter::shooterRotationReset));
 
 //        manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(60)));
-        manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> shooter.adjustment = 8).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
+        manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> shooter.adjustment = 3).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
 
         manipulatorController.rightStick().whileTrue(new InstantCommand(() -> shooter.autoAngle(limelight)));
 
@@ -196,6 +196,7 @@ public class RobotContainer {
         Optional<Pose2d> limelightPose = limelight.getRobotPose();
         limelightPose.ifPresent(cameraPositioningField::setRobotPose);
 
+        SmartDashboard.putNumber("FLR", swerveDrivetrain.frontLeft.getRotation().getDegrees());
 
         poseEstimatorField.setRobotPose(poseEstimator.getCurrentPose());
     }

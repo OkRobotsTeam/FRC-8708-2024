@@ -11,7 +11,7 @@ public class Constants {
         public static final double WHEELBASE_IN_METERS = 0.56515;
         public static final double DRIVEBASE_RADIUS_IN_METERS = (WHEELBASE_IN_METERS / 2) * Math.sqrt(2);
         public static final double WHEEL_RADIUS_IN_METERS = 0.051;
-        public static final double DRIVE_GEAR_RATIO = 5.60;
+        public static final double DRIVE_GEAR_RATIO = (1.0 / 5.60);
         public static final double WHEEL_CIRCUMFERENCE_IN_METERS = WHEEL_RADIUS_IN_METERS * (Math.PI * 2);
         public static final boolean TURNING_MOTORS_INVERTED = true;
         public static final boolean DRIVE_MOTORS_INVERTED = false;
@@ -41,7 +41,7 @@ public class Constants {
         public static final HolonomicPathFollowerConfig HOLONOMIC_PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
                 new PIDConstants(3.0, 0.0, 0.0), // Translation PID constants
                 new PIDConstants(3.0, 0.0, 0.0), // Rotation PID constants
-                MOVEMENT_MAX_SPEED_IN_METERS_PER_SECOND, // Max module speed, in m/s
+                0.25, // Max module speed, in m/s
                 DRIVEBASE_RADIUS_IN_METERS, // Drive base radius in meters. Distance from robot center to the furthest module.
                 new ReplanningConfig() // Default path re-planning config. See the API for the options here
         );

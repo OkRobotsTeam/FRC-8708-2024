@@ -1,0 +1,61 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3630636426223934,
+      "y": 5.54978902308505
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MoveBeforeShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootFromFarther"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "runIntakeIn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "extendWrist"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MoveAfterPickup"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "extendWrist"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
