@@ -36,6 +36,7 @@ public class Shooter {
 
         topShooter.setInverted(SHOOTER_TOP_INVERTED);
         bottomShooter.setInverted(SHOOTER_BOTTOM_INVERTED);
+        shooterRotation.setInverted(SHOOTER_ROTATION_INVERTED);
 
         shooterRotationEncoder.setPositionConversionFactor(SHOOTER_ROTATION_GEAR_RATIO);
         shooterRotationEncoder.setVelocityConversionFactor(SHOOTER_ROTATION_GEAR_RATIO);
@@ -148,9 +149,9 @@ public class Shooter {
 //        } else {
             setShooterRotationBraking(false);
             double PIDOutput = shooterRotationPID.calculate(getShooterRotationPositionInRotations());
-            PIDOutput= PIDOutput * 0.6;
-            PIDOutput = Math.min(0.2,PIDOutput);
-            PIDOutput = Math.max(-0.2,PIDOutput);
+            //PIDOutput= PIDOutput * 0.6;
+            //PIDOutput = Math.min(0.2,PIDOutput);
+            //PIDOutput = Math.max(-0.2,PIDOutput);
 
             double gravityCompensationCoefficient = Math.sin(Units.degreesToRadians(getTargetShooterDegreesFromHorizon())) * 0.07;
 

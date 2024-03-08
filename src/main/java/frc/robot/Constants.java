@@ -100,13 +100,16 @@ public class Constants {
     }
 
     public static class Shooter {
-        public static final double SHOOTER_ROTATION_GEAR_RATIO = (10.0 / 64.0);
+        //public static final double SHOOTER_ROTATION_GEAR_RATIO = (10.0 / 64.0);
+        public static final double SHOOTER_ROTATION_GEAR_RATIO = (1.0/220.0);
         public static final double SHOOTER_WHEELS_GEAR_RATIO = (10.0 / 64.0);
+
 
         public static final boolean SHOOTER_TOP_INVERTED = true;
         public static final boolean SHOOTER_BOTTOM_INVERTED = true;
+        public static final boolean SHOOTER_ROTATION_INVERTED = true;
 
-        public static final double SHOOTER_ROTATION_PID_KP = 1.4;
+        public static final double SHOOTER_ROTATION_PID_KP = 14;
         public static final double SHOOTER_ROTATION_PID_KI = 0.08;
         public static final double SHOOTER_ROTATION_PID_KD = 0.08;
 
