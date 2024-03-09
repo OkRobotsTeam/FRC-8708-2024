@@ -39,9 +39,9 @@ public class Constants {
         public static final double WHEEL_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED = Math.PI * 200;
 
         public static final HolonomicPathFollowerConfig HOLONOMIC_PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
-                new PIDConstants(3.0, 0.0, 0.0), // Translation PID constants
-                new PIDConstants(3.0, 0.0, 0.0), // Rotation PID constants
-                0.25, // Max module speed, in m/s
+                new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                new PIDConstants(2.0, 0.0, 0.0), // Rotation PID constants
+                1.5, // Max module speed, in m/s
                 DRIVEBASE_RADIUS_IN_METERS, // Drive base radius in meters. Distance from robot center to the furthest module.
                 new ReplanningConfig() // Default path re-planning config. See the API for the options here
         );
@@ -82,14 +82,15 @@ public class Constants {
 
         public static final double WRIST_FOLDED_SETPOINT_IN_ROTATIONS = 0.0;
         public static final double WRIST_HALF_EXTENDED_SETPOINT_IN_ROTATIONS = 0.297 * (2.0 / 5.0);
-        public static final double WRIST_EXTENDED_SETPOINT_IN_ROTATIONS = 0.297;
+        public static final double WRIST_EXTENDED_SETPOINT_IN_ROTATIONS = 0.305;
 
         public static final int TOP_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS = 15;
         public static final int TOP_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS = 15;
         public static final int BOTTOM_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS = 15;
         public static final int BOTTOM_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS = 15;
 
-        public static final double INTAKE_IN_POWER = 1.0;
+        public static final double INTAKE_IN_TOP_POWER = 0.55;
+        public static final double INTAKE_IN_BOTTOM_POWER = 0.4;
         public static final double INTAKE_OUT_POWER = -0.5;
 
         public static class CANIds {

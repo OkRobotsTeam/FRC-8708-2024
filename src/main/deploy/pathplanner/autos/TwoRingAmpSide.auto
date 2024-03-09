@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.072981316247419,
-      "y": 6.799138940646617
+      "x": 0.8519535483565265,
+      "y": 6.735950627069118
     },
-    "rotation": 0
+    "rotation": 45.0
   },
   "command": {
     "type": "sequential",
@@ -44,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "MoveAfterShoot"
+            "pathName": "PickupAmpSide"
           }
         },
         {
@@ -57,6 +57,18 @@
           "type": "named",
           "data": {
             "name": "foldWrist"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ShootAmpSide"
           }
         },
         {

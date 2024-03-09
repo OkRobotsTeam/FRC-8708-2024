@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.072981316247419,
-      "y": 6.799138940646617
+      "x": 1.3630636426223934,
+      "y": 5.54978902308505
     },
-    "rotation": 0
+    "rotation": 10.612462330657385
   },
   "command": {
     "type": "sequential",
@@ -62,7 +62,7 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "shootFromFarther"
           }
         }
       ]

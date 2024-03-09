@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.395184669625304,
-      "y": 5.4924432558342176
+      "x": 1.3746118678760795,
+      "y": 5.551903540330518
     },
     "rotation": 0
   },
@@ -12,15 +12,27 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeaveAfterShooting"
+          }
+        },
+        {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 2.0
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "stopIntake"
           }
         }
       ]

@@ -7,7 +7,7 @@ import frc.robot.subsystems.*;
 
 public class ShootFromFarther extends SequentialCommandGroup {
     public ShootFromFarther(
-            SwerveModule drivetrain,
+            SwerveDrivetrain drivetrain,
             Intake intake,
             Limelight limelight,
             Shooter shooter,

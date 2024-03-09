@@ -46,7 +46,8 @@ public class Intake {
     }
 
     public void runIntakeIn() {
-        runIntake(INTAKE_IN_POWER);
+        runTopIntake(INTAKE_IN_TOP_POWER);
+        runBottomIntake(INTAKE_IN_BOTTOM_POWER);
         System.out.println("Info: Running intake in");
     }
 
@@ -56,7 +57,8 @@ public class Intake {
     }
 
     public void fullSpeedOut() {
-        runIntake(-1);
+        runTopIntake(-1);
+        runBottomIntake(-1);
         System.out.println("Info: Running intake out full speed");
     }
 

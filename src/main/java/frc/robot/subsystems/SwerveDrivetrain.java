@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -16,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import static frc.robot.Constants.SwerveDrivetrain.*;
 import static frc.robot.MathUtils.cubicFilter;
@@ -41,9 +41,14 @@ public class SwerveDrivetrain extends SubsystemBase {
     private final SlewRateLimiter ySpeedLimiter = new SlewRateLimiter(MOVEMENT_MAX_ACCELERATION_IN_METERS_PER_SECOND_SQUARED);
     private final SlewRateLimiter rotateLimiter = new SlewRateLimiter(TURNING_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED);
 
+    private Shooter shooter;
+    private Limelight limelight;
     private boolean fieldOriented = false;
 
-    public SwerveDrivetrain() {
+    public SwerveDrivetrain(Shooter shooter, Limelight limelight) {
+        this.shooter = shooter;
+        this.limelight = limelight;
+
         resetGyro();
         resetOdometry();
 
@@ -107,6 +112,16 @@ public class SwerveDrivetrain extends SubsystemBase {
         odometry.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
     }
 
+    public Optional<Rotation2d> getGoalAngle(Limelight limelight) {
+        Optional<Translation2d> goalOffset = limelight.getOffsetFromGoalInMeters();
+
+        if (goalOffset.isPresent()) {
+            Rotation2d angleFromRobotToGoal = goalOffset.get().getAngle();
+            return Optional.of(angleFromRobotToGoal);
+        }
+        return Optional.empty();
+    }
+
     public void driveWithController(CommandXboxController controller, double driveSpeedScalar, double rotationSpeedScalar, boolean autoAdjust) {
         boolean fast = controller.getRightTriggerAxis() > 0.25;
         boolean slow = controller.getLeftTriggerAxis() > 0.25;
@@ -141,7 +156,13 @@ public class SwerveDrivetrain extends SubsystemBase {
         double rot = -rightStickXWithRateLimit * TURNING_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND;
 
         if (autoAdjust) {
-            rot = 0.0;
+            Optional<Rotation2d> targetRotation = getGoalAngle(limelight);
+
+            if (targetRotation.isPresent()) {
+                rot = targetRotation.get().minus(getOdometryRotation()).getRotations();
+            } else {
+                System.out.println("Warning: autoAdjust failed! Can the limelight see any april tags?");
+            }
         }
 
         // Apply the drive speed selector from ShuffleBoard
@@ -199,9 +220,14 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     public void pathPlannerDrive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MOVEMENT_MAX_SPEED_IN_METERS_PER_SECOND);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, 0.1);
 
         System.out.println("pathPlannerDrive:" + Arrays.toString(kinematics.toSwerveModuleStates(chassisSpeeds)));
+
+//        swerveModuleStates[0].speedMetersPerSecond = Math.min(Math.max(swerveModuleStates[0].speedMetersPerSecond, -0.1), 0.1);
+//        swerveModuleStates[1].speedMetersPerSecond = Math.min(Math.max(swerveModuleStates[1].speedMetersPerSecond, -0.1), 0.1);
+//        swerveModuleStates[2].speedMetersPerSecond = Math.min(Math.max(swerveModuleStates[2].speedMetersPerSecond, -0.1), 0.1);
+//        swerveModuleStates[3].speedMetersPerSecond = Math.min(Math.max(swerveModuleStates[3].speedMetersPerSecond, -0.1), 0.1);
 
         frontLeft.setDesiredState(swerveModuleStates[0]);
         frontRight.setDesiredState(swerveModuleStates[1]);
@@ -225,7 +251,7 @@ public class SwerveDrivetrain extends SubsystemBase {
      * Updates the field relative position of the robot.
      */
     public void updateOdometry() {
-        odometry.update(gyro.getRotation2d(), new SwerveModulePosition[]{frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
+        odometry.update(gyro.getRotation2d(), getModulePositions());
         SmartDashboard.putNumber("Odometry X", odometry.getPoseMeters().getX());
         SmartDashboard.putNumber("Odometry Y", odometry.getPoseMeters().getY());
     }

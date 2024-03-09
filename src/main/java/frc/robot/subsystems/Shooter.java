@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 import java.util.Optional;
+import java.util.OptionalDouble;
 
 import static com.revrobotics.CANSparkLowLevel.MotorType.kBrushless;
 import static frc.robot.Constants.Shooter.*;

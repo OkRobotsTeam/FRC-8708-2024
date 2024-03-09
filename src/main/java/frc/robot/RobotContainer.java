@@ -2,11 +2,10 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -17,8 +16,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.ShootFromFarther;
 import frc.robot.subsystems.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 public class RobotContainer {
@@ -27,18 +28,18 @@ public class RobotContainer {
     private final CommandXboxController manipulatorController = new CommandXboxController(1);
 
     // Subsystems
-    private final SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain();
+
     //    private final Climber climber = new Climber();
     private final Intake intake = new Intake();
     private Shooter shooter;
     private final Limelight limelight = new Limelight();
+    private final SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain(shooter, limelight);
     private final PoseEstimator poseEstimator = new PoseEstimator(swerveDrivetrain, limelight);
 
     // Shuffleboard
-//    private final SendableChooser<Boolean> driveMode = new SendableChooser<>();
     private final SendableChooser<Double> driveSpeed = new SendableChooser<>();
     private final SendableChooser<Double> turnSpeed = new SendableChooser<>();
-    private SendableChooser<Command> autonomousSelector;
+    private final SendableChooser<Command> autonomousSelector;
 
     private final Field2d cameraPositioningField = new Field2d();
     private final Field2d odometryField = new Field2d();
@@ -55,6 +56,7 @@ public class RobotContainer {
 
         // Register Named Commands
         NamedCommands.registerCommand("shoot", new Shoot(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
+        NamedCommands.registerCommand("shootFromFarther", new ShootFromFarther(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
         NamedCommands.registerCommand("extendWrist", new InstantCommand(intake::extendWrist));
         NamedCommands.registerCommand("foldWrist", new InstantCommand(intake::foldWrist));
         NamedCommands.registerCommand("runIntakeIn", new InstantCommand(intake::runIntakeIn));
@@ -73,17 +75,19 @@ public class RobotContainer {
 
         autonomousSelector = AutoBuilder.buildAutoChooser();
 
+        drivingTab.add( new HttpCamera("limelight",
+                        NetworkTableInstance.getDefault().getEntry("limelight_Stream").getString("http://limelight.local:5800/stream.mjpg"),
+                        HttpCamera.HttpCameraKind.kMJPGStreamer))
+                .withProperties(Map.of("min", 0, "max", 1)) // specify widget properties here
+                .withPosition(2,1)
+                .withSize(8,4);
+
         setupShuffleboard(drivingTab);
         swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());
         configureControllerBindings();
     }
 
     private void setupShuffleboard(ShuffleboardTab drivingTab) {
-
-//        autonomousSelector.setDefaultOption("Nothing", new InstantCommand());
-//        autonomousSelector.addOption("Test", new AutonomousTest(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
-//        autonomousSelector.addOption("Just Shoot", new JustShootAutonomous(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
-//        autonomousSelector.addOption("Two Ring", new TwoRingAutonomous(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
 
         driveSpeed.setDefaultOption("100%", 1.0);
         driveSpeed.addOption("50%", 0.5);
@@ -97,22 +101,13 @@ public class RobotContainer {
         turnSpeed.addOption("10%", 0.1);
 
 
-//        driveMode.setDefaultOption("Competition Mode", false);
-//        driveMode.addOption("Demonstration Mode", true);
-
-
-        drivingTab.add("Autonomous", autonomousSelector).withPosition(4, 0).withSize(2, 1);
-//        drivingTab.add(driveMode).withPosition(4, 3).withSize(2, 1);
-        drivingTab.add("Drive Speed", driveSpeed).withPosition(6, 3).withSize(2, 1);
-        drivingTab.add("Turning Speed", turnSpeed).withPosition(8, 3).withSize(2, 1);
+        drivingTab.add("Autonomous", autonomousSelector).withPosition(2, 0).withSize(2, 1);
+        drivingTab.add("Drive Speed", driveSpeed).withPosition(4, 0).withSize(2, 1);
+        drivingTab.add("Turning Speed", turnSpeed).withPosition(6, 0).withSize(2, 1);
 
         SmartDashboard.putData("Limelight Position", cameraPositioningField);
         SmartDashboard.putData("Odometry Position", odometryField);
         SmartDashboard.putData("Odometry Position", poseEstimatorField);
-
-
-
-//        SmartDashboard.putNumber("Shooter Angle", shooter.getTargetShooterDegreesFromHorizon());
 
         Shuffleboard.selectTab("Driving");
         Shuffleboard.update();
@@ -148,7 +143,7 @@ public class RobotContainer {
         manipulatorController.povRight().onFalse(Commands.runOnce(shooter::shooterRotationReset));
 
 //        manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(60)));
-        manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> shooter.adjustment = 3).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
+        manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> shooter.adjustment = 8).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
 
         manipulatorController.rightStick().whileTrue(new InstantCommand(() -> shooter.autoAngle(limelight)));
 
@@ -163,7 +158,7 @@ public class RobotContainer {
     }
 
     public Command getSwerveDriveCommand() {
-        return new InstantCommand(() -> swerveDrivetrain.driveWithController(driveController, driveSpeed.getSelected(), turnSpeed.getSelected(), driveController.leftBumper().getAsBoolean()), swerveDrivetrain);
+        return new InstantCommand(() -> swerveDrivetrain.driveWithController(driveController, driveSpeed.getSelected(), turnSpeed.getSelected(), driveController.rightBumper().getAsBoolean()), swerveDrivetrain);
     }
 
     public Command getAutonomousCommand() {
@@ -195,8 +190,6 @@ public class RobotContainer {
         odometryField.setRobotPose(swerveDrivetrain.getOdometryPose());
         Optional<Pose2d> limelightPose = limelight.getRobotPose();
         limelightPose.ifPresent(cameraPositioningField::setRobotPose);
-
-        SmartDashboard.putNumber("FLR", swerveDrivetrain.frontLeft.getRotation().getDegrees());
 
         poseEstimatorField.setRobotPose(poseEstimator.getCurrentPose());
     }
