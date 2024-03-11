@@ -14,7 +14,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         robotContainer = new RobotContainer();
-        robotContainer.robotInit();
+        robotContainer.robotInit();        
     }
 
     // This function is called every 20 ms, no matter the mode.

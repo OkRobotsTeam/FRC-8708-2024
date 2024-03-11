@@ -11,6 +11,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.InitHelper;
+import frc.robot.Constants.Shooter.CANIds;
 
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -31,6 +33,8 @@ public class Shooter {
     private GenericEntry shooterAngleEntry;
     public int adjustment = -1;
     private int resetCount = 0;
+    private InitHelper initHelper = new InitHelper("Shooter", 80, -0.01);
+
 
     public Shooter(GenericEntry shooterAngleEntry) {
         this.shooterAngleEntry = shooterAngleEntry;
@@ -55,11 +59,12 @@ public class Shooter {
         setTargetShooterDegreesFromHorizon(0.0);
         shooterRotationPID.reset();
         shooterRotationPID = new PIDController(SHOOTER_ROTATION_PID_KP, SHOOTER_ROTATION_PID_KI, SHOOTER_ROTATION_PID_KD);
-
-        resetCount++;
-//        SmartDashboard.putNumber("Reset count: ", resetCount);
+        shooterRotation.set(-0.2);
+        initHelper.start(shooterRotationEncoder.getPosition());
 
     }
+
+
 
     public double getShooterRotationPositionInRotations() {
         return shooterRotationEncoder.getPosition();
@@ -143,11 +148,12 @@ public class Shooter {
     }
 
     public void tickShooterRotation() {
-//        if (adjustment == -1 && shooterRotationPID.atSetpoint()) {
-//            // If we are in the docked position (position -1), we want to lock the shooter
-////            SmartDashboard.putNumber("Shooter Angle Current", 0);
-//            setShooterRotationBraking(true);
-//        } else {
+            if (initHelper.initializing(shooterRotationEncoder.getPosition()) ) {
+                return;
+            }
+            if (initHelper.justFinishedInit()) {
+                shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION);
+            }
             setShooterRotationBraking(false);
             double PIDOutput = shooterRotationPID.calculate(getShooterRotationPositionInRotations());
             //PIDOutput= PIDOutput * 0.6;

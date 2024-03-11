@@ -1,0 +1,16 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Driving/Autonomous": "String Chooser",
+      "/Shuffleboard/Driving/Drive Speed": "String Chooser",
+      "/Shuffleboard/Driving/Turning Speed": "String Chooser",
+      "/SmartDashboard/Limelight Position": "Field2d",
+      "/SmartDashboard/Odometry Position": "Field2d",
+      "/SmartDashboard/PoseEstimator": "Field2d"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}

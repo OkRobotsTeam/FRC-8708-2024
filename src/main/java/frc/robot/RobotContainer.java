@@ -165,16 +165,27 @@ public class RobotContainer {
         return autonomousSelector.getSelected();
     }
 
+    public void sleep(double millis) {
+      try {
+            Thread.sleep(100);
+        } catch (Exception e) {
+            return;
+        }
+    }
+
     public void robotInit() {
         swerveDrivetrain.stop();
         swerveDrivetrain.resetGyro();
+
     }
 
     public void teleopInit() {
         // Reset the braking state in case autonomous exited uncleanly
-        shooter.init();
+        System.out.println("Starting teleop");
         swerveDrivetrain.init();
 //        climber.recalibrateClimber();
+        shooter.init();
+        intake.init();
     }
 
 

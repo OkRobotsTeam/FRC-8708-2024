@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.controller.PIDController;
+import frc.robot.InitHelper;
+import frc.robot.Constants.Intake.CANIds;
 
 import static com.revrobotics.CANSparkLowLevel.MotorType.kBrushless;
 import static frc.robot.Constants.Intake.*;
@@ -16,6 +18,8 @@ public class Intake {
 
     private final RelativeEncoder wristEncoder = wrist.getEncoder();
     private final PIDController wristPID = new PIDController(WRIST_PID_KP, WRIST_PID_KI, WRIST_PID_KD);
+    private double lastWristPosition = 0;
+    private InitHelper initHelper = new InitHelper("Intake", 100, -0.001);
 
     public Intake() {
         topIntake.setInverted(TOP_INTAKE_REVERSED);
@@ -30,6 +34,27 @@ public class Intake {
 
         topIntake.setSmartCurrentLimit(TOP_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS, TOP_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS);
         bottomIntake.setSmartCurrentLimit(BOTTOM_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS, BOTTOM_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS);
+    }
+
+    public void init() {
+        wrist.set(-0.2);
+        initHelper.start(wristEncoder.getPosition() );
+        System.out.println("Intake init starting");
+
+    }
+
+    public boolean initializing() {
+        if (initHelper.initialized()) {
+            return false;
+        }
+        initHelper.doneIfUnchanged(wristEncoder.getPosition());
+        if (initHelper.initializing() ) {
+            return true;
+        } else {
+            System.out.println("Intake init done " + wristEncoder.getPosition());
+            wristEncoder.setPosition(WRIST_STARTUP_POSITION);
+            return false;
+        }        
     }
 
     public void runTopIntake(double power) {
@@ -87,6 +112,12 @@ public class Intake {
     }
 
     public void tickWrist() {
+        if (initHelper.initializing(wristEncoder.getPosition())) {
+            return;
+        }
+        if (initHelper.justFinishedInit()) {
+            wristEncoder.setPosition(WRIST_STARTUP_POSITION);
+        }
         double PIDOutput = wristPID.calculate(getWristPositionInRotations());
         PIDOutput = min(max(-WRIST_MAX_SPEED, PIDOutput), WRIST_MAX_SPEED);
 
