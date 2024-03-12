@@ -33,7 +33,7 @@ public class Shooter {
     private GenericEntry shooterAngleEntry;
     public int adjustment = -1;
     private int resetCount = 0;
-    private InitHelper initHelper = new InitHelper("Shooter", 80, -0.01);
+    private InitHelper initHelper = new InitHelper("Shooter", 80, -0.001, 100);
 
 
     public Shooter(GenericEntry shooterAngleEntry) {
@@ -59,7 +59,7 @@ public class Shooter {
         setTargetShooterDegreesFromHorizon(0.0);
         shooterRotationPID.reset();
         shooterRotationPID = new PIDController(SHOOTER_ROTATION_PID_KP, SHOOTER_ROTATION_PID_KI, SHOOTER_ROTATION_PID_KD);
-        shooterRotation.set(-0.2);
+        shooterRotation.set(-0.05);
         initHelper.start(shooterRotationEncoder.getPosition());
 
     }

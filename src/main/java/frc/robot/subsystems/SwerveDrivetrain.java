@@ -129,6 +129,8 @@ public class SwerveDrivetrain extends SubsystemBase {
         boolean slow = controller.getLeftTriggerAxis() > 0.25;
         boolean wheelsCrossed = controller.leftBumper().getAsBoolean();
 
+        //System.out.println("Gyro: " + gyro.getAngle());
+
         double leftStickYWithDeadzone = MathUtil.applyDeadband(controller.getLeftY(), CONTROLLER_DEADZONE);
         double leftStickXWithDeadzone = MathUtil.applyDeadband(controller.getLeftX(), CONTROLLER_DEADZONE);
         double rightStickXWithDeadzone = MathUtil.applyDeadband(controller.getRightX(), CONTROLLER_DEADZONE);

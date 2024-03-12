@@ -72,7 +72,7 @@ public class Constants {
         public static final boolean BOTTOM_INTAKE_REVERSED = false;
         public static final boolean WRIST_REVERSED = true;
 
-        public static final double WRIST_STARTUP_POSITION = 0.0;
+        public static final double WRIST_STARTUP_POSITION = -0.01;
 
         public static final double WRIST_PID_KP = 8;
         public static final double WRIST_PID_KI = 0.0;

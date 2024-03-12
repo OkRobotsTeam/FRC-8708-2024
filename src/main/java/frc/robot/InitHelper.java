@@ -9,7 +9,6 @@ public class InitHelper {
     private String name;
     private long lastCheckTime;
     private long minTimeDelta;
-
     private boolean justFinishedInit = false;
 
     public InitHelper(String name, long minimumTimeMillis, double minDifference) {
@@ -61,7 +60,7 @@ public class InitHelper {
             if ((value - lastValue) <= minDifference) {
                 debugOut(name + " done init " + (value - lastValue) + " <= " + minDifference);
                 initialized = true;
-                justFinishedInit = true;
+                this.justFinishedInit = true;
             } else {
                 debugOut(name + " still moving " + (value - lastValue) + " <= " + minDifference);
             }
@@ -69,7 +68,7 @@ public class InitHelper {
             if ((value - lastValue) > minDifference) {
                 debugOut(name + " done init " + (value - lastValue) + " > " + minDifference);
                 initialized = true;
-                justFinishedInit = true;
+                this.justFinishedInit = true;
             } else {
                 debugOut(name + " still moving " + (value - lastValue) + " > " + minDifference);
             }
@@ -78,7 +77,7 @@ public class InitHelper {
     }
 
     public boolean justFinishedInit() {
-        if (justFinishedInit = true) {
+        if (justFinishedInit == true) {
             justFinishedInit=false;
             return true;
         } else {

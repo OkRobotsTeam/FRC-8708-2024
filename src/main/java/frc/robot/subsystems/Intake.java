@@ -19,7 +19,7 @@ public class Intake {
     private final RelativeEncoder wristEncoder = wrist.getEncoder();
     private final PIDController wristPID = new PIDController(WRIST_PID_KP, WRIST_PID_KI, WRIST_PID_KD);
     private double lastWristPosition = 0;
-    private InitHelper initHelper = new InitHelper("Intake", 100, -0.001);
+    private InitHelper initHelper = new InitHelper("Intake", 100, -0.001, 100);
 
     public Intake() {
         topIntake.setInverted(TOP_INTAKE_REVERSED);
@@ -43,19 +43,7 @@ public class Intake {
 
     }
 
-    public boolean initializing() {
-        if (initHelper.initialized()) {
-            return false;
-        }
-        initHelper.doneIfUnchanged(wristEncoder.getPosition());
-        if (initHelper.initializing() ) {
-            return true;
-        } else {
-            System.out.println("Intake init done " + wristEncoder.getPosition());
-            wristEncoder.setPosition(WRIST_STARTUP_POSITION);
-            return false;
-        }        
-    }
+
 
     public void runTopIntake(double power) {
         topIntake.set(power);
@@ -116,11 +104,18 @@ public class Intake {
             return;
         }
         if (initHelper.justFinishedInit()) {
+            System.out.println("Setting wrist encoder position to " + WRIST_STARTUP_POSITION);
+            wrist.set(0);
             wristEncoder.setPosition(WRIST_STARTUP_POSITION);
-        }
+            wristPID.reset();
+            foldWrist();
+            wristPID.calculate(WRIST_FOLDED_SETPOINT_IN_ROTATIONS);
+            return;
+        } 
         double PIDOutput = wristPID.calculate(getWristPositionInRotations());
-        PIDOutput = min(max(-WRIST_MAX_SPEED, PIDOutput), WRIST_MAX_SPEED);
+        //System.out.println("Wrist motor power " + PIDOutput + " : " + wristPID.getSetpoint() + " : " + getWristPositionInRotations());
 
+        PIDOutput = min(max(-WRIST_MAX_SPEED, PIDOutput), WRIST_MAX_SPEED);
         wrist.set(PIDOutput);
     }
 }
