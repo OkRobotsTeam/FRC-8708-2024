@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import frc.robot.subsystems.SwerveDrivetrain;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;

@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.Constants;
+import frc.robot.Debug;
 
 import static frc.robot.Constants.SwerveDrivetrain.*;
 
@@ -24,7 +25,7 @@ public class SwerveModule {
     private final CANcoder turningEncoder;
     private final PIDController drivePIDController = new PIDController(1, 0, 0);
     private final ProfiledPIDController turningPIDController = new ProfiledPIDController(5, 0, 0, new TrapezoidProfile.Constraints(WHEEL_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND_SQUARED, WHEEL_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED));
-    private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(1, 3);
+    private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.12, 2);
     private final String name;
 
 
@@ -60,17 +61,13 @@ public class SwerveModule {
 
     private double getDistanceMeters() {
         double drivePositionRotations = driveMotor.getPosition().getValueAsDouble();
-
-        return drivePositionRotations * Constants.SwerveDrivetrain.WHEEL_CIRCUMFERENCE_IN_METERS;
+        return drivePositionRotations * DRIVE_GEAR_RATIO * Constants.SwerveDrivetrain.WHEEL_CIRCUMFERENCE_IN_METERS;
     }
 
 
     private double getVelocityMetersPerSecond() {
-        double driveVelocityRPM = driveMotor.getVelocity().getValueAsDouble();
-
-        double driveVelocityRPS = driveVelocityRPM / 60;
-
-        return driveVelocityRPS * Constants.SwerveDrivetrain.WHEEL_CIRCUMFERENCE_IN_METERS;
+        double driveVelocityRPS = driveMotor.getVelocity().getValueAsDouble();
+        return driveVelocityRPS * DRIVE_GEAR_RATIO * Constants.SwerveDrivetrain.WHEEL_CIRCUMFERENCE_IN_METERS;
     }
 
 
@@ -91,7 +88,7 @@ public class SwerveModule {
      * @return The current position of the module.
      */
     public SwerveModulePosition getPosition() {
-        return new SwerveModulePosition(getDistanceMeters() * DRIVE_GEAR_RATIO, getRotation());
+        return new SwerveModulePosition(getDistanceMeters(), getRotation());
     }
 
 
@@ -103,6 +100,9 @@ public class SwerveModule {
         turningMotor.setVoltage(0);
     }
 
+     String fmt(double num) {
+        return Debug.sixPlaces.format(num);
+    }
 
     /**
      * Sets the desired state for the module.
@@ -119,10 +119,17 @@ public class SwerveModule {
         final double driveFeedforward = this.driveFeedforward.calculate(optimizedDesiredState.speedMetersPerSecond);
 
         // Calculate the turning motor output from the turning PID controller.
-        
-        final double turnOutput = turningPIDController.calculate(getRotation().getRadians(), optimizedDesiredState.angle.getRadians());
+        // if (name == "FL") {
+        //     //Debug.debugPrint(name, " FF:" + fmt(driveFeedforward) + " + DO:" + fmt(driveOutput) + " CS:"+ fmt(getVelocityMetersPerSecond()) + " DS:" + fmt(optimizedDesiredState.speedMetersPerSecond) +
+        //     //" Ratio: " + fmt(getVelocityMetersPerSecond() / optimizedDesiredState.speedMetersPerSecond));
+        //     //Debug.debugPrint("Voltage", fmt(driveMotor.getMotorVoltage().getValueAsDouble()));
+        //     //Debug.debugPrint("RPS", fmt(driveMotor.getVelocity().getValueAsDouble()));
+        // }
+        double turnOutput = turningPIDController.calculate(getRotation().getRadians(), optimizedDesiredState.angle.getRadians());
 
+        turnOutput = turnOutput / 4;
         driveMotor.setVoltage(driveOutput + driveFeedforward);
+        //driveMotor.setVoltage(driveOutput);
         turningMotor.setVoltage(turnOutput);
     }
     public void setDriveMotorBraking(boolean braking) {

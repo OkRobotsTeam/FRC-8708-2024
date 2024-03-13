@@ -76,7 +76,7 @@ public class Constants {
 
         public static final double WRIST_PID_KP = 8;
         public static final double WRIST_PID_KI = 0.0;
-        public static final double WRIST_PID_KD = 0.1;
+        public static final double WRIST_PID_KD = 0.2;
 
         public static final double WRIST_MAX_SPEED = 0.6;
 

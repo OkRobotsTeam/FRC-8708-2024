@@ -5,20 +5,30 @@ public class InitHelper {
     private long minimumTime;
     private boolean initialized; 
     private double lastValue;
-    private double minDifference;
+    private double minValueDifference;
     private String name;
     private long lastCheckTime;
     private long minTimeDelta;
     private boolean justFinishedInit = false;
+    private long maxTimeMillis;
 
-    public InitHelper(String name, long minimumTimeMillis, double minDifference) {
-        this(name, minimumTimeMillis, minDifference, 20);
+/*
+ * @param name The name of what is being inited for debug output
+ * @param minValueDifference Differences below this trigger init being finished
+ * @param minTimeMillis The minimum time to init for.  Differences below the trigger will be ignored during this time
+ * @param maxTimeMillis The limit for how long the init process can take.  Provides a failsafe timeout.
+ * @param minTimeDelta  The minimum time between checking for trigger.  Calls too often will be skipped.
+ */
+   
+    public InitHelper(String name, double minValueDifference, long minTimeMillis, long maxTimeMillis ) {
+        this(name, minValueDifference, minTimeMillis,  maxTimeMillis, 20);
     }
 
-    public InitHelper(String name, long minimumTimeMillis, double minDifference, long minTimeDelta) {
+    public InitHelper(String name, double minValueDifference, long minimumTimeMillis, long maxTimeMillis, long minTimeDelta) {
         this.name = name;
         this.minimumTime = minimumTimeMillis;
-        this.minDifference = minDifference;
+        this.minValueDifference = minValueDifference;
+        this.maxTimeMillis = maxTimeMillis;
         this.minTimeDelta = minTimeDelta;
     }
     public void start(double initialValue) {
@@ -55,26 +65,34 @@ public class InitHelper {
             //debugOut("Called multiple times within " + (now - lastCheckTime) + " milliseconds.  Aborting check.");
             return;
         }
+        if ( (now - initStartTime) > maxTimeMillis) {
+            debugOut("Timeout reached.  Giving up on init for "+ name);
+            initialized = true;
+            this.justFinishedInit = true;
+            return;
+        }
+
         lastCheckTime = now;
-        if (minDifference>=0) {
-            if ((value - lastValue) <= minDifference) {
-                debugOut(name + " done init " + (value - lastValue) + " <= " + minDifference);
+        if (minValueDifference>=0) {
+            if ((value - lastValue) <= minValueDifference) {
+                debugOut(name + " done init " + (value - lastValue) + " <= " + minValueDifference);
                 initialized = true;
                 this.justFinishedInit = true;
             } else {
-                debugOut(name + " still moving " + (value - lastValue) + " <= " + minDifference);
+                debugOut(name + " still moving " + (value - lastValue) + " <= " + minValueDifference);
             }
         } else {
-            if ((value - lastValue) > minDifference) {
-                debugOut(name + " done init " + (value - lastValue) + " > " + minDifference);
+            if ((value - lastValue) > minValueDifference) {
+                debugOut(name + " done init " + (value - lastValue) + " > " + minValueDifference);
                 initialized = true;
                 this.justFinishedInit = true;
             } else {
-                debugOut(name + " still moving " + (value - lastValue) + " > " + minDifference);
+                debugOut(name + " still moving " + (value - lastValue) + " > " + minValueDifference);
             }
         }
         lastValue = value;
     }
+
 
     public boolean justFinishedInit() {
         if (justFinishedInit == true) {

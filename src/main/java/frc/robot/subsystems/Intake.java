@@ -1,14 +1,21 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
+
 import edu.wpi.first.math.controller.PIDController;
+import frc.robot.Debug;
 import frc.robot.InitHelper;
 import frc.robot.Constants.Intake.CANIds;
 
 import static com.revrobotics.CANSparkLowLevel.MotorType.kBrushless;
 import static frc.robot.Constants.Intake.*;
 import static java.lang.Double.*;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 
 public class Intake {
@@ -19,7 +26,12 @@ public class Intake {
     private final RelativeEncoder wristEncoder = wrist.getEncoder();
     private final PIDController wristPID = new PIDController(WRIST_PID_KP, WRIST_PID_KI, WRIST_PID_KD);
     private double lastWristPosition = 0;
-    private InitHelper initHelper = new InitHelper("Intake", 100, -0.001, 100);
+    private InitHelper initHelper = new InitHelper("Intake", -0.001, 100, 2000, 50);
+    private boolean disabled = true;
+    private AbsoluteEncoder absoluteEncoder = wrist.getAbsoluteEncoder(Type.kDutyCycle);
+
+    
+
 
     public Intake() {
         topIntake.setInverted(TOP_INTAKE_REVERSED);
@@ -37,10 +49,21 @@ public class Intake {
     }
 
     public void init() {
+        disabled=false;
         wrist.set(-0.2);
         initHelper.start(wristEncoder.getPosition() );
         System.out.println("Intake init starting");
+    }
 
+    public void disable() {
+        disabled=true;
+        topIntake.set(0);
+        bottomIntake.set(0);
+        wrist.set(0);
+    }
+
+    public void enable() {
+        disabled=false;
     }
 
 
@@ -99,7 +122,12 @@ public class Intake {
         return wristEncoder.getPosition();
     }
 
-    public void tickWrist() {
+    public void periodic() {
+        if (disabled) {
+            Debug.debugPrint("Wrist motor encoder: " + Debug.fourPlaces(wristEncoder.getPosition()) + " Wrist alt encoder: " + Debug.fourPlaces(absoluteEncoder.getPosition()));
+
+            return;
+        }
         if (initHelper.initializing(wristEncoder.getPosition())) {
             return;
         }
@@ -113,8 +141,8 @@ public class Intake {
             return;
         } 
         double PIDOutput = wristPID.calculate(getWristPositionInRotations());
-        //System.out.println("Wrist motor power " + PIDOutput + " : " + wristPID.getSetpoint() + " : " + getWristPositionInRotations());
-
+        //System.out.println("Wrist motor power " + fourPlaces.format(PIDOutput) + " : " + wristPID.getSetpoint() + " : " + getWristPositionInRotations());
+        Debug.debugPrint("Wrist motor encoder: " + Debug.fourPlaces(wristEncoder.getPosition()) + " Wrist alt encoder: " + Debug.fourPlaces(absoluteEncoder.getPosition()));
         PIDOutput = min(max(-WRIST_MAX_SPEED, PIDOutput), WRIST_MAX_SPEED);
         wrist.set(PIDOutput);
     }

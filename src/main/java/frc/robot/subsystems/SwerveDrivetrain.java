@@ -8,10 +8,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Debug;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import java.util.Arrays;
@@ -46,6 +47,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     private Shooter shooter;
     private Limelight limelight;
     private boolean fieldOriented = false;
+    SwerveModuleState testState = new SwerveModuleState();
 
     public SwerveDrivetrain(Shooter shooter, Limelight limelight) {
         this.shooter = shooter;
@@ -128,8 +130,9 @@ public class SwerveDrivetrain extends SubsystemBase {
         boolean fast = controller.getRightTriggerAxis() > 0.25;
         boolean slow = controller.getLeftTriggerAxis() > 0.25;
         boolean wheelsCrossed = controller.leftBumper().getAsBoolean();
+        
 
-        //System.out.println("Gyro: " + gyro.getAngle());
+        //debugPrint("Gyro: " + gyro.getAngle() + ":" + gyro.getYaw());
 
         double leftStickYWithDeadzone = MathUtil.applyDeadband(controller.getLeftY(), CONTROLLER_DEADZONE);
         double leftStickXWithDeadzone = MathUtil.applyDeadband(controller.getLeftX(), CONTROLLER_DEADZONE);
@@ -222,18 +225,31 @@ public class SwerveDrivetrain extends SubsystemBase {
         backRight.setDesiredState(swerveModuleStates[3]);
     }
 
+    String fmt(double num) {
+        return Debug.fourPlaces.format(num);
+    }
+
+    public void testWithController(CommandXboxController controller) {
+        
+        testState.speedMetersPerSecond = controller.getLeftY()*10;
+        testState.angle.plus(new Rotation2d(controller.getRightY()/10));
+        frontLeft.setDesiredState(testState);
+    }
+
     public void pathPlannerDrive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, 0.1);
+        //SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, 0.1);
 
-        System.out.println("pathPlannerDrive:" + Arrays.toString(kinematics.toSwerveModuleStates(chassisSpeeds)));
+        //System.out.println("pathPlannerDrive:" + Arrays.toString(kinematics.toSwerveModuleStates(chassisSpeeds)));
 
 //        swerveModuleStates[0].speedMetersPerSecond = Math.min(Math.max(swerveModuleStates[0].speedMetersPerSecond, -0.1), 0.1);
 //        swerveModuleStates[1].speedMetersPerSecond = Math.min(Math.max(swerveModuleStates[1].speedMetersPerSecond, -0.1), 0.1);
 //        swerveModuleStates[2].speedMetersPerSecond = Math.min(Math.max(swerveModuleStates[2].speedMetersPerSecond, -0.1), 0.1);
 //        swerveModuleStates[3].speedMetersPerSecond = Math.min(Math.max(swerveModuleStates[3].speedMetersPerSecond, -0.1), 0.1);
-
+        Debug.debugPrint("S" , "FLS: " + fmt(frontLeft.getState().speedMetersPerSecond) + " FLDS: " + fmt(swerveModuleStates[0].speedMetersPerSecond));
+        
         frontLeft.setDesiredState(swerveModuleStates[0]);
+
         frontRight.setDesiredState(swerveModuleStates[1]);
         backLeft.setDesiredState(swerveModuleStates[2]);
         backRight.setDesiredState(swerveModuleStates[3]);
@@ -253,8 +269,9 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     /**
      * Updates the field relative position of the robot.
+     * Called automatically by command scheduler
      */
-    public void updateOdometry() {
+    public void periodic() {
         odometry.update(gyro.getRotation2d(), getModulePositions());
         SmartDashboard.putNumber("Odometry X", odometry.getPoseMeters().getX());
         SmartDashboard.putNumber("Odometry Y", odometry.getPoseMeters().getY());

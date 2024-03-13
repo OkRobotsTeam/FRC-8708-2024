@@ -11,6 +11,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Debug;
 import frc.robot.InitHelper;
 import frc.robot.Constants.Shooter.CANIds;
 
@@ -33,7 +34,8 @@ public class Shooter {
     private GenericEntry shooterAngleEntry;
     public int adjustment = -1;
     private int resetCount = 0;
-    private InitHelper initHelper = new InitHelper("Shooter", 80, -0.001, 100);
+    private InitHelper initHelper = new InitHelper("Shooter", -0.001, 80,  3000, 100);
+    private boolean disabled = true;
 
 
     public Shooter(GenericEntry shooterAngleEntry) {
@@ -55,13 +57,13 @@ public class Shooter {
     }
 
     public void init() {
+        disabled = false;
         adjustment = -1;
         setTargetShooterDegreesFromHorizon(0.0);
         shooterRotationPID.reset();
-        shooterRotationPID = new PIDController(SHOOTER_ROTATION_PID_KP, SHOOTER_ROTATION_PID_KI, SHOOTER_ROTATION_PID_KD);
-        shooterRotation.set(-0.05);
+        shooterRotationPID.setSetpoint(SHOOTER_ROTATION_STARTUP_POSITION);
+        shooterRotation.set(-0.03);
         initHelper.start(shooterRotationEncoder.getPosition());
-
     }
 
 
@@ -147,12 +149,31 @@ public class Shooter {
         }
     }
 
-    public void tickShooterRotation() {
+    public void disable() {
+        disabled = true;
+        shooterRotation.set(0);
+        topShooter.set(0);
+        bottomShooter.set(0);
+    }
+
+    public void enable() {
+        disabled=false;
+    }
+
+    public void periodic() {
             if (initHelper.initializing(shooterRotationEncoder.getPosition()) ) {
                 return;
             }
             if (initHelper.justFinishedInit()) {
-                shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION);
+                shooterRotation.set(0);
+                shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION-0.01);
+                shooterRotationPID.reset();
+                shooterRotationPID.setSetpoint(SHOOTER_ROTATION_STARTUP_POSITION);
+                shooterRotationPID.calculate(SHOOTER_ROTATION_STARTUP_POSITION);
+                return;
+            }
+            if (disabled) {
+                return;
             }
             setShooterRotationBraking(false);
             double PIDOutput = shooterRotationPID.calculate(getShooterRotationPositionInRotations());
@@ -160,13 +181,16 @@ public class Shooter {
             //PIDOutput = Math.min(0.2,PIDOutput);
             //PIDOutput = Math.max(-0.2,PIDOutput);
 
-            double gravityCompensationCoefficient = Math.sin(Units.degreesToRadians(getTargetShooterDegreesFromHorizon())) * 0.07;
-
-
-            SmartDashboard.putNumber("Gravity compensation: ", (gravityCompensationCoefficient));
             SmartDashboard.putNumber("PID Output: ", PIDOutput);
 
-            PIDOutput = PIDOutput + gravityCompensationCoefficient;
+            //double gravityCompensationCoefficient = Math.sin(Units.degreesToRadians(getTargetShooterDegreesFromHorizon())) * 0.07;
+            //SmartDashboard.putNumber("Gravity compensation: ", (gravityCompensationCoefficient));
+            //PIDOutput = PIDOutput + gravityCompensationCoefficient;
+            
+           //Debug.debugPrint("Shooter motor power " + PIDOutput + " : " + shooterRotationPID.getSetpoint() + " : " + getShooterRotationPositionInRotations() + 
+           //     " Diff: " + (shooterRotationPID.getSetpoint() - getShooterRotationPositionInRotations()) );
+
+            
 
 
             shooterRotation.set(PIDOutput);

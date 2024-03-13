@@ -44,6 +44,7 @@ public class RobotContainer {
     private final Field2d cameraPositioningField = new Field2d();
     private final Field2d odometryField = new Field2d();
     private final Field2d poseEstimatorField = new Field2d();
+    private boolean enabled;
 
     public RobotContainer() {
 
@@ -141,6 +142,8 @@ public class RobotContainer {
         manipulatorController.povUp().onTrue(Commands.runOnce(shooter::shooterManualAdjustUp));
         manipulatorController.povDown().onFalse(Commands.runOnce(shooter::shooterManualAdjustDown));
         manipulatorController.povRight().onFalse(Commands.runOnce(shooter::shooterRotationReset));
+        manipulatorController.back().onTrue(Commands.runOnce(shooter::init));
+        
 
 //        manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(60)));
         manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> shooter.adjustment = 8).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
@@ -180,6 +183,8 @@ public class RobotContainer {
     }
 
     public void teleopInit() {
+
+
         // Reset the braking state in case autonomous exited uncleanly
         System.out.println("Starting teleop");
         swerveDrivetrain.init();
@@ -188,20 +193,39 @@ public class RobotContainer {
         intake.init();
     }
 
+    public void testInit() {
+        Command test = new InstantCommand(() -> swerveDrivetrain.testWithController(driveController), swerveDrivetrain);
+        swerveDrivetrain.setDefaultCommand(test);
+        // Reset the braking state in case autonomous exited uncleanly
+        System.out.println("Starting test");
+        
+        swerveDrivetrain.init();
+    }
 
     public void autonomousInit() {
         shooter.init();
+        intake.init();
     }
 
-    public void periodic() {
-        swerveDrivetrain.updateOdometry();
-//        climber.tickClimber();
-        shooter.tickShooterRotation();
-        intake.tickWrist();
-        odometryField.setRobotPose(swerveDrivetrain.getOdometryPose());
-        Optional<Pose2d> limelightPose = limelight.getRobotPose();
-        limelightPose.ifPresent(cameraPositioningField::setRobotPose);
 
-        poseEstimatorField.setRobotPose(poseEstimator.getCurrentPose());
+
+    public void periodic() {
+        shooter.periodic();
+        intake.periodic();
+        odometryField.setRobotPose(swerveDrivetrain.getOdometryPose());
+        //Optional<Pose2d> limelightPose = limelight.getRobotPose();
+        //limelightPose.ifPresent(cameraPositioningField::setRobotPose);
+        //poseEstimatorField.setRobotPose(poseEstimator.getCurrentPose());
+    }
+
+    public void enable() {
+        shooter.enable();
+        intake.enable();
+    }
+
+    public void disable() {
+        shooter.disable();
+        intake.disable();
+        swerveDrivetrain.stop();
     }
 }
