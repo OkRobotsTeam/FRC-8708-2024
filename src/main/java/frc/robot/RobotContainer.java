@@ -35,6 +35,9 @@ public class RobotContainer {
     private final Limelight limelight = new Limelight();
     private final SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain(shooter, limelight);
     private final PoseEstimator poseEstimator = new PoseEstimator(swerveDrivetrain, limelight);
+    private final USBCameraVision USBDriverCamera = new USBCameraVision();
+    final HttpCamera httpCamera = new HttpCamera("Camera", "http://10.14.44.5:8080/?action=stream", HttpCamera.HttpCameraKind.kMJPGStreamer);
+
 
     // Shuffleboard
     private final SendableChooser<Double> driveSpeed = new SendableChooser<>();
@@ -48,10 +51,15 @@ public class RobotContainer {
 
     public RobotContainer() {
 
+        USBDriverCamera.start();
+
         ShuffleboardTab drivingTab = Shuffleboard.getTab("Driving");
 
 
         GenericEntry ShooterAngleEntry = drivingTab.add("Shooter angle", 0).withPosition(0, 0).withSize(2, 1).getEntry();
+
+
+        drivingTab.add(httpCamera);
 
         shooter = new Shooter(ShooterAngleEntry);
 
@@ -148,7 +156,7 @@ public class RobotContainer {
 //        manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(60)));
         manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> shooter.adjustment = 8).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
 
-        manipulatorController.rightStick().whileTrue(new InstantCommand(() -> shooter.autoAngle(limelight)));
+        manipulatorController.rightTrigger().whileTrue(new InstantCommand(() -> shooter.autoAngle(limelight)));
 
         driveController.a().onTrue(
                 Commands.runOnce(swerveDrivetrain::resetGyro).andThen(

@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class Debug {
     private static int i = 0;
-    private static final int[] ids = { 0,0,0,0,0,0,0,0,0};
+    private static final int[] ids = {0,0,0,0,0,0,0,0,0};
     private static final Map<String, Integer> map = new HashMap<>();
     public static NumberFormat fourPlaces = new DecimalFormat("#.0000");
     public static NumberFormat sixPlaces = new DecimalFormat("0.0000");

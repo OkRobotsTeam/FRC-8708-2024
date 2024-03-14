@@ -213,12 +213,16 @@ public class Shooter {
             double GOAL_HEIGHT_METERS = 2.2;
             double SHOOTER_HEIGHT = 0.4826;
 
-            Rotation2d angleFromShooterToGoal = Rotation2d.fromRadians(Math.atan((GOAL_HEIGHT_METERS - SHOOTER_HEIGHT) / goalDistanceInMeters));
+            Rotation2d angleFromShooterToGoal = Rotation2d.fromRadians(Math.atan((GOAL_HEIGHT_METERS - SHOOTER_HEIGHT) / goalDistanceInMeters)).minus(Rotation2d.fromDegrees(12));
 
-//            SmartDashboard.putString("Offset from Goal (in): ", goalOffset.get().times(39.3701).toString());
-//            SmartDashboard.putNumber("Distance from Goal (in): ", Units.metersToInches(goalDistanceInMeters));
-//            SmartDashboard.putNumber("Angle to goal from robot (deg): ", angleFromRobotToGoal.getDegrees());
-//            SmartDashboard.putNumber("Shooter angle (deg): ", angleFromShooterToGoal.getDegrees());
+            if (goalDistanceInMeters > 80) {
+                angleFromRobotToGoal.times(goalDistanceInMeters / 80);
+            }
+
+            SmartDashboard.putString("Offset from Goal (in): ", goalOffset.get().times(39.3701).toString());
+            SmartDashboard.putNumber("Distance from Goal (in): ", Units.metersToInches(goalDistanceInMeters));
+            SmartDashboard.putNumber("Angle to goal from robot (deg): ", angleFromRobotToGoal.getDegrees());
+            SmartDashboard.putNumber("Shooter angle (deg): ", angleFromShooterToGoal.getDegrees());
 
             setTargetShooterDegreesFromHorizon(angleFromShooterToGoal.getDegrees());
         }
