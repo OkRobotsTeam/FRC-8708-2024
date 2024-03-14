@@ -6,6 +6,7 @@ import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -169,7 +170,8 @@ public class RobotContainer {
     }
 
     public Command getSwerveDriveCommand() {
-        return new InstantCommand(() -> swerveDrivetrain.driveWithController(driveController.getHID(), driveSpeed.getSelected(), turnSpeed.getSelected(), driveController.rightBumper().getAsBoolean()), swerveDrivetrain);
+        XboxController controller = driveController.getHID();
+        return new InstantCommand(() -> swerveDrivetrain.driveWithController(controller, driveSpeed.getSelected(), turnSpeed.getSelected(), driveController.rightBumper().getAsBoolean()), swerveDrivetrain);
     }
 
     public Command getAutonomousCommand() {

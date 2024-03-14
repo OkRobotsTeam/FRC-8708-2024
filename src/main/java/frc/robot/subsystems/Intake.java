@@ -142,7 +142,7 @@ public class Intake {
         } 
         double PIDOutput = wristPID.calculate(getWristPositionInRotations());
         //System.out.println("Wrist motor power " + fourPlaces.format(PIDOutput) + " : " + wristPID.getSetpoint() + " : " + getWristPositionInRotations());
-        Debug.debugPrint("Wrist motor encoder: " + Debug.fourPlaces(wristEncoder.getPosition()) + " Wrist alt encoder: " + Debug.fourPlaces(absoluteEncoder.getPosition()));
+        //Debug.debugPrint("Wrist motor encoder: " + Debug.fourPlaces(wristEncoder.getPosition()) + " Wrist alt encoder: " + Debug.fourPlaces(absoluteEncoder.getPosition()));
         PIDOutput = min(max(-WRIST_MAX_SPEED, PIDOutput), WRIST_MAX_SPEED);
         wrist.set(PIDOutput);
     }
