@@ -37,7 +37,7 @@ public class USBCameraVision extends SubsystemBase {
                 }
 //                Core.transpose(mat, mat);
                 Core.flip(mat, mat, 0);
-                Imgproc.blur(mat, mat, Size());
+                //Imgproc.blur(mat, mat, Size());
                 outputStream.putFrame(mat);
             }
         });

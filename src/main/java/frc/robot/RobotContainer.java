@@ -169,7 +169,7 @@ public class RobotContainer {
     }
 
     public Command getSwerveDriveCommand() {
-        return new InstantCommand(() -> swerveDrivetrain.driveWithController(driveController, driveSpeed.getSelected(), turnSpeed.getSelected(), driveController.rightBumper().getAsBoolean()), swerveDrivetrain);
+        return new InstantCommand(() -> swerveDrivetrain.driveWithController(driveController.getHID(), driveSpeed.getSelected(), turnSpeed.getSelected(), driveController.rightBumper().getAsBoolean()), swerveDrivetrain);
     }
 
     public Command getAutonomousCommand() {

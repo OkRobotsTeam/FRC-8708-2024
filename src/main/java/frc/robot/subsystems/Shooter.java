@@ -57,13 +57,14 @@ public class Shooter {
     }
 
     public void init() {
-        disabled = false;
+disabled = false;
         adjustment = -1;
         setTargetShooterDegreesFromHorizon(0.0);
         shooterRotationPID.reset();
         shooterRotationPID.setSetpoint(SHOOTER_ROTATION_STARTUP_POSITION);
         shooterRotation.set(-0.03);
         initHelper.start(shooterRotationEncoder.getPosition());
+
     }
 
 
@@ -165,13 +166,14 @@ public class Shooter {
                 return;
             }
             if (initHelper.justFinishedInit()) {
+                System.out.println("Setting shooter encoder position to " + SHOOTER_ROTATION_STARTUP_POSITION);
                 shooterRotation.set(0);
                 shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION-0.01);
                 shooterRotationPID.reset();
                 shooterRotationPID.setSetpoint(SHOOTER_ROTATION_STARTUP_POSITION);
                 shooterRotationPID.calculate(SHOOTER_ROTATION_STARTUP_POSITION);
                 return;
-            }
+}
             if (disabled) {
                 return;
             }
@@ -181,12 +183,16 @@ public class Shooter {
             //PIDOutput = Math.min(0.2,PIDOutput);
             //PIDOutput = Math.max(-0.2,PIDOutput);
 
+            double gravityCompensationCoefficient = Math.sin(Units.degreesToRadians(getTargetShooterDegreesFromHorizon())) * 0.07;
+
+
+            SmartDashboard.putNumber("Gravity compensation: ", (gravityCompensationCoefficient));
             SmartDashboard.putNumber("PID Output: ", PIDOutput);
 
             //double gravityCompensationCoefficient = Math.sin(Units.degreesToRadians(getTargetShooterDegreesFromHorizon())) * 0.07;
             //SmartDashboard.putNumber("Gravity compensation: ", (gravityCompensationCoefficient));
             //PIDOutput = PIDOutput + gravityCompensationCoefficient;
-            
+
            //Debug.debugPrint("Shooter motor power " + PIDOutput + " : " + shooterRotationPID.getSetpoint() + " : " + getShooterRotationPositionInRotations() + 
            //     " Diff: " + (shooterRotationPID.getSetpoint() - getShooterRotationPositionInRotations()) );
 
@@ -215,14 +221,14 @@ public class Shooter {
 
             Rotation2d angleFromShooterToGoal = Rotation2d.fromRadians(Math.atan((GOAL_HEIGHT_METERS - SHOOTER_HEIGHT) / goalDistanceInMeters)).minus(Rotation2d.fromDegrees(12));
 
-            if (goalDistanceInMeters > 80) {
+if (goalDistanceInMeters > 80) {
                 angleFromRobotToGoal.times(goalDistanceInMeters / 80);
             }
 
             SmartDashboard.putString("Offset from Goal (in): ", goalOffset.get().times(39.3701).toString());
-            SmartDashboard.putNumber("Distance from Goal (in): ", Units.metersToInches(goalDistanceInMeters));
-            SmartDashboard.putNumber("Angle to goal from robot (deg): ", angleFromRobotToGoal.getDegrees());
-            SmartDashboard.putNumber("Shooter angle (deg): ", angleFromShooterToGoal.getDegrees());
+        SmartDashboard.putNumber("Distance from Goal (in): ", Units.metersToInches(goalDistanceInMeters));
+        SmartDashboard.putNumber("Angle to goal from robot (deg): ", angleFromRobotToGoal.getDegrees());
+    SmartDashboard.putNumber("Shooter angle (deg): ", angleFromShooterToGoal.getDegrees());
 
             setTargetShooterDegreesFromHorizon(angleFromShooterToGoal.getDegrees());
         }

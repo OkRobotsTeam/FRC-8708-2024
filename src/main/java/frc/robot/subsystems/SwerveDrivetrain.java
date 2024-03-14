@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -34,6 +35,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     private final SwerveModule frontRight = new SwerveModule(CANIds.FRONT_RIGHT_DRIVE_MOTOR, CANIds.FRONT_RIGHT_ROTATION_MOTOR, CANIds.FRONT_RIGHT_ROTATION_ENCODER, "FR");
     private final SwerveModule backLeft = new SwerveModule(CANIds.BACK_LEFT_DRIVE_MOTOR, CANIds.BACK_LEFT_ROTATION_MOTOR, CANIds.BACK_LEFT_ROTATION_ENCODER, "BL");
     private final SwerveModule backRight = new SwerveModule(CANIds.BACK_RIGHT_DRIVE_MOTOR, CANIds.BACK_RIGHT_ROTATION_MOTOR, CANIds.BACK_RIGHT_ROTATION_ENCODER, "BR");
+    //private final AHRS gyro = new AHRS(I2C.Port.kMXP);
     private final AHRS gyro = new AHRS();
 
     public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
@@ -113,6 +115,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public void setOdometryPose(Pose2d pose) {
+
         System.out.println("Just set odometry pose to: " + pose.toString());
         odometry.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
     }
@@ -127,10 +130,10 @@ public class SwerveDrivetrain extends SubsystemBase {
         return Optional.empty();
     }
 
-    public void driveWithController(CommandXboxController controller, double driveSpeedScalar, double rotationSpeedScalar, boolean autoAdjust) {
+    public void driveWithController(XboxController controller, double driveSpeedScalar, double rotationSpeedScalar, boolean autoAdjust) {
         boolean fast = controller.getRightTriggerAxis() > 0.25;
         boolean slow = controller.getLeftTriggerAxis() > 0.25;
-        boolean wheelsCrossed = controller.leftBumper().getAsBoolean();
+        boolean wheelsCrossed = controller.getLeftBumper();
 
 
         if (autoAdjust && !autoAdjustLastTick) {
@@ -176,7 +179,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
         if (autoAdjust) {
             Optional<Rotation2d> targetRotation = getGoalAngle(limelight);
-            Optional<Pose2d> currentRotation = limelight.getRobotPose();
+Optional<Pose2d> currentRotation = limelight.getRobotPose();
 
             if (targetRotation.isPresent() && currentRotation.isPresent()) {
                 Optional<DriverStation.Alliance> ally = DriverStation.getAlliance();
@@ -263,7 +266,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public void testWithController(CommandXboxController controller) {
-
+        
         testState.speedMetersPerSecond = controller.getLeftY()*10;
         testState.angle.plus(new Rotation2d(controller.getRightY()/10));
         frontLeft.setDesiredState(testState);
@@ -280,8 +283,9 @@ public class SwerveDrivetrain extends SubsystemBase {
 //        swerveModuleStates[2].speedMetersPerSecond = Math.min(Math.max(swerveModuleStates[2].speedMetersPerSecond, -0.1), 0.1);
 //        swerveModuleStates[3].speedMetersPerSecond = Math.min(Math.max(swerveModuleStates[3].speedMetersPerSecond, -0.1), 0.1);
         Debug.debugPrint("S" , "FLS: " + fmt(frontLeft.getState().speedMetersPerSecond) + " FLDS: " + fmt(swerveModuleStates[0].speedMetersPerSecond));
-
+        
         frontLeft.setDesiredState(swerveModuleStates[0]);
+
         frontRight.setDesiredState(swerveModuleStates[1]);
         backLeft.setDesiredState(swerveModuleStates[2]);
         backRight.setDesiredState(swerveModuleStates[3]);
