@@ -6,6 +6,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.Debug;
 import frc.robot.InitHelper;
 import frc.robot.Constants.Intake.CANIds;
@@ -28,7 +29,7 @@ public class Intake {
     private double lastWristPosition = 0;
     private InitHelper initHelper = new InitHelper("Intake", -0.001, 100, 2000, 50);
     private boolean disabled = true;
-    private AbsoluteEncoder absoluteEncoder = wrist.getAbsoluteEncoder(Type.kDutyCycle);
+    private DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(0);
 
     
 
@@ -142,7 +143,7 @@ public class Intake {
         } 
         double PIDOutput = wristPID.calculate(getWristPositionInRotations());
         //System.out.println("Wrist motor power " + fourPlaces.format(PIDOutput) + " : " + wristPID.getSetpoint() + " : " + getWristPositionInRotations());
-        //Debug.debugPrint("Wrist motor encoder: " + Debug.fourPlaces(wristEncoder.getPosition()) + " Wrist alt encoder: " + Debug.fourPlaces(absoluteEncoder.getPosition()));
+        Debug.debugPrint("Wrist motor encoder: " + Debug.fourPlaces(wristEncoder.getPosition()) + " Wrist alt encoder: " + Debug.fourPlaces(absoluteEncoder.getAbsolutePosition()));
         PIDOutput = min(max(-WRIST_MAX_SPEED, PIDOutput), WRIST_MAX_SPEED);
         wrist.set(PIDOutput);
     }
