@@ -6,15 +6,23 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
-
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.Optional;
 import static frc.robot.Constants.Limelight.*;
 
 
-public class Limelight {
+public class Limelight extends SubsystemBase {
 
-    public Limelight() {}
+    public Limelight() {
+        
+    }
+
+    @Override
+    public void periodic() {
+                //double[] botpose = NetworkTableInstance.getDefault().getTable("limelight").getEntry("botpose").getDoubleArray(defaultBotpose);
+
+    }
 
     public Optional<Pose2d> getRobotPose() {
         double[] defaultBotpose = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};

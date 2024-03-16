@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.fasterxml.jackson.databind.deser.DataFormatReaders.Match;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.cscore.HttpCamera;
@@ -7,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -37,7 +39,6 @@ public class RobotContainer {
     private final SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain(shooter, limelight);
     private final PoseEstimator poseEstimator = new PoseEstimator(swerveDrivetrain, limelight);
     private final USBCameraVision USBDriverCamera = new USBCameraVision();
-    final HttpCamera httpCamera = new HttpCamera("Camera", "http://10.14.44.5:8080/?action=stream", HttpCamera.HttpCameraKind.kMJPGStreamer);
 
 
     // Shuffleboard
@@ -48,7 +49,6 @@ public class RobotContainer {
     private final Field2d cameraPositioningField = new Field2d();
     private final Field2d odometryField = new Field2d();
     private final Field2d poseEstimatorField = new Field2d();
-    private boolean enabled;
 
     public RobotContainer() {
 
@@ -60,7 +60,6 @@ public class RobotContainer {
         GenericEntry ShooterAngleEntry = drivingTab.add("Shooter angle", 0).withPosition(0, 0).withSize(2, 1).getEntry();
 
 
-        drivingTab.add(httpCamera);
 
         shooter = new Shooter(ShooterAngleEntry);
 
@@ -85,12 +84,12 @@ public class RobotContainer {
 
         autonomousSelector = AutoBuilder.buildAutoChooser();
 
-        drivingTab.add( new HttpCamera("limelight",
-                        NetworkTableInstance.getDefault().getEntry("limelight_Stream").getString("http://limelight.local:5800/stream.mjpg"),
-                        HttpCamera.HttpCameraKind.kMJPGStreamer))
-                .withProperties(Map.of("min", 0, "max", 1)) // specify widget properties here
-                .withPosition(2,1)
-                .withSize(8,4);
+        // drivingTab.add( new HttpCamera("limelight",
+        //                 NetworkTableInstance.getDefault().getEntry("limelight_Stream").getString("http://limelight.local:5800/stream.mjpg"),
+        //                 HttpCamera.HttpCameraKind.kMJPGStreamer))
+        //         .withProperties(Map.of("min", 0, "max", 1)) // specify widget properties here
+        //         .withPosition(2,1)
+        //         .withSize(8,4);
 
         setupShuffleboard(drivingTab);
         swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());
@@ -98,6 +97,7 @@ public class RobotContainer {
     }
 
     private void setupShuffleboard(ShuffleboardTab drivingTab) {
+
 
         driveSpeed.setDefaultOption("100%", 1.0);
         driveSpeed.addOption("50%", 0.5);
@@ -112,8 +112,14 @@ public class RobotContainer {
 
 
         drivingTab.add("Autonomous", autonomousSelector).withPosition(2, 0).withSize(2, 1);
-        drivingTab.add("Drive Speed", driveSpeed).withPosition(4, 0).withSize(2, 1);
-        drivingTab.add("Turning Speed", turnSpeed).withPosition(6, 0).withSize(2, 1);
+        drivingTab.add("Drive Speed", driveSpeed).withPosition(0, 1).withSize(2, 1);
+        drivingTab.add("Turning Speed", turnSpeed).withPosition(2, 1).withSize(2, 1);
+        USBDriverCamera.addCameraToDrivingTab(drivingTab);
+
+
+        
+        
+
 
         SmartDashboard.putData("Limelight Position", cameraPositioningField);
         SmartDashboard.putData("Odometry Position", odometryField);

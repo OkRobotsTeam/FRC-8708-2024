@@ -30,6 +30,14 @@ public class Intake {
     private InitHelper initHelper = new InitHelper("Intake", -0.001, 100, 2000, 50);
     private boolean disabled = true;
     private DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(0);
+    
+            private DutyCycleEncoder absoluteEncoder1 = new DutyCycleEncoder(1);
+
+        private DutyCycleEncoder absoluteEncoder2 = new DutyCycleEncoder(2);
+
+            private DutyCycleEncoder absoluteEncoder3 = new DutyCycleEncoder(3);
+
+    
 
     
 
@@ -47,6 +55,7 @@ public class Intake {
 
         topIntake.setSmartCurrentLimit(TOP_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS, TOP_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS);
         bottomIntake.setSmartCurrentLimit(BOTTOM_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS, BOTTOM_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS);
+        absoluteEncoder.setDistancePerRotation(1);
     }
 
     public void init() {
@@ -125,8 +134,11 @@ public class Intake {
 
     public void periodic() {
         if (disabled) {
-//            Debug.debugPrint("Wrist motor encoder: " + Debug.fourPlaces(wristEncoder.getPosition()) + " Wrist alt encoder: " + Debug.fourPlaces(absoluteEncoder.getPosition()));
-
+        // Debug.debugPrint("Wrist motor encoder: " + Debug.fourPlaces(wristEncoder.getPosition()) + " Wrist alt encoder: " + absoluteEncoder.isConnected() + 
+        // " 0:" + Debug.fourPlaces(absoluteEncoder.getDistance()) +
+        // " 1:" + Debug.fourPlaces(absoluteEncoder1.getDistance()) +
+        // " 2:" + Debug.fourPlaces(absoluteEncoder2.getDistance()) +
+        // " 3:" + Debug.fourPlaces(absoluteEncoder3.getDistance()) );
             return;
         }
         if (initHelper.initializing(wristEncoder.getPosition())) {
@@ -143,7 +155,9 @@ public class Intake {
         } 
         double PIDOutput = wristPID.calculate(getWristPositionInRotations());
         //System.out.println("Wrist motor power " + fourPlaces.format(PIDOutput) + " : " + wristPID.getSetpoint() + " : " + getWristPositionInRotations());
-        Debug.debugPrint("Wrist motor encoder: " + Debug.fourPlaces(wristEncoder.getPosition()) + " Wrist alt encoder: " + Debug.fourPlaces(absoluteEncoder.getAbsolutePosition()));
+        //Debug.debugPrint("Wrist motor encoder: " + Debug.fourPlaces(wristEncoder.getPosition()) + " Wrist alt encoder: " + Debug.fourPlaces(absoluteEncoder.getPosition()));
+
+
         PIDOutput = min(max(-WRIST_MAX_SPEED, PIDOutput), WRIST_MAX_SPEED);
         wrist.set(PIDOutput);
     }
