@@ -17,7 +17,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.AutoAngle;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootFromFarther;
 import frc.robot.subsystems.*;
@@ -35,9 +37,10 @@ public class RobotContainer {
     //    private final Climber climber = new Climber();
     private final Intake intake = new Intake();
     private Shooter shooter;
-    private final Limelight limelight = new Limelight();
-    private final SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain(shooter, limelight);
-    private final PoseEstimator poseEstimator = new PoseEstimator(swerveDrivetrain, limelight);
+    
+    private final BetterPoseEstimator poseEstimator = new BetterPoseEstimator();
+    private final SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain(shooter, poseEstimator);
+    private final Limelight limelight = new Limelight(poseEstimator);
     private final USBCameraVision USBDriverCamera = new USBCameraVision();
 
 
@@ -46,7 +49,7 @@ public class RobotContainer {
     private final SendableChooser<Double> turnSpeed = new SendableChooser<>();
     private final SendableChooser<Command> autonomousSelector;
 
-    private final Field2d cameraPositioningField = new Field2d();
+    private final Field2d limelightField = new Field2d();
     private final Field2d odometryField = new Field2d();
     private final Field2d poseEstimatorField = new Field2d();
 
@@ -121,9 +124,9 @@ public class RobotContainer {
         
 
 
-        SmartDashboard.putData("Limelight Position", cameraPositioningField);
+        SmartDashboard.putData("Limelight Position", limelightField);
         SmartDashboard.putData("Odometry Position", odometryField);
-        SmartDashboard.putData("Odometry Position", poseEstimatorField);
+        SmartDashboard.putData("Pose Estimator", poseEstimatorField);
 
         Shuffleboard.selectTab("Driving");
         Shuffleboard.update();
@@ -160,11 +163,12 @@ public class RobotContainer {
         manipulatorController.back().onTrue(Commands.runOnce(shooter::init));
         
 
-//        manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(60)));
         manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> shooter.adjustment = 8).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
 
-        manipulatorController.rightTrigger().whileTrue(new InstantCommand(() -> shooter.autoAngle(limelight)));
-
+        // manipulatorController.rightTrigger().whileTrue(Commands.repeatingSequence(new InstantCommand(() -> shooter.autoAngle(poseEstimator)), new WaitCommand(0.1)));
+        
+        
+        manipulatorController.rightTrigger().whileTrue(new AutoAngle(poseEstimator,shooter));
         driveController.a().onTrue(
                 Commands.runOnce(swerveDrivetrain::resetGyro).andThen(
                 Commands.runOnce(swerveDrivetrain::resetOdometry)
@@ -226,12 +230,17 @@ public class RobotContainer {
 
 
     public void periodic() {
-        shooter.periodic();
+        shooter.update();
         intake.periodic();
+        limelight.update();
+
+        limelightField.setRobotPose(limelight.getRobotPose());
         odometryField.setRobotPose(swerveDrivetrain.getOdometryPose());
-        //Optional<Pose2d> limelightPose = limelight.getRobotPose();
-        //limelightPose.ifPresent(cameraPositioningField::setRobotPose);
-        //poseEstimatorField.setRobotPose(poseEstimator.getCurrentPose());
+        poseEstimatorField.setRobotPose(poseEstimator.getCurrentPose());
+    }
+
+    public void teleopPeriodic() {
+
     }
 
     public void enable() {

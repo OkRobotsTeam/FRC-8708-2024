@@ -11,7 +11,7 @@ public class ShootFromFarther extends SequentialCommandGroup {
             Intake intake,
             Limelight limelight,
             Shooter shooter,
-            PoseEstimator poseEstimator
+            BetterPoseEstimator poseEstimator
     ) {
         addCommands(
                 new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(45)),

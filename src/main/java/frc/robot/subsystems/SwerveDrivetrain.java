@@ -22,40 +22,51 @@ import java.util.Optional;
 import static frc.robot.Constants.SwerveDrivetrain.*;
 import static frc.robot.MathUtils.cubicFilter;
 
-
 /**
  * Represents a swerve drive style drivetrain.
  */
 public class SwerveDrivetrain extends SubsystemBase {
     private final Translation2d frontLeftLocation = new Translation2d(WHEELBASE_IN_METERS / 2, WHEELBASE_IN_METERS / 2);
-    private final Translation2d frontRightLocation = new Translation2d(WHEELBASE_IN_METERS / 2, -WHEELBASE_IN_METERS / 2);
+    private final Translation2d frontRightLocation = new Translation2d(WHEELBASE_IN_METERS / 2,
+            -WHEELBASE_IN_METERS / 2);
     private final Translation2d backLeftLocation = new Translation2d(-WHEELBASE_IN_METERS / 2, WHEELBASE_IN_METERS / 2);
-    private final Translation2d backRightLocation = new Translation2d(-WHEELBASE_IN_METERS / 2, -WHEELBASE_IN_METERS / 2);
-    public final SwerveModule frontLeft = new SwerveModule(CANIds.FRONT_LEFT_DRIVE_MOTOR, CANIds.FRONT_LEFT_ROTATION_MOTOR, CANIds.FRONT_LEFT_ROTATION_ENCODER, "FL");
-    private final SwerveModule frontRight = new SwerveModule(CANIds.FRONT_RIGHT_DRIVE_MOTOR, CANIds.FRONT_RIGHT_ROTATION_MOTOR, CANIds.FRONT_RIGHT_ROTATION_ENCODER, "FR");
-    private final SwerveModule backLeft = new SwerveModule(CANIds.BACK_LEFT_DRIVE_MOTOR, CANIds.BACK_LEFT_ROTATION_MOTOR, CANIds.BACK_LEFT_ROTATION_ENCODER, "BL");
-    private final SwerveModule backRight = new SwerveModule(CANIds.BACK_RIGHT_DRIVE_MOTOR, CANIds.BACK_RIGHT_ROTATION_MOTOR, CANIds.BACK_RIGHT_ROTATION_ENCODER, "BR");
-    //private final AHRS gyro = new AHRS(I2C.Port.kMXP);
+    private final Translation2d backRightLocation = new Translation2d(-WHEELBASE_IN_METERS / 2,
+            -WHEELBASE_IN_METERS / 2);
+    public final SwerveModule frontLeft = new SwerveModule(CANIds.FRONT_LEFT_DRIVE_MOTOR,
+            CANIds.FRONT_LEFT_ROTATION_MOTOR, CANIds.FRONT_LEFT_ROTATION_ENCODER, "FL");
+    private final SwerveModule frontRight = new SwerveModule(CANIds.FRONT_RIGHT_DRIVE_MOTOR,
+            CANIds.FRONT_RIGHT_ROTATION_MOTOR, CANIds.FRONT_RIGHT_ROTATION_ENCODER, "FR");
+    private final SwerveModule backLeft = new SwerveModule(CANIds.BACK_LEFT_DRIVE_MOTOR,
+            CANIds.BACK_LEFT_ROTATION_MOTOR, CANIds.BACK_LEFT_ROTATION_ENCODER, "BL");
+    private final SwerveModule backRight = new SwerveModule(CANIds.BACK_RIGHT_DRIVE_MOTOR,
+            CANIds.BACK_RIGHT_ROTATION_MOTOR, CANIds.BACK_RIGHT_ROTATION_ENCODER, "BR");
+    // private final AHRS gyro = new AHRS(I2C.Port.kMXP);
     private final AHRS gyro = new AHRS();
 
-    public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
-    public final SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), new SwerveModulePosition[]{frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
+    public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation,
+            backLeftLocation, backRightLocation);
+    public final SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(),
+            new SwerveModulePosition[] { frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(),
+                    backRight.getPosition() });
     // Slew rate limiters to make joystick inputs less abrupt
-    private final SlewRateLimiter xSpeedLimiter = new SlewRateLimiter(MOVEMENT_MAX_ACCELERATION_IN_METERS_PER_SECOND_SQUARED);
-    private final SlewRateLimiter ySpeedLimiter = new SlewRateLimiter(MOVEMENT_MAX_ACCELERATION_IN_METERS_PER_SECOND_SQUARED);
-    private final SlewRateLimiter rotateLimiter = new SlewRateLimiter(TURNING_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED);
+    private final SlewRateLimiter xSpeedLimiter = new SlewRateLimiter(
+            MOVEMENT_MAX_ACCELERATION_IN_METERS_PER_SECOND_SQUARED);
+    private final SlewRateLimiter ySpeedLimiter = new SlewRateLimiter(
+            MOVEMENT_MAX_ACCELERATION_IN_METERS_PER_SECOND_SQUARED);
+    private final SlewRateLimiter rotateLimiter = new SlewRateLimiter(
+            TURNING_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED);
 
     private Shooter shooter;
-    private Limelight limelight;
+    private BetterPoseEstimator poseEstimator;
     private boolean fieldOriented = false;
     private boolean autoAdjustLastTick = false;
     private boolean lastAutoAdjustTarget = false;
 
     SwerveModuleState testState = new SwerveModuleState();
 
-    public SwerveDrivetrain(Shooter shooter, Limelight limelight) {
+    public SwerveDrivetrain(Shooter shooter, BetterPoseEstimator poseEstimator) {
         this.shooter = shooter;
-        this.limelight = limelight;
+        this.poseEstimator = poseEstimator;
 
         resetGyro();
         resetOdometry();
@@ -67,7 +78,8 @@ public class SwerveDrivetrain extends SubsystemBase {
                 this::pathPlannerDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 HOLONOMIC_PATH_FOLLOWER_CONFIG,
                 () -> {
-                    // Boolean supplier that controls when the path will be mirrored for the red alliance
+                    // Boolean supplier that controls when the path will be mirrored for the red
+                    // alliance
                     // This will flip the path being followed to the red side of the field.
                     // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
@@ -86,7 +98,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public ChassisSpeeds getRobotRelativeSpeeds() {
-        System.out.println("getRobotRelativeSpeeds returning:" + kinematics.toChassisSpeeds(getModuleStates()).toString());
+        System.out.println(
+                "getRobotRelativeSpeeds returning:" + kinematics.toChassisSpeeds(getModuleStates()).toString());
         return kinematics.toChassisSpeeds(getModuleStates());
     }
 
@@ -120,34 +133,21 @@ public class SwerveDrivetrain extends SubsystemBase {
         odometry.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
     }
 
-    public Optional<Rotation2d> getGoalAngle(Limelight limelight) {
-        Optional<Translation2d> goalOffset = limelight.getOffsetFromGoalInMeters();
-
-        if (goalOffset.isPresent()) {
-            Rotation2d angleFromRobotToGoal = goalOffset.get().getAngle();
-            return Optional.of(angleFromRobotToGoal);
-        }
-        return Optional.empty();
+    public Rotation2d getGoalAngle(BetterPoseEstimator poseEstimator) {
+        Translation2d goalOffset = poseEstimator.getOffsetFromGoalInMeters();
+        Rotation2d angleFromRobotToGoal = goalOffset.getAngle();
+        return angleFromRobotToGoal;
     }
 
-    public void driveWithController(XboxController controller, double driveSpeedScalar, double rotationSpeedScalar, boolean autoAdjust) {
+
+
+    public void driveWithController(XboxController controller, double driveSpeedScalar, double rotationSpeedScalar,
+            boolean autoAdjust) {
         boolean fast = controller.getRightTriggerAxis() > 0.25;
         boolean slow = controller.getLeftTriggerAxis() > 0.25;
         boolean wheelsCrossed = controller.getLeftBumper();
 
-
-        if (autoAdjust && !autoAdjustLastTick) {
-            Optional<Pose2d> limelightPose = limelight.getRobotPose();
-
-            if (limelightPose.isPresent()) {
-                odometry.resetPosition(gyro.getRotation2d(), getModulePositions(), limelightPose.get());
-                autoAdjustLastTick = true;
-            }
-        } else if (!autoAdjust) {
-            autoAdjustLastTick = false;
-        }
-
-        //debugPrint("Gyro: " + gyro.getAngle() + ":" + gyro.getYaw());
+        // debugPrint("Gyro: " + gyro.getAngle() + ":" + gyro.getYaw());
 
         double leftStickYWithDeadzone = MathUtil.applyDeadband(controller.getLeftY(), CONTROLLER_DEADZONE);
         double leftStickXWithDeadzone = MathUtil.applyDeadband(controller.getLeftX(), CONTROLLER_DEADZONE);
@@ -160,7 +160,6 @@ public class SwerveDrivetrain extends SubsystemBase {
         double leftStickYWithRateLimit = xSpeedLimiter.calculate(leftStickYWithCubicFilter);
         double leftStickXWithRateLimit = ySpeedLimiter.calculate(leftStickXWithCubicFilter);
         double rightStickXWithRateLimit = rotateLimiter.calculate(rightStickXWithCubicFilter);
-
 
         // Get the x speed. We are inverting this because Xbox controllers return
         // negative values when we push forward.
@@ -176,36 +175,41 @@ public class SwerveDrivetrain extends SubsystemBase {
         // mathematics). The Xbox controller returns positive values when you pull to
         // the right by default.
         double rot = -rightStickXWithRateLimit * TURNING_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND;
-
+        
         if (autoAdjust) {
-            Optional<Rotation2d> targetRotation = getGoalAngle(limelight);
-Optional<Pose2d> currentRotation = limelight.getRobotPose();
+            Rotation2d targetRotation = getGoalAngle(poseEstimator);
+            Pose2d currentPose = poseEstimator.getRobotPose();
+            Rotation2d currentRotation = currentPose.getRotation();
 
-            if (targetRotation.isPresent() && currentRotation.isPresent()) {
-                Optional<DriverStation.Alliance> ally = DriverStation.getAlliance();
+            Optional<DriverStation.Alliance> ally = DriverStation.getAlliance();
 
-                Rotation2d rotation = Rotation2d.fromDegrees(0);
+            Rotation2d rotation = Rotation2d.fromDegrees(0);
 
-                if (ally.isPresent()) {
-                    if (ally.get() == DriverStation.Alliance.Red) {
-                        rotation = currentRotation.get().getRotation().rotateBy(Rotation2d.fromRotations(0.5));
-                    }
-                    if (ally.get() == DriverStation.Alliance.Blue) {
-                        rotation = currentRotation.get().getRotation();
-                    }
 
-                    System.out.println("Target: " + targetRotation.get().getDegrees());
-                    System.out.println("Current: " + rotation.getDegrees());
-                    System.out.println("Difference: " + targetRotation.get().minus(rotation).getDegrees());
-
-                    rot = -targetRotation.get().minus(getOdometryRotation()).getRotations() / 4;
-
-                } else {
-                    System.out.println("Warning: No alliance Selected, please select alliance");
+            if (ally.isPresent()) {
+                if (ally.get() == DriverStation.Alliance.Red) {
+                    rotation = currentRotation;
                 }
+                if (ally.get() == DriverStation.Alliance.Blue) {
+                    rotation = currentRotation.rotateBy(Rotation2d.fromRotations(0.5));
+                }
+                
+                Rotation2d difference = targetRotation.minus(rotation);
+
+                rot = difference.getDegrees() * 0.13;
+
+                rot = MathUtil.clamp(rot, -2, 2);
+
+                Debug.debugPrint("Target: " + fmt(targetRotation.getDegrees()) + 
+                    " Current: " + fmt(rotation.getDegrees()) + 
+                    " Difference (deg): " + fmt(difference.getDegrees()) + 
+                    " Difference (rot): " + fmt(difference.getRotations()) + 
+                    " Output: " + fmt(rot));
+
             } else {
-                System.out.println("Warning: autoAdjust failed! Can the limelight see any april tags?");
+                System.out.println("Warning: No alliance Selected, please select alliance");
             }
+
         }
 
         // Apply the drive speed selector from ShuffleBoard
@@ -227,7 +231,8 @@ Optional<Pose2d> currentRotation = limelight.getRobotPose();
         }
 
         if (wheelsCrossed) {
-            // If the wheelsCrossed flag is true then stop all movement and force the wheels into a diamond shape for more traction
+            // If the wheelsCrossed flag is true then stop all movement and force the wheels
+            // into a diamond shape for more traction
             // This is useful if we are being pushed
             frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
             frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
@@ -240,20 +245,22 @@ Optional<Pose2d> currentRotation = limelight.getRobotPose();
         }
     }
 
-
     /**
      * Method to drive the robot using joystick info.
      *
      * @param xSpeed        Speed of the robot in the x direction (forward).
      * @param ySpeed        Speed of the robot in the y direction (sideways).
      * @param rotation      Angular rate of the robot.
-     * @param fieldRelative Whether the provided x and y speeds are relative to the field.
+     * @param fieldRelative Whether the provided x and y speeds are relative to the
+     *                      field.
      */
     public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldRelative) {
-//        if (fieldRelative) {
-//            System.out.println("Gyro: " + gyro.getRotation2d().getDegrees());
-//        }
-        var swerveModuleStates = kinematics.toSwerveModuleStates(fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotation, gyro.getRotation2d()) : new ChassisSpeeds(xSpeed, ySpeed, rotation));
+        // if (fieldRelative) {
+        // System.out.println("Gyro: " + gyro.getRotation2d().getDegrees());
+        // }
+        var swerveModuleStates = kinematics.toSwerveModuleStates(
+                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotation, gyro.getRotation2d())
+                        : new ChassisSpeeds(xSpeed, ySpeed, rotation));
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MOVEMENT_MAX_SPEED_IN_METERS_PER_SECOND);
         frontLeft.setDesiredState(swerveModuleStates[0]);
         frontRight.setDesiredState(swerveModuleStates[1]);
@@ -266,24 +273,30 @@ Optional<Pose2d> currentRotation = limelight.getRobotPose();
     }
 
     public void testWithController(CommandXboxController controller) {
-        
-        testState.speedMetersPerSecond = controller.getLeftY()*10;
-        testState.angle.plus(new Rotation2d(controller.getRightY()/10));
+
+        testState.speedMetersPerSecond = controller.getLeftY() * 10;
+        testState.angle.plus(new Rotation2d(controller.getRightY() / 10));
         frontLeft.setDesiredState(testState);
     }
 
     public void pathPlannerDrive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
-        //SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, 0.1);
+        // SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, 0.1);
 
-        //System.out.println("pathPlannerDrive:" + Arrays.toString(kinematics.toSwerveModuleStates(chassisSpeeds)));
+        // System.out.println("pathPlannerDrive:" +
+        // Arrays.toString(kinematics.toSwerveModuleStates(chassisSpeeds)));
 
-//        swerveModuleStates[0].speedMetersPerSecond = Math.min(Math.max(swerveModuleStates[0].speedMetersPerSecond, -0.1), 0.1);
-//        swerveModuleStates[1].speedMetersPerSecond = Math.min(Math.max(swerveModuleStates[1].speedMetersPerSecond, -0.1), 0.1);
-//        swerveModuleStates[2].speedMetersPerSecond = Math.min(Math.max(swerveModuleStates[2].speedMetersPerSecond, -0.1), 0.1);
-//        swerveModuleStates[3].speedMetersPerSecond = Math.min(Math.max(swerveModuleStates[3].speedMetersPerSecond, -0.1), 0.1);
-        Debug.debugPrint("S" , "FLS: " + fmt(frontLeft.getState().speedMetersPerSecond) + " FLDS: " + fmt(swerveModuleStates[0].speedMetersPerSecond));
-        
+        // swerveModuleStates[0].speedMetersPerSecond =
+        // Math.min(Math.max(swerveModuleStates[0].speedMetersPerSecond, -0.1), 0.1);
+        // swerveModuleStates[1].speedMetersPerSecond =
+        // Math.min(Math.max(swerveModuleStates[1].speedMetersPerSecond, -0.1), 0.1);
+        // swerveModuleStates[2].speedMetersPerSecond =
+        // Math.min(Math.max(swerveModuleStates[2].speedMetersPerSecond, -0.1), 0.1);
+        // swerveModuleStates[3].speedMetersPerSecond =
+        // Math.min(Math.max(swerveModuleStates[3].speedMetersPerSecond, -0.1), 0.1);
+        Debug.debugPrint("S", "FLS: " + fmt(frontLeft.getState().speedMetersPerSecond) + " FLDS: "
+                + fmt(swerveModuleStates[0].speedMetersPerSecond));
+
         frontLeft.setDesiredState(swerveModuleStates[0]);
 
         frontRight.setDesiredState(swerveModuleStates[1]);
@@ -293,22 +306,30 @@ Optional<Pose2d> currentRotation = limelight.getRobotPose();
 
     /**
      * Gets the current drivetrain position, as reported by the modules themselves.
-     * @return current drivetrain state. Array orders are frontLeft, frontRight, backLeft, backRight
+     * 
+     * @return current drivetrain state. Array orders are frontLeft, frontRight,
+     *         backLeft, backRight
      */
     public SwerveModulePosition[] getModulePositions() {
-        return new SwerveModulePosition[]{frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()};
+        return new SwerveModulePosition[] { frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(),
+                backRight.getPosition() };
     }
 
     public SwerveModuleState[] getModuleStates() {
-        return new SwerveModuleState[]{frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()};
+        return new SwerveModuleState[] { frontLeft.getState(), frontRight.getState(), backLeft.getState(),
+                backRight.getState() };
     }
 
     /**
      * Updates the field relative position of the robot.
      * Called automatically by command scheduler
      */
+    @Override
     public void periodic() {
         odometry.update(gyro.getRotation2d(), getModulePositions());
+        poseEstimator.newOdometryEntry(odometry.getPoseMeters());
+        // gyro.setAngleAdjustment(gryo.getAngleAdjustment());
+
         SmartDashboard.putNumber("Odometry X", odometry.getPoseMeters().getX());
         SmartDashboard.putNumber("Odometry Y", odometry.getPoseMeters().getY());
     }
@@ -322,7 +343,8 @@ Optional<Pose2d> currentRotation = limelight.getRobotPose();
     }
 
     public Pose2d getOdometryPose() {
-//        System.out.println("getOdometryPose: " + odometry.getPoseMeters().toString());
+        // System.out.println("getOdometryPose: " +
+        // odometry.getPoseMeters().toString());
         return odometry.getPoseMeters();
     }
 
@@ -330,4 +352,3 @@ Optional<Pose2d> currentRotation = limelight.getRobotPose();
         return gyro.getRotation2d();
     }
 }
-

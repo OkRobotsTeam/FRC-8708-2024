@@ -10,9 +10,7 @@ public class TwoRingAutonomous extends SequentialCommandGroup {
     public TwoRingAutonomous(
             SwerveDrivetrain drivetrain,
             Intake intake,
-            Limelight limelight,
-            Shooter shooter,
-            PoseEstimator poseEstimator
+            Shooter shooter
     ) {
         addCommands(
                 new InstantCommand(drivetrain::resetGyro, drivetrain),

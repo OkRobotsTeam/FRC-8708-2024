@@ -10,9 +10,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Debug;
 import frc.robot.InitHelper;
+import frc.robot.MathUtils;
 import frc.robot.Constants.Shooter.CANIds;
 
 import java.util.Optional;
@@ -21,22 +23,21 @@ import java.util.OptionalDouble;
 import static com.revrobotics.CANSparkLowLevel.MotorType.kBrushless;
 import static frc.robot.Constants.Shooter.*;
 
-
-public class Shooter {
+public class Shooter extends SubsystemBase {
     private final TalonFX topShooter = new TalonFX(CANIds.TOP_SHOOTER, "CTRE");
     private final TalonFX bottomShooter = new TalonFX(CANIds.BOTTOM_SHOOTER, "CTRE");
     private final CANSparkMax shooterRotation = new CANSparkMax(CANIds.SHOOTER_ROTATION, kBrushless);
 
     private final RelativeEncoder shooterRotationEncoder = shooterRotation.getEncoder();
-    private PIDController shooterRotationPID = new PIDController(SHOOTER_ROTATION_PID_KP, SHOOTER_ROTATION_PID_KI, SHOOTER_ROTATION_PID_KD);
+    private PIDController shooterRotationPID = new PIDController(SHOOTER_ROTATION_PID_KP, SHOOTER_ROTATION_PID_KI,
+            SHOOTER_ROTATION_PID_KD);
     // Create a new ArmFeedforward with gains kS, kG, kV, and kA
-//    ArmFeedforward feedforward = new ArmFeedforward(kS, kG, kV, kA);
+    // ArmFeedforward feedforward = new ArmFeedforward(kS, kG, kV, kA);
     private GenericEntry shooterAngleEntry;
     public int adjustment = -1;
     private int resetCount = 0;
-    private InitHelper initHelper = new InitHelper("Shooter", -0.001, 80,  3000, 100);
+    private InitHelper initHelper = new InitHelper("Shooter", -0.001, 80, 3000, 100);
     private boolean disabled = true;
-
 
     public Shooter(GenericEntry shooterAngleEntry) {
         this.shooterAngleEntry = shooterAngleEntry;
@@ -53,11 +54,11 @@ public class Shooter {
 
         shooterRotationPID.setTolerance(0.01);
 
-//        SmartDashboard.putData("Rotation PID: ", shooterRotationPID);
+        // SmartDashboard.putData("Rotation PID: ", shooterRotationPID);
     }
 
     public void init() {
-disabled = false;
+        disabled = false;
         adjustment = -1;
         setTargetShooterDegreesFromHorizon(0.0);
         shooterRotationPID.reset();
@@ -66,8 +67,6 @@ disabled = false;
         initHelper.start(shooterRotationEncoder.getPosition());
 
     }
-
-
 
     public double getShooterRotationPositionInRotations() {
         return shooterRotationEncoder.getPosition();
@@ -95,7 +94,7 @@ disabled = false;
         setShooterSpeed(SHOOTER_FORWARD_SLOW_SPEED);
         System.out.println("Info: Running shooter forward slow");
     }
-    
+
     public void runShooterBackward() {
         setShooterSpeed(SHOOTER_REVERSE_SPEED);
         System.out.println("Info: Running shooter backward");
@@ -108,7 +107,8 @@ disabled = false;
 
     public void setTargetShooterDegreesFromHorizon(double angle) {
         shooterRotationPID.setSetpoint(angle / 360.0 + SHOOTER_ROTATION_STARTUP_POSITION);
-//        SmartDashboard.putNumber("Shooter Angle", getTargetShooterDegreesFromHorizon());
+        // SmartDashboard.putNumber("Shooter Angle",
+        // getTargetShooterDegreesFromHorizon());
     }
 
     public double getTargetShooterDegreesFromHorizon() {
@@ -158,49 +158,52 @@ disabled = false;
     }
 
     public void enable() {
-        disabled=false;
+        disabled = false;
     }
 
-    public void periodic() {
-            if (initHelper.initializing(shooterRotationEncoder.getPosition()) ) {
-                return;
-            }
-            if (initHelper.justFinishedInit()) {
-                System.out.println("Setting shooter encoder position to " + SHOOTER_ROTATION_STARTUP_POSITION);
-                shooterRotation.set(0);
-                shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION-0.01);
-                shooterRotationPID.reset();
-                shooterRotationPID.setSetpoint(SHOOTER_ROTATION_STARTUP_POSITION);
-                shooterRotationPID.calculate(SHOOTER_ROTATION_STARTUP_POSITION);
-                return;
-}
-            if (disabled) {
-                return;
-            }
-            setShooterRotationBraking(false);
-            double PIDOutput = shooterRotationPID.calculate(getShooterRotationPositionInRotations());
-            //PIDOutput= PIDOutput * 0.6;
-            //PIDOutput = Math.min(0.2,PIDOutput);
-            //PIDOutput = Math.max(-0.2,PIDOutput);
+    public void update() {
+        if (initHelper.initializing(shooterRotationEncoder.getPosition())) {
+            return;
+        }
+        if (initHelper.justFinishedInit()) {
+            System.out.println("Setting shooter encoder position to " + SHOOTER_ROTATION_STARTUP_POSITION);
+            shooterRotation.set(0);
+            shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION - 0.01);
+            shooterRotationPID.reset();
+            shooterRotationPID.setSetpoint(SHOOTER_ROTATION_STARTUP_POSITION);
+            shooterRotationPID.calculate(SHOOTER_ROTATION_STARTUP_POSITION);
+            return;
+        }
+        if (disabled) {
+            return;
+        }
+        setShooterRotationBraking(false);
+        double PIDOutput = shooterRotationPID.calculate(getShooterRotationPositionInRotations());
+        // PIDOutput= PIDOutput * 0.6;
+        // PIDOutput = Math.min(0.2,PIDOutput);
+        // PIDOutput = Math.max(-0.2,PIDOutput);
 
-            double gravityCompensationCoefficient = Math.sin(Units.degreesToRadians(getTargetShooterDegreesFromHorizon())) * 0.07;
+        double gravityCompensationCoefficient = Math.sin(Units.degreesToRadians(getTargetShooterDegreesFromHorizon()))
+                * 0.07;
 
+        SmartDashboard.putNumber("Gravity compensation: ", (gravityCompensationCoefficient));
+        SmartDashboard.putNumber("PID Output: ", PIDOutput);
 
-            SmartDashboard.putNumber("Gravity compensation: ", (gravityCompensationCoefficient));
-            SmartDashboard.putNumber("PID Output: ", PIDOutput);
+        // double gravityCompensationCoefficient =
+        // Math.sin(Units.degreesToRadians(getTargetShooterDegreesFromHorizon())) *
+        // 0.07;
+        // SmartDashboard.putNumber("Gravity compensation: ",
+        // (gravityCompensationCoefficient));
+        // PIDOutput = PIDOutput + gravityCompensationCoefficient;
 
-            //double gravityCompensationCoefficient = Math.sin(Units.degreesToRadians(getTargetShooterDegreesFromHorizon())) * 0.07;
-            //SmartDashboard.putNumber("Gravity compensation: ", (gravityCompensationCoefficient));
-            //PIDOutput = PIDOutput + gravityCompensationCoefficient;
+        // Debug.debugPrint("Shooter motor power " + PIDOutput + " : " +
+        // shooterRotationPID.getSetpoint() + " : " +
+        // getShooterRotationPositionInRotations() +
+        // " Diff: " + (shooterRotationPID.getSetpoint() -
+        // getShooterRotationPositionInRotations()) );
 
-           //Debug.debugPrint("Shooter motor power " + PIDOutput + " : " + shooterRotationPID.getSetpoint() + " : " + getShooterRotationPositionInRotations() + 
-           //     " Diff: " + (shooterRotationPID.getSetpoint() - getShooterRotationPositionInRotations()) );
-
-            
-
-
-            shooterRotation.set(PIDOutput);
-//        }
+        shooterRotation.set(PIDOutput);
+        // }
 
         shooterAngleEntry.setDouble(Math.round(shooterRotationEncoder.getPosition() * 360));
 
@@ -208,29 +211,33 @@ disabled = false;
         SmartDashboard.putNumber("Rotation PID setpoint: ", Math.round(shooterRotationPID.getSetpoint() * 360));
     }
 
-    public void autoAngle(Limelight limelight) {
-        Optional<Translation2d> goalOffset = limelight.getOffsetFromGoalInMeters();
+    public void autoAngle(BetterPoseEstimator poseEstimator) {
+        Translation2d goalOffset = poseEstimator.getOffsetFromGoalInMeters();
+        Debug.debugPrint("GDM: " + goalOffset.getNorm());
+        SmartDashboard.putString("Offset from Goal (in): ", goalOffset.times(39.3701).toString());
 
-        if (goalOffset.isPresent()) {
+        double goalDistanceInMeters = MathUtils.clamp(goalOffset.getNorm(),0,5);
+        Rotation2d angleFromRobotToGoal = goalOffset.getAngle();
 
-            double goalDistanceInMeters = goalOffset.get().getNorm();
-            Rotation2d angleFromRobotToGoal = goalOffset.get().getAngle();
+        double GOAL_HEIGHT_METERS = 2.2;
+        double SHOOTER_HEIGHT = 0.4826;
 
-            double GOAL_HEIGHT_METERS = 2.2;
-            double SHOOTER_HEIGHT = 0.4826;
+        Rotation2d angleFromShooterToGoal = Rotation2d
+                .fromRadians(Math.atan((GOAL_HEIGHT_METERS - SHOOTER_HEIGHT) / goalDistanceInMeters))
+                .minus(Rotation2d.fromDegrees(12));
 
-            Rotation2d angleFromShooterToGoal = Rotation2d.fromRadians(Math.atan((GOAL_HEIGHT_METERS - SHOOTER_HEIGHT) / goalDistanceInMeters)).minus(Rotation2d.fromDegrees(12));
+        if (goalDistanceInMeters > 80) {
+            angleFromRobotToGoal.times(goalDistanceInMeters / 80);
+        }
+        if (angleFromRobotToGoal.getDegrees() < 0) {
+            angleFromRobotToGoal = new Rotation2d(0);
+        }
 
-if (goalDistanceInMeters > 80) {
-                angleFromRobotToGoal.times(goalDistanceInMeters / 80);
-            }
-
-            SmartDashboard.putString("Offset from Goal (in): ", goalOffset.get().times(39.3701).toString());
         SmartDashboard.putNumber("Distance from Goal (in): ", Units.metersToInches(goalDistanceInMeters));
         SmartDashboard.putNumber("Angle to goal from robot (deg): ", angleFromRobotToGoal.getDegrees());
-    SmartDashboard.putNumber("Shooter angle (deg): ", angleFromShooterToGoal.getDegrees());
+        SmartDashboard.putNumber("Shooter angle (deg): ", angleFromShooterToGoal.getDegrees());
 
-            setTargetShooterDegreesFromHorizon(angleFromShooterToGoal.getDegrees());
-        }
+        setTargetShooterDegreesFromHorizon(angleFromShooterToGoal.getDegrees());
     }
+
 }
