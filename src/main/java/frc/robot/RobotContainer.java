@@ -52,6 +52,7 @@ public class RobotContainer {
     private final Field2d limelightField = new Field2d();
     private final Field2d odometryField = new Field2d();
     private final Field2d poseEstimatorField = new Field2d();
+    private final Field2d adjustedOdometry = new Field2d();
 
     public RobotContainer() {
 
@@ -127,6 +128,7 @@ public class RobotContainer {
         SmartDashboard.putData("Limelight Position", limelightField);
         SmartDashboard.putData("Odometry Position", odometryField);
         SmartDashboard.putData("Pose Estimator", poseEstimatorField);
+        SmartDashboard.putData("Adjusted Odometry", adjustedOdometry);
 
         Shuffleboard.selectTab("Driving");
         Shuffleboard.update();
@@ -237,6 +239,7 @@ public class RobotContainer {
         limelightField.setRobotPose(limelight.getRobotPose());
         odometryField.setRobotPose(swerveDrivetrain.getOdometryPose());
         poseEstimatorField.setRobotPose(poseEstimator.getCurrentPose());
+        adjustedOdometry.setRobotPose(poseEstimator.getAdjustedOdometryPose());
     }
 
     public void teleopPeriodic() {

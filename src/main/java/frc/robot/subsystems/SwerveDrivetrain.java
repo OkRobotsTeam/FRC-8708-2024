@@ -198,7 +198,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
                 rot = difference.getDegrees() * 0.13;
 
-                rot = MathUtil.clamp(rot, -2, 2);
+                rot = MathUtil.clamp(rot, -4, 4);
 
                 Debug.debugPrint("Target: " + fmt(targetRotation.getDegrees()) + 
                     " Current: " + fmt(rotation.getDegrees()) + 

@@ -25,7 +25,7 @@ public class SwerveModule {
     private final CANcoder turningEncoder;
     private final PIDController drivePIDController = new PIDController(1, 0, 0);
     private final ProfiledPIDController turningPIDController = new ProfiledPIDController(5, 0, 0, new TrapezoidProfile.Constraints(WHEEL_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND_SQUARED, WHEEL_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED));
-    private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.12, 2);
+    private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.13, 2);
     private final String name;
 
 

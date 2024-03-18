@@ -11,7 +11,10 @@ import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Debug;
 
 public class BetterPoseEstimator extends SubsystemBase{
     
@@ -39,17 +42,35 @@ public class BetterPoseEstimator extends SubsystemBase{
 
 
     public BetterPoseEstimator() {
-        
+        odometryHistory.add(0,new OdometryHistoryEntry(System.currentTimeMillis(),0,0,0));
     }
 
     ArrayList<OdometryHistoryEntry> odometryHistory = new ArrayList<OdometryHistoryEntry>();
 
     public void newOdometryEntry(Pose2d pose) {
-        Translation2d translatedPose = pose.getTranslation().rotateBy(new Rotation2d(diffR));
-        odometryHistory.add(0, new OdometryHistoryEntry(System.currentTimeMillis(), translatedPose.getX(), translatedPose.getY(), pose.getRotation().getRadians()));
+        final OdometryHistoryEntry newEntry =  new OdometryHistoryEntry(System.currentTimeMillis(), pose.getX() ,pose.getY(), pose.getRotation().getRadians());
+        odometryHistory.add(0,newEntry);
         if (odometryHistory.size() > 100) {
             odometryHistory.remove(odometryHistory.size() -1);
         }
+        Translation2d adjustedLocation = translateHistoryToAdjusted(newEntry);
+        
+
+    }
+
+    
+
+    public Translation2d translateHistoryToAdjusted(OdometryHistoryEntry entry) {
+        Translation2d translation = new Translation2d(entry.x, entry.y);
+        Translation2d newTransation = translation.rotateBy(Rotation2d.fromRadians(diffR));
+        //Debug.debugPrint("Translation. x " + entry.x + ":" + newTransation.getX() + " y " + entry.y + " : " + newTransation.getY() + " rot:" + Units.radiansToDegrees(diffR));
+        return newTransation;
+    }
+
+    public Pose2d getAdjustedOdometryPose() {
+        Translation2d translated = translateHistoryToAdjusted( odometryHistory.get(0));
+        double angle = odometryHistory.get(0).r + diffR;
+        return new Pose2d(translated, new Rotation2d(angle));
     }
 
     public void newVisionEntry(Pose2d visionPose, long visionTime) {
@@ -64,20 +85,22 @@ public class BetterPoseEstimator extends SubsystemBase{
             return;
         }
         //matching contains the index of the entry matching the time the camera saw the targets
-        OdometryHistoryEntry historyEntry = odometryHistory.get(matching);
-        double newX = visionPose.getX() - historyEntry.x;
-        double newY = visionPose.getY() - historyEntry.y;
-        double newR = visionPose.getRotation().getRadians() - historyEntry.r;
+        Translation2d historyEntry = translateHistoryToAdjusted(odometryHistory.get(matching));
+        double newX = visionPose.getX() - historyEntry.getX();
+        double newY = visionPose.getY() - historyEntry.getY();
+        double newR = visionPose.getRotation().minus(Rotation2d.fromRadians(odometryHistory.get(matching).r)).getRadians();
 
         //Adjust all odometry histories since the match by the same difference.  Maybe divided by something to remove noise. 
         double weighting = 3;
         OdometryHistoryEntry last = odometryHistory.get(0);
         //System.out.println("Munging:  x:" + fmt(diffX,newX) + " y:" + fmt(diffY,newY) + " r:" + fmt(diffR,newR));
-        
+        Debug.debugPrint("Rot:" + fmt(visionPose.getRotation().getDegrees()) +  " : " 
+            + fmt(Units.radiansToDegrees( odometryHistory.get(matching).r)) + " : " + fmt(Units.radiansToDegrees(diffR)));
+
         diffX = ((diffX*weighting) + newX ) / (weighting+1);
         diffY = ((diffY*weighting) + newY ) / (weighting+1);
         diffR = ((diffR*weighting) + newR )/ (weighting+1);
-        //System.out.println("x:" + fmt(last.x,last.x+diffX) + " y:" + fmt(last.y,last.y+diffY) + " r:" + fmt(last.r,last.r+diffR));
+        Debug.debugPrint("x:" + fmt(last.x,last.x+diffX) + " y:" + fmt(last.y,last.y+diffY) + " r:" + fmt(last.r,last.r+diffR));
 
     }
     String fmt(double num1, double num2) {
@@ -93,12 +116,11 @@ public class BetterPoseEstimator extends SubsystemBase{
     }
     
     public Pose2d getCurrentPose() {
-        if (odometryHistory.size() < 1) {
-            return new Pose2d(0, 0, new Rotation2d(0));
-        }
+        Translation2d adjusted = translateHistoryToAdjusted(odometryHistory.get(0));
+
         return new Pose2d(
-            odometryHistory.get(0).x + diffX, 
-            odometryHistory.get(0).y + diffY, 
+            adjusted.getX() + diffX, 
+            adjusted.getY() + diffY, 
             new Rotation2d(odometryHistory.get(0).r+diffR));
     }
 
@@ -123,6 +145,8 @@ public class BetterPoseEstimator extends SubsystemBase{
         Translation2d robotPose = getRobotPose().getTranslation();
         return robotPose.minus(targetPosition);
     }
+
+
 
 
 }
