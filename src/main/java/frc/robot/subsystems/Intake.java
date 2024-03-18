@@ -1,22 +1,16 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import frc.robot.Debug;
 import frc.robot.InitHelper;
 import frc.robot.Constants.Intake.CANIds;
 
 import static com.revrobotics.CANSparkLowLevel.MotorType.kBrushless;
 import static frc.robot.Constants.Intake.*;
 import static java.lang.Double.*;
-
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 
 public class Intake {

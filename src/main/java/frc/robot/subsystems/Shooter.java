@@ -11,17 +11,15 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Debug;
 import frc.robot.InitHelper;
 import frc.robot.MathUtils;
 import frc.robot.Constants.Shooter.CANIds;
 
-import java.util.Optional;
-import java.util.OptionalDouble;
 
 import static com.revrobotics.CANSparkLowLevel.MotorType.kBrushless;
 import static frc.robot.Constants.Shooter.*;
+
 
 public class Shooter extends SubsystemBase {
     private final TalonFX topShooter = new TalonFX(CANIds.TOP_SHOOTER, "CTRE");

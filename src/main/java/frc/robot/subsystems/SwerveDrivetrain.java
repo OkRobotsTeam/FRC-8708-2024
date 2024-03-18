@@ -16,7 +16,6 @@ import frc.robot.Debug;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 import static frc.robot.Constants.SwerveDrivetrain.*;

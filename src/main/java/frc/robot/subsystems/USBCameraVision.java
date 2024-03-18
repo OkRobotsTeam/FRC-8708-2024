@@ -2,16 +2,10 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.*;
-import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.Map;
-
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
 
 
 public class USBCameraVision extends SubsystemBase {
@@ -57,12 +51,12 @@ public class USBCameraVision extends SubsystemBase {
     public void addCameraToDrivingTab(ShuffleboardTab drivingTab) {
         try {
             drivingTab.add("Driver Camera", camera).
-                withPosition(4,0).withSize(2,3).
-                withProperties(
-                Map.of("showCrosshair", false, "showControls", false, "rotation", "HALF", "showGlyph", false, "title", "Driver Camera")
-            );
-        } catch(Exception e) { 
+                    withPosition(4,0).withSize(2,3).
+                    withProperties(
+                            Map.of("showCrosshair", false, "showControls", false, "rotation", "HALF", "showGlyph", false, "title", "Driver Camera")
+                    );
+        } catch(Exception e) {
             e.printStackTrace();
-        }    
+        }
     }
 }
