@@ -14,15 +14,15 @@ public class ShootFromFarther extends SequentialCommandGroup {
             BetterPoseEstimator poseEstimator
     ) {
         addCommands(
-                new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(45)),
+                new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(20)),
                 new InstantCommand(shooter::runShooterForward),
                 new WaitCommand(1),
                 new InstantCommand(intake::runIntakeOut),
-                new WaitCommand(2),
-                new InstantCommand(intake::runIntakeIn),
                 new WaitCommand(1),
-                new InstantCommand(intake::runIntakeOut),
-                new WaitCommand(2),
+                // new InstantCommand(intake::runIntakeIn),
+                // new WaitCommand(1),
+                // new InstantCommand(intake::runIntakeOut),
+                // new WaitCommand(2),
                 new InstantCommand(shooter::stopShooter),
                 new InstantCommand(intake::stopIntake)
         );

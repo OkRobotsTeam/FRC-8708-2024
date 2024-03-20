@@ -3,25 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.7709402133281806,
-        "y": 5.54
+        "x": 3.0013090795412376,
+        "y": 5.564955745296107
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7097906452282632,
-        "y": 5.782733865882771
+        "x": 2.6460991383521244,
+        "y": 5.574822688106915
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.4338211939363332,
-        "y": 6.439366959544466
+        "x": 2.1626189406224983,
+        "y": 6.048435943025733
       },
       "prevControl": {
-        "x": 2.099861298111268,
-        "y": 6.159814626758159
+        "x": 2.132125109977409,
+        "y": 5.848630490052142
+      },
+      "nextControl": {
+        "x": 2.1931127712675877,
+        "y": 6.248241395999323
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.784236337703446,
+        "y": 6.867392196322855
+      },
+      "prevControl": {
+        "x": 2.4783611105683763,
+        "y": 6.581250854809402
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,13 +46,37 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.4,
+      "waypointRelativePos": 0.8,
       "rotationDegrees": 45.0,
       "rotateFast": true
     }
   ],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Extend Wrist and Run Intake In",
+      "waypointRelativePos": 0.85,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "extendWrist"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "runIntakeIn"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 0.5,
     "maxAcceleration": 3.0,
@@ -45,7 +85,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 50.0118563942559,
+    "rotation": 30.0,
     "rotateFast": false
   },
   "reversed": false,

@@ -104,7 +104,14 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setTargetShooterDegreesFromHorizon(double angle) {
-        shooterRotationPID.setSetpoint(angle / 360.0 + SHOOTER_ROTATION_STARTUP_POSITION);
+        if (disabled) {
+            System.out.println("Warning: Disabled");
+        }
+
+        double output = angle / 360.0 + SHOOTER_ROTATION_STARTUP_POSITION;
+        System.out.println("Setting setpoint to: " + output);
+
+        shooterRotationPID.setSetpoint(output);
         // SmartDashboard.putNumber("Shooter Angle",
         // getTargetShooterDegreesFromHorizon());
     }

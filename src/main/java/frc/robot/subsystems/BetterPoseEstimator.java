@@ -89,8 +89,8 @@ public class BetterPoseEstimator extends SubsystemBase{
         double weighting = 3;
         OdometryHistoryEntry last = odometryHistory.get(0);
         //System.out.println("Munging:  x:" + fmt(diffX,newX) + " y:" + fmt(diffY,newY) + " r:" + fmt(diffR,newR));
-        Debug.debugPrint("Rot:" + fmt(visionPose.getRotation().getDegrees()) +  " : " 
-            + fmt(Units.radiansToDegrees( odometryHistory.get(matching).r)) + " : " + fmt(Units.radiansToDegrees(diffR)));
+        // Debug.debugPrint("Rot:" + fmt(visionPose.getRotation().getDegrees()) +  " : " 
+        //     + fmt(Units.radiansToDegrees( odometryHistory.get(matching).r)) + " : " + fmt(Units.radiansToDegrees(diffR)));
 
         diffX = ((diffX*weighting) + newX ) / (weighting+1);
         diffY = ((diffY*weighting) + newY ) / (weighting+1);

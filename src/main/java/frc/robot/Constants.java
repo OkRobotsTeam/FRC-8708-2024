@@ -39,8 +39,8 @@ public class Constants {
         public static final double WHEEL_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED = Math.PI * 200;
 
         public static final HolonomicPathFollowerConfig HOLONOMIC_PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
-                new PIDConstants(0.006, 0.0, 0.0), // Translation PID constants
-                new PIDConstants(0.2, 0.0, 0.0), // Rotation PID constants
+                new PIDConstants(5, 0.0, 0.0), // Translation PID constants
+                new PIDConstants(5, 0.0, 0.0), // Rotation PID constants
                 1.5, // Max module speed, in m/s
                 DRIVEBASE_RADIUS_IN_METERS, // Drive base radius in meters. Distance from robot center to the furthest module.
                 new ReplanningConfig() // Default path re-planning config. See the API for the options here

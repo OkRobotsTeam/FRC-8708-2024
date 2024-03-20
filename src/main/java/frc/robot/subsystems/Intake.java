@@ -1,16 +1,23 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Encoder;
+import frc.robot.Debug;
 import frc.robot.InitHelper;
 import frc.robot.Constants.Intake.CANIds;
 
 import static com.revrobotics.CANSparkLowLevel.MotorType.kBrushless;
 import static frc.robot.Constants.Intake.*;
 import static java.lang.Double.*;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 
 public class Intake {
@@ -23,17 +30,18 @@ public class Intake {
     private double lastWristPosition = 0;
     private InitHelper initHelper = new InitHelper("Intake", -0.001, 100, 2000, 50);
     private boolean disabled = true;
-    private DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(0);
-    
-            private DutyCycleEncoder absoluteEncoder1 = new DutyCycleEncoder(1);
-
-        private DutyCycleEncoder absoluteEncoder2 = new DutyCycleEncoder(2);
-
-            private DutyCycleEncoder absoluteEncoder3 = new DutyCycleEncoder(3);
+    private DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(9);
 
     
-
-    
+    // private DutyCycleEncoder absoluteEncoder1 = new DutyCycleEncoder(1);
+    // private DutyCycleEncoder absoluteEncoder2 = new DutyCycleEncoder(2);
+    // private DutyCycleEncoder absoluteEncoder3 = new DutyCycleEncoder(3);
+    // private DutyCycleEncoder absoluteEncoder4 = new DutyCycleEncoder(4);
+    // private DutyCycleEncoder absoluteEncoder5 = new DutyCycleEncoder(5);
+    // private DutyCycleEncoder absoluteEncoder6 = new DutyCycleEncoder(6);
+    // private DutyCycleEncoder absoluteEncoder7 = new DutyCycleEncoder(7);
+    //private DutyCycleEncoder absoluteEncoder8 = new DutyCycleEncoder(8);
+    //private DutyCycleEncoder absoluteEncoder9 = new DutyCycleEncoder(9);
 
 
     public Intake() {
@@ -50,6 +58,7 @@ public class Intake {
         topIntake.setSmartCurrentLimit(TOP_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS, TOP_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS);
         bottomIntake.setSmartCurrentLimit(BOTTOM_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS, BOTTOM_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS);
         absoluteEncoder.setDistancePerRotation(1);
+
     }
 
     public void init() {
@@ -127,12 +136,16 @@ public class Intake {
     }
 
     public void periodic() {
+        //Debug.debugPrint("Wrist motor encoder: " + Debug.fourPlaces(wristEncoder.getPosition()) + " Wrist alt encoder: "
+        //         + " 9:" + Debug.fourPlaces(absoluteEncoder.get()) );
+
+
+        //System.out.println("Wrist motor power " + fourPlaces.format(PIDOutput) + " : " + wristPID.getSetpoint() + " : " + getWristPositionInRotations());
+        //Debug.debugPrint("Wrist motor encoder: " + Debug.fourPlaces(wristEncoder.getPosition()) + " Wrist alt encoder: " + Debug.fourPlaces(absoluteEncoder.getPosition()));
+
+
         if (disabled) {
-        // Debug.debugPrint("Wrist motor encoder: " + Debug.fourPlaces(wristEncoder.getPosition()) + " Wrist alt encoder: " + absoluteEncoder.isConnected() + 
-        // " 0:" + Debug.fourPlaces(absoluteEncoder.getDistance()) +
-        // " 1:" + Debug.fourPlaces(absoluteEncoder1.getDistance()) +
-        // " 2:" + Debug.fourPlaces(absoluteEncoder2.getDistance()) +
-        // " 3:" + Debug.fourPlaces(absoluteEncoder3.getDistance()) );
+
             return;
         }
         if (initHelper.initializing(wristEncoder.getPosition())) {
@@ -148,8 +161,6 @@ public class Intake {
             return;
         } 
         double PIDOutput = wristPID.calculate(getWristPositionInRotations());
-        //System.out.println("Wrist motor power " + fourPlaces.format(PIDOutput) + " : " + wristPID.getSetpoint() + " : " + getWristPositionInRotations());
-        //Debug.debugPrint("Wrist motor encoder: " + Debug.fourPlaces(wristEncoder.getPosition()) + " Wrist alt encoder: " + Debug.fourPlaces(absoluteEncoder.getPosition()));
 
 
         PIDOutput = min(max(-WRIST_MAX_SPEED, PIDOutput), WRIST_MAX_SPEED);

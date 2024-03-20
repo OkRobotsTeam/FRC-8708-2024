@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.SwerveDrivetrain.CANIds;
 import frc.robot.Debug;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -138,7 +139,13 @@ public class SwerveDrivetrain extends SubsystemBase {
         return angleFromRobotToGoal;
     }
 
-
+    public void straightenWheels() {
+        System.out.println("Straightening Wheels");
+        frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
+            frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
+            backLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
+            backRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
+    }
 
     public void driveWithController(XboxController controller, double driveSpeedScalar, double rotationSpeedScalar,
             boolean autoAdjust) {
@@ -330,6 +337,8 @@ public class SwerveDrivetrain extends SubsystemBase {
         // gyro.setAngleAdjustment(gryo.getAngleAdjustment());
 
         SmartDashboard.putNumber("Odometry X", odometry.getPoseMeters().getX());
+                SmartDashboard.putNumber("Odometry X Inches", odometry.getPoseMeters().getX() * 39.3701);
+
         SmartDashboard.putNumber("Odometry Y", odometry.getPoseMeters().getY());
     }
 

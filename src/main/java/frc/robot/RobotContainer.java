@@ -169,6 +169,7 @@ public class RobotContainer {
         );
 
         driveController.rightBumper().onTrue(Commands.runOnce(swerveDrivetrain::toggleFieldOriented));
+        driveController.povUp().onTrue(Commands.runOnce(swerveDrivetrain::straightenWheels));
 
     }
 
@@ -201,6 +202,7 @@ public class RobotContainer {
         // Reset the braking state in case autonomous exited uncleanly
         System.out.println("Starting teleop");
         swerveDrivetrain.init();
+        swerveDrivetrain.straightenWheels();
 //        climber.recalibrateClimber();
         shooter.init();
         intake.init();
