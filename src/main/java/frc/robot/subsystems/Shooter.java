@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DigitalGlitchFilter;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Debug;
@@ -35,6 +37,7 @@ public class Shooter extends SubsystemBase {
     public int adjustment = -1;
     private int resetCount = 0;
     private InitHelper initHelper = new InitHelper("Shooter", -0.001, 80, 3000, 100);
+    private DigitalInput shooterLimitSwitch = new DigitalInput(8);
     private boolean disabled = true;
 
     public Shooter(GenericEntry shooterAngleEntry) {
@@ -61,6 +64,7 @@ public class Shooter extends SubsystemBase {
         setTargetShooterDegreesFromHorizon(0.0);
         shooterRotationPID.reset();
         shooterRotationPID.setSetpoint(SHOOTER_ROTATION_STARTUP_POSITION);
+        
         shooterRotation.set(-0.03);
         initHelper.start(shooterRotationEncoder.getPosition());
 
@@ -162,20 +166,33 @@ public class Shooter extends SubsystemBase {
         bottomShooter.set(0);
     }
 
+    public boolean limitSwitchPressed() {
+        return shooterLimitSwitch.get();
+    }
+
     public void enable() {
         disabled = false;
     }
 
     public void update() {
+
         if (initHelper.initializing(shooterRotationEncoder.getPosition())) {
-            return;
+            if (limitSwitchPressed()) {
+                initHelper.setDone();
+            } else {
+                return;
+            }
         }
         if (initHelper.justFinishedInit()) {
-            System.out.println("Setting shooter encoder position to " + SHOOTER_ROTATION_STARTUP_POSITION);
             shooterRotation.set(0);
-            shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION - 0.01);
-            shooterRotationPID.reset();
-            shooterRotationPID.setSetpoint(SHOOTER_ROTATION_STARTUP_POSITION);
+            if (limitSwitchPressed()) {
+                System.out.println("Setting shooter encoder position to " + SHOOTER_ROTATION_STARTUP_POSITION);
+                shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION);
+            } else {
+                System.out.println("Setting shooter encoder position to " + (SHOOTER_ROTATION_STARTUP_POSITION - 0.02));
+                shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION - 0.02);
+            }
+            shooterRotationPID.reset();  
             shooterRotationPID.calculate(SHOOTER_ROTATION_STARTUP_POSITION);
             return;
         }
@@ -184,36 +201,21 @@ public class Shooter extends SubsystemBase {
         }
         setShooterRotationBraking(false);
         double PIDOutput = shooterRotationPID.calculate(getShooterRotationPositionInRotations());
-        // PIDOutput= PIDOutput * 0.6;
-        // PIDOutput = Math.min(0.2,PIDOutput);
-        // PIDOutput = Math.max(-0.2,PIDOutput);
-
-        double gravityCompensationCoefficient = Math.sin(Units.degreesToRadians(getTargetShooterDegreesFromHorizon()))
-                * 0.07;
-
-        SmartDashboard.putNumber("Gravity compensation: ", (gravityCompensationCoefficient));
-        SmartDashboard.putNumber("PID Output: ", PIDOutput);
-
-        // double gravityCompensationCoefficient =
-        // Math.sin(Units.degreesToRadians(getTargetShooterDegreesFromHorizon())) *
-        // 0.07;
-        // SmartDashboard.putNumber("Gravity compensation: ",
-        // (gravityCompensationCoefficient));
-        // PIDOutput = PIDOutput + gravityCompensationCoefficient;
-
-        // Debug.debugPrint("Shooter motor power " + PIDOutput + " : " +
-        // shooterRotationPID.getSetpoint() + " : " +
-        // getShooterRotationPositionInRotations() +
-        // " Diff: " + (shooterRotationPID.getSetpoint() -
-        // getShooterRotationPositionInRotations()) );
-
         shooterRotation.set(PIDOutput);
-        // }
+        // Debug.debugPrint("ShooterPID Status "
+        //         + " Position: " + fmt(getShooterRotationPositionInRotations())
+        //         + " Setpoint: " + fmt(shooterRotationPID.getSetpoint())
+        //         + " Error: " + fmt(shooterRotationPID.getPositionError())
+        //         + " Output: " + fmt(PIDOutput));
 
         shooterAngleEntry.setDouble(Math.round(shooterRotationEncoder.getPosition() * 360));
-
+        SmartDashboard.putNumber("PID Output: ", PIDOutput);
         SmartDashboard.putNumber("Rotation motor position: ", Math.round(shooterRotationEncoder.getPosition() * 360));
         SmartDashboard.putNumber("Rotation PID setpoint: ", Math.round(shooterRotationPID.getSetpoint() * 360));
+    }
+
+    public String fmt(double number) {
+        return Debug.fourPlaces(number);
     }
 
     public void autoAngle(BetterPoseEstimator poseEstimator) {

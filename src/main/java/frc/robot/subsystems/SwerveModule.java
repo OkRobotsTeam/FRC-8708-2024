@@ -23,9 +23,14 @@ public class SwerveModule {
     private final TalonFX driveMotor;
     private final CANSparkMax turningMotor;
     private final CANcoder turningEncoder;
+
     private final PIDController drivePIDController = new PIDController(1, 0, 0);
-    private final ProfiledPIDController turningPIDController = new ProfiledPIDController(30, 0, 0.65, new TrapezoidProfile.Constraints(WHEEL_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND_SQUARED, WHEEL_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED));
     private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.13, 2);
+    
+    private final ProfiledPIDController turningPIDController = new ProfiledPIDController(30, 0, 0.05, new TrapezoidProfile.Constraints(WHEEL_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND_SQUARED, WHEEL_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED));
+    private final SimpleMotorFeedforward turnFeedforward = new SimpleMotorFeedforward(0.5, 2);
+    
+    
     private final String name;
 
 
@@ -104,6 +109,12 @@ public class SwerveModule {
         return Debug.sixPlaces.format(num);
     }
 
+    public void testSetTurnMotor(double speed) {
+        speed = speed * 2;
+        turningMotor.setVoltage(speed);
+        //System.out.println("Turning motor speed:" + fmt(speed)) ;
+    }
+
     /**
      * Sets the desired state for the module.
      *
@@ -119,6 +130,9 @@ public class SwerveModule {
         final double driveFeedforward = this.driveFeedforward.calculate(optimizedDesiredState.speedMetersPerSecond);
 
         // Calculate the turning motor output from the turning PID controller.
+        double turnFF = turnFeedforward.calculate(optimizedDesiredState.angle.minus(getRotation()).getRadians());
+        double turnOutput = turningPIDController.calculate(getRotation().getRadians(), optimizedDesiredState.angle.getRadians());
+
         if (name == "FL") {
             if (optimizedDesiredState.speedMetersPerSecond > 0) {
                 Debug.debugPrint(name, " FF:" + fmt(driveFeedforward) + " + DO:" + fmt(driveOutput) + " CS:"
@@ -129,13 +143,23 @@ public class SwerveModule {
             // //Debug.debugPrint("Voltage",
             // fmt(driveMotor.getMotorVoltage().getValueAsDouble()));
             // //Debug.debugPrint("RPS", fmt(driveMotor.getVelocity().getValueAsDouble()));
+            
+            System.out.println("Turning" 
+                    + " diff: " + fmt(optimizedDesiredState.angle.minus(getRotation()).getDegrees())
+                    + " PID: " + fmt(turnOutput)
+                    + " FF: " + fmt(turnFF));
+            
+
         }
-        double turnOutput = turningPIDController.calculate(getRotation().getRadians(), optimizedDesiredState.angle.getRadians());
+
 
         turnOutput = turnOutput / 4;
+        //turningMotor.setVoltage(turnOutput);
+        turningMotor.set(turnOutput/12);
         driveMotor.setVoltage(driveOutput + driveFeedforward);
         //driveMotor.setVoltage(driveOutput);
-        turningMotor.setVoltage(turnOutput);
+        //System.out.println("Setting turning motor voltage to " + turnOutput);
+        
     }
     public void setDriveMotorBraking(boolean braking) {
         if (braking) {

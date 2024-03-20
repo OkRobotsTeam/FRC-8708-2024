@@ -139,19 +139,12 @@ public class SwerveDrivetrain extends SubsystemBase {
         return angleFromRobotToGoal;
     }
 
-    public void straightenWheels() {
-        System.out.println("Straightening Wheels");
-        frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
-            frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
-            backLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
-            backRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
-    }
-
     public void driveWithController(XboxController controller, double driveSpeedScalar, double rotationSpeedScalar,
             boolean autoAdjust) {
         boolean fast = controller.getRightTriggerAxis() > 0.25;
         boolean slow = controller.getLeftTriggerAxis() > 0.25;
         boolean wheelsCrossed = controller.getLeftBumper();
+        boolean straightenWheels = (controller.getPOV() == 0);
 
         // debugPrint("Gyro: " + gyro.getAngle() + ":" + gyro.getYaw());
 
@@ -235,8 +228,12 @@ public class SwerveDrivetrain extends SubsystemBase {
             xSpeed *= 2;
             ySpeed *= 2;
         }
-
-        if (wheelsCrossed) {
+        if (straightenWheels) { 
+            frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
+            frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
+            backLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
+            backRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
+        } else if (wheelsCrossed) {
             // If the wheelsCrossed flag is true then stop all movement and force the wheels
             // into a diamond shape for more traction
             // This is useful if we are being pushed
@@ -279,10 +276,15 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public void testWithController(CommandXboxController controller) {
-
-        testState.speedMetersPerSecond = controller.getLeftY() * 10;
-        testState.angle.plus(new Rotation2d(controller.getRightY() / 10));
-        frontLeft.setDesiredState(testState);
+        if (controller.getHID().getAButton()) {
+            if ((System.currentTimeMillis() / 1000) % 2 == 1) {
+                frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(90)));
+            } else {
+                frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
+            }
+        } else {
+            frontLeft.testSetTurnMotor(0);
+        }
     }
 
     public void pathPlannerDrive(ChassisSpeeds chassisSpeeds) {

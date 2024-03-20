@@ -33,7 +33,7 @@ public class RobotContainer {
     private final BetterPoseEstimator poseEstimator = new BetterPoseEstimator();
     private final SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain(shooter, poseEstimator);
     private final Limelight limelight = new Limelight(poseEstimator);
-    private final USBCameraVision USBDriverCamera = new USBCameraVision();
+    private final USBCameraVision driverCamera = new USBCameraVision();
 
 
     // Shuffleboard
@@ -48,7 +48,7 @@ public class RobotContainer {
 
     public RobotContainer() {
 
-        USBDriverCamera.start();
+        driverCamera.start();
 
         ShuffleboardTab drivingTab = Shuffleboard.getTab("Driving");
 
@@ -110,7 +110,7 @@ public class RobotContainer {
         drivingTab.add("Autonomous", autonomousSelector).withPosition(2, 0).withSize(2, 1);
         drivingTab.add("Drive Speed", driveSpeed).withPosition(0, 1).withSize(2, 1);
         drivingTab.add("Turning Speed", turnSpeed).withPosition(2, 1).withSize(2, 1);
-        USBDriverCamera.addCameraToDrivingTab(drivingTab);
+        driverCamera.addCameraToDrivingTab(drivingTab);
 
 
         
@@ -170,7 +170,6 @@ public class RobotContainer {
         );
 
         driveController.rightBumper().onTrue(Commands.runOnce(swerveDrivetrain::toggleFieldOriented));
-        driveController.povUp().onTrue(Commands.runOnce(swerveDrivetrain::straightenWheels));
 
     }
 
@@ -203,7 +202,8 @@ public class RobotContainer {
         // Reset the braking state in case autonomous exited uncleanly
         System.out.println("Starting teleop");
         swerveDrivetrain.init();
-        swerveDrivetrain.straightenWheels();
+        swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());
+
 //        climber.recalibrateClimber();
         shooter.init();
         intake.init();
