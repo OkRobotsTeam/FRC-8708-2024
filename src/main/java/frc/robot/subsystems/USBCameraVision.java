@@ -45,7 +45,10 @@ public class USBCameraVision extends SubsystemBase {
     }
 
     public void start() {
-        visionThread.start();
+        // visionThread.start();
+        camera = CameraServer.startAutomaticCapture();
+        camera.setResolution(160, 120);
+
     }
 
     public void addCameraToDrivingTab(ShuffleboardTab drivingTab) {

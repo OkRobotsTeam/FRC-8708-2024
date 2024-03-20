@@ -45,6 +45,12 @@ public class InitHelper {
         return initialized;
     }
 
+    public void setDone() {
+        debugOut(name + " done init: setDone called");
+        initialized = true;
+        this.justFinishedInit = true;
+    }
+
     public boolean initializing(double value) {
         if (initialized) { 
             return false;
