@@ -24,33 +24,21 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "extendWrist"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "runIntakeIn"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "PickUpMiddleRing"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "stopIntake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "foldWrist"
+            "name": "stopIntakeAndFoldWrist"
           }
         },
         {
@@ -62,13 +50,43 @@
         {
           "type": "path",
           "data": {
-            "pathName": "PickupSecondRing"
+            "pathName": "PickUpAmpRing"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "foldWrist"
+            "name": "stopIntakeAndFoldWrist"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootFromFarther"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "PickUpSourceRing"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopIntakeAndFoldWrist"
           }
         },
         {

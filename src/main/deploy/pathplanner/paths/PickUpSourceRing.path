@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.0013090795412376,
-        "y": 5.564955745296107
+        "x": 2.1724858834333065,
+        "y": 5.910298743674411
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6460991383521244,
-        "y": 5.574822688106915
+        "x": 2.014614798460368,
+        "y": 5.505754088431254
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.1626189406224983,
-        "y": 6.048435943025733
+        "x": 1.9258123131630898,
+        "y": 5.051874719134054
       },
       "prevControl": {
-        "x": 2.132125109977409,
-        "y": 5.848630490052142
+        "x": 1.8962114847306637,
+        "y": 5.1998788612961855
       },
       "nextControl": {
-        "x": 2.1931127712675877,
-        "y": 6.248241395999323
+        "x": 1.9516293228785522,
+        "y": 4.922789670556741
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.784236337703446,
-        "y": 6.867392196322855
+        "x": 2.5079619390008028,
+        "y": 4.430257322053106
       },
       "prevControl": {
-        "x": 2.4783611105683763,
-        "y": 6.581250854809402
+        "x": 2.093550340946837,
+        "y": 4.755866434809793
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,15 +47,15 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.8,
-      "rotationDegrees": 45.0,
+      "rotationDegrees": -33.74678834393899,
       "rotateFast": true
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Extend Wrist and Run Intake In",
-      "waypointRelativePos": 0.85,
+      "name": "pickupRing",
+      "waypointRelativePos": 1.05,
       "command": {
         "type": "parallel",
         "data": {
@@ -63,13 +63,7 @@
             {
               "type": "named",
               "data": {
-                "name": "extendWrist"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "runIntakeIn"
+                "name": "pickupRing"
               }
             }
           ]
@@ -78,14 +72,14 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 0.5,
+    "maxVelocity": 1.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 30.0,
+    "rotation": -39.52263127117109,
     "rotateFast": false
   },
   "reversed": false,

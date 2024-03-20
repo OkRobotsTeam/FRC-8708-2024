@@ -76,7 +76,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("shooterManualAdjustUp", new InstantCommand(shooter::shooterManualAdjustUp));
         NamedCommands.registerCommand("shooterManualAdjustDown", new InstantCommand(shooter::shooterManualAdjustDown));
         NamedCommands.registerCommand("done", new InstantCommand(() -> System.out.println("Done autonomous")));
-
+        NamedCommands.registerCommand("pickupRing", new InstantCommand(intake::extendWrist).alongWith(new InstantCommand(intake::runIntakeIn)));
+         NamedCommands.registerCommand("stopIntakeAndFoldWrist", new InstantCommand(intake::stopIntake).alongWith(new InstantCommand(intake::foldWrist)));
         autonomousSelector = AutoBuilder.buildAutoChooser();
 
         // drivingTab.add( new HttpCamera("limelight",
