@@ -2,15 +2,21 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3746118678760795,
-      "y": 5.551903540330518
+      "x": 0.65,
+      "y": 4.35
     },
-    "rotation": 0
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source Move To Shoot Preload"
+          }
+        },
         {
           "type": "named",
           "data": {
@@ -20,19 +26,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeaveAfterShooting"
+            "pathName": "Source Pick Up 1"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 0.25
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "stopIntake"
+            "name": "pickupRing"
           }
         }
       ]

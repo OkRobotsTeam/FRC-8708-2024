@@ -2,61 +2,19 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.8519535483565265,
-      "y": 6.735950627069118
+      "x": 1.3732635157578024,
+      "y": 6.541783083566167
     },
-    "rotation": 45.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "runIntakeIn"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "extendWrist"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "PickupAmpSide"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stopIntake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "foldWrist"
+            "waitTime": 1.0
           }
         },
         {
@@ -68,13 +26,73 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ShootAmpSide"
+            "pathName": "MiddlePickUpMiddleRing"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "stopIntakeAndFoldWrist"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootFromFarther"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "PickUpAmpRing"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopIntakeAndFoldWrist"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootFromFarther"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "PickUpSourceRing"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopIntakeAndFoldWrist"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootFromFarther"
           }
         }
       ]
