@@ -2,19 +2,19 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.65,
-      "y": 4.35
+      "x": 1.35,
+      "y": 5.55
     },
-    "rotation": -60.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "Source Move To Shoot Preload"
+            "waitTime": 1.0
           }
         },
         {
@@ -26,13 +26,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Pick Up 1"
+            "pathName": "MiddlePickUpMiddleRing"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.25
+            "waitTime": 0.5
           }
         },
         {
@@ -42,27 +42,21 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Source Return From 1"
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "autoShoot"
+            "name": "shootFromFarther"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Source Pick Up 2"
+            "pathName": "PickUpAmpRing"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.25
+            "waitTime": 0.5
           }
         },
         {
@@ -72,15 +66,9 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Source Return From 2"
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "autoShoot"
+            "name": "shootFromFarther"
           }
         }
       ]

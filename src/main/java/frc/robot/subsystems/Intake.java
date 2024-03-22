@@ -148,7 +148,7 @@ public class Intake {
 
             return;
         }
-        if (initHelper.initializing(wristEncoder.getPosition())) {
+        if (initHelper.isInitializing(wristEncoder.getPosition())) {
             return;
         }
         if (initHelper.justFinishedInit()) {

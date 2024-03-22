@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.65,
-      "y": 4.35
+      "x": 0.7,
+      "y": 6.7
     },
-    "rotation": -60.0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Move To Shoot Preload"
+            "pathName": "Amp Move To Shoot Preload"
           }
         },
         {
@@ -26,7 +26,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Pick Up 1"
+            "pathName": "Amp Pick Up Amp Ring"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopIntakeAndFoldWrist"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Pick Up 1"
           }
         },
         {
@@ -44,19 +68,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Return From 1"
+            "pathName": "Amp Return From 1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "autoShoot"
+            "name": "shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Source Pick Up 2"
+            "pathName": "Amp Pick Up 2"
           }
         },
         {
@@ -74,13 +98,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Return From 2"
+            "pathName": "Amp Return From 2"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "autoShoot"
+            "name": "shoot"
           }
         }
       ]

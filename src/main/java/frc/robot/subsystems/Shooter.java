@@ -1,6 +1,11 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
+import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -40,12 +45,18 @@ public class Shooter extends SubsystemBase {
     private DigitalInput shooterLimitSwitch = new DigitalInput(8);
     private boolean disabled = true;
 
+//    private enum calibrationStates {}
+//    private boolean calibrationState = 0
+
     public Shooter(GenericEntry shooterAngleEntry) {
         this.shooterAngleEntry = shooterAngleEntry;
 
         topShooter.setInverted(SHOOTER_TOP_INVERTED);
         bottomShooter.setInverted(SHOOTER_BOTTOM_INVERTED);
         shooterRotation.setInverted(SHOOTER_ROTATION_INVERTED);
+
+        topShooter.setNeutralMode(NeutralModeValue.Coast);
+        bottomShooter.setNeutralMode(NeutralModeValue.Coast);
 
         shooterRotationEncoder.setPositionConversionFactor(SHOOTER_ROTATION_GEAR_RATIO);
         shooterRotationEncoder.setVelocityConversionFactor(SHOOTER_ROTATION_GEAR_RATIO);
@@ -64,22 +75,38 @@ public class Shooter extends SubsystemBase {
         setTargetShooterDegreesFromHorizon(0.0);
         shooterRotationPID.reset();
         shooterRotationPID.setSetpoint(SHOOTER_ROTATION_STARTUP_POSITION);
-        
+
         shooterRotation.set(-0.03);
         initHelper.start(shooterRotationEncoder.getPosition());
 
     }
+
+//    public void calibrate() {
+//
+//
+//        while (shooterLimitSwitch.get()) {
+//
+//        }
+//    }
 
     public double getShooterRotationPositionInRotations() {
         return shooterRotationEncoder.getPosition();
     }
 
     public void setTopShooterSpeed(double speed) {
-        topShooter.set(speed);
+        if (speed == 0){
+            topShooter.setControl(new NeutralOut());
+        } else {
+            topShooter.setControl(new VelocityVoltage(speed * 16));
+        }
     }
 
     public void setBottomShooterSpeed(double speed) {
-        bottomShooter.set(speed);
+        if (speed == 0){
+            bottomShooter.setControl(new NeutralOut());
+        } else {
+            bottomShooter.setControl(new VoltageOut(speed * 16));
+        }
     }
 
     public void setShooterSpeed(double speed) {
@@ -161,9 +188,8 @@ public class Shooter extends SubsystemBase {
 
     public void disable() {
         disabled = true;
+        setShooterSpeed(0);
         shooterRotation.set(0);
-        topShooter.set(0);
-        bottomShooter.set(0);
     }
 
     public boolean limitSwitchPressed() {
@@ -176,29 +202,29 @@ public class Shooter extends SubsystemBase {
 
     public void update() {
 
-        if (initHelper.initializing(shooterRotationEncoder.getPosition())) {
-            if (limitSwitchPressed()) {
-                initHelper.setDone();
-            } else {
-                return;
-            }
-        }
-        if (initHelper.justFinishedInit()) {
-            shooterRotation.set(0);
-            if (limitSwitchPressed()) {
-                System.out.println("Setting shooter encoder position to " + SHOOTER_ROTATION_STARTUP_POSITION);
-                shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION);
-            } else {
-                System.out.println("Setting shooter encoder position to " + (SHOOTER_ROTATION_STARTUP_POSITION - 0.02));
-                shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION - 0.02);
-            }
-            shooterRotationPID.reset();  
-            shooterRotationPID.calculate(SHOOTER_ROTATION_STARTUP_POSITION);
-            return;
-        }
-        if (disabled) {
-            return;
-        }
+//        if (initHelper.isInitializing(shooterRotationEncoder.getPosition())) {
+//            if (limitSwitchPressed()) {
+//                initHelper.setDone();
+//            } else {
+//                return;
+//            }
+//        }
+//        if (initHelper.justFinishedInit()) {
+//            shooterRotation.set(0);
+//            if (limitSwitchPressed()) {
+//                System.out.println("Setting shooter encoder position to " + SHOOTER_ROTATION_STARTUP_POSITION);
+//                shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION);
+//            } else {
+//                System.out.println("Setting shooter encoder position to " + (SHOOTER_ROTATION_STARTUP_POSITION - 0.02));
+//                shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION - 0.02);
+//            }
+//            shooterRotationPID.reset();
+//            shooterRotationPID.calculate(SHOOTER_ROTATION_STARTUP_POSITION);
+//            return;
+//        }
+//        if (disabled) {
+//            return;
+//        }
         setShooterRotationBraking(false);
         double PIDOutput = shooterRotationPID.calculate(getShooterRotationPositionInRotations());
         shooterRotation.set(PIDOutput);
