@@ -5,8 +5,10 @@
       "/Shuffleboard/Driving/Autonomous": "String Chooser",
       "/Shuffleboard/Driving/Drive Speed": "String Chooser",
       "/Shuffleboard/Driving/Turning Speed": "String Chooser",
+      "/SmartDashboard/Adjusted Odometry": "Field2d",
       "/SmartDashboard/Limelight Position": "Field2d",
       "/SmartDashboard/Odometry Position": "Field2d",
+      "/SmartDashboard/Pose Estimator": "Field2d",
       "/SmartDashboard/PoseEstimator": "Field2d"
     }
   },

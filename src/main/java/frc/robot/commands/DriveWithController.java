@@ -4,9 +4,9 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.SwerveDrivetrain;
 
+@Deprecated
 public class DriveWithController extends Command {
     SwerveDrivetrain drivetrain;
     XboxController controller; 
@@ -17,9 +17,9 @@ public class DriveWithController extends Command {
     double speed;
     double tspeed;
 
-    public DriveWithController(SwerveDrivetrain drivetrain,  CommandXboxController controller, SendableChooser<Double> driveSpeed, SendableChooser<Double> turnSpeed) {
+    public DriveWithController(SwerveDrivetrain drivetrain,  XboxController controller, SendableChooser<Double> driveSpeed, SendableChooser<Double> turnSpeed) {
          this.drivetrain = drivetrain;
-         this.controller = controller.getHID();
+         this.controller = controller;
          this.driveSpeed = driveSpeed;
          this.turnSpeed = turnSpeed;
          addRequirements(drivetrain);
@@ -28,13 +28,7 @@ public class DriveWithController extends Command {
     }
 
     public void execute() {
-        if (i++%20 == 0 ) {
-            speed = driveSpeed.getSelected();
-            tspeed = turnSpeed.getSelected();
-        }
-  
-        drivetrain.driveWithController(controller, speed, tspeed, false);
-
+        drivetrain.driveWithController(controller, driveSpeed, turnSpeed);
     }
 
     public boolean isFinished() {

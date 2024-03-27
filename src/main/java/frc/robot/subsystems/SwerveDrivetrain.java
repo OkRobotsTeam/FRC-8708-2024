@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -61,6 +62,10 @@ public class SwerveDrivetrain extends SubsystemBase {
     private boolean fieldOriented = false;
     private boolean autoAdjustLastTick = false;
     private boolean lastAutoAdjustTarget = false;
+    private int loopCounter = 0;
+    double driveSpeedScalar = 0.1;
+    double rotationSpeedScalar = 0.1;
+
 
     SwerveModuleState testState = new SwerveModuleState();
 
@@ -139,12 +144,12 @@ public class SwerveDrivetrain extends SubsystemBase {
         return angleFromRobotToGoal;
     }
 
-    public void driveWithController(XboxController controller, double driveSpeedScalar, double rotationSpeedScalar,
-            boolean autoAdjust) {
+    public void driveWithController(XboxController controller, SendableChooser<Double> driveSpeed, SendableChooser<Double> turnSpeed) {
         boolean fast = controller.getRightTriggerAxis() > 0.25;
         boolean slow = controller.getLeftTriggerAxis() > 0.25;
         boolean wheelsCrossed = controller.getLeftBumper();
         boolean straightenWheels = (controller.getPOV() == 0);
+        boolean autoAdjust = controller.getRightTriggerAxis() > 0.25;
 
         // debugPrint("Gyro: " + gyro.getAngle() + ":" + gyro.getYaw());
 
@@ -212,6 +217,15 @@ public class SwerveDrivetrain extends SubsystemBase {
         }
 
         // Apply the drive speed selector from ShuffleBoard
+        
+        loopCounter++;
+        if (loopCounter%50==0) {
+            driveSpeedScalar = driveSpeed.getSelected();
+        } 
+        if (loopCounter%50==25) {
+            rotationSpeedScalar = turnSpeed.getSelected();
+        }
+        
         xSpeed *= driveSpeedScalar;
         ySpeed *= driveSpeedScalar;
 

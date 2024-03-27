@@ -188,7 +188,7 @@ public class RobotContainer {
 
     public Command getSwerveDriveCommand() {
         XboxController controller = driveController.getHID();
-        return new InstantCommand(() -> swerveDrivetrain.driveWithController(controller, driveSpeed.getSelected(), turnSpeed.getSelected(), driveController.rightTrigger().getAsBoolean()), swerveDrivetrain);
+        return new InstantCommand(() -> swerveDrivetrain.driveWithController(controller, driveSpeed, turnSpeed), swerveDrivetrain);
     }
 
     public Command getAutonomousCommand() {

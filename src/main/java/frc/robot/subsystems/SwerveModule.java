@@ -25,7 +25,7 @@ public class SwerveModule {
     private final CANcoder turningEncoder;
 
     private final PIDController drivePIDController = new PIDController(1, 0, 0);
-    private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.13, 2);
+    private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.1, 0);
     
     private final ProfiledPIDController turningPIDController = new ProfiledPIDController(30, 0, 0.05, new TrapezoidProfile.Constraints(WHEEL_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND_SQUARED, WHEEL_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED));
     private final SimpleMotorFeedforward turnFeedforward = new SimpleMotorFeedforward(0.5, 2);
@@ -156,7 +156,7 @@ public class SwerveModule {
         turnOutput = turnOutput / 4;
         //turningMotor.setVoltage(turnOutput);
         turningMotor.set(turnOutput/12);
-        driveMotor.setVoltage(driveOutput + driveFeedforward);
+        driveMotor.set( (driveOutput + driveFeedforward) / 12);
         //driveMotor.setVoltage(driveOutput);
         //System.out.println("Setting turning motor voltage to " + turnOutput);
         
