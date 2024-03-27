@@ -115,7 +115,7 @@ public class Constants {
         public static final double SHOOTER_ROTATION_PID_KD = 0.18;
 
         public static final double SHOOTER_ROTATION_STARTUP_POSITION = 0;
-        public static final double SHOOTER_ROTATION_MANUAL_ADJUST_START_DEGREES = 20.0;
+        public static final double SHOOTER_ROTATION_MANUAL_ADJUST_START_DEGREES = 10.0;
 
 
 

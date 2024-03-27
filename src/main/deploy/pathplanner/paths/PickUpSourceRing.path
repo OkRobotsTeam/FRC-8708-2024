@@ -8,36 +8,36 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8797703778953263,
-        "y": 5.155299901000186
+        "x": 1.9231639413397603,
+        "y": 5.264869437102295
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.9258123131630898,
-        "y": 5.051874719134054
+        "x": 1.7866673263037751,
+        "y": 4.845629833777482
       },
       "prevControl": {
-        "x": 1.8962114847306637,
-        "y": 5.1998788612961855
+        "x": 1.7086692605689264,
+        "y": 5.089373789198885
       },
       "nextControl": {
-        "x": 1.9516293228785522,
-        "y": 4.922789670556741
+        "x": 1.8443632189493435,
+        "y": 4.665330169260081
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.5079619390008028,
-        "y": 4.430257322053106
+        "x": 2.4684941677575676,
+        "y": 4.371055665188254
       },
       "prevControl": {
-        "x": 2.093550340946837,
-        "y": 4.755866434809793
+        "x": 2.123151169379263,
+        "y": 4.489458978917958
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,7 +47,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.8,
-      "rotationDegrees": -33.74678834393899,
+      "rotationDegrees": -25.520332119467604,
       "rotateFast": true
     }
   ],
@@ -55,7 +55,7 @@
   "eventMarkers": [
     {
       "name": "pickupRing",
-      "waypointRelativePos": 1.05,
+      "waypointRelativePos": 0.9,
       "command": {
         "type": "parallel",
         "data": {
@@ -73,13 +73,13 @@
   ],
   "globalConstraints": {
     "maxVelocity": 1.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -39.52263127117109,
+    "rotation": -30.0,
     "rotateFast": false
   },
   "reversed": false,

@@ -95,7 +95,7 @@ public class BetterPoseEstimator extends SubsystemBase{
         diffX = ((diffX*weighting) + newX ) / (weighting+1);
         diffY = ((diffY*weighting) + newY ) / (weighting+1);
         diffR = ((diffR*weighting) + newR )/ (weighting+1);
-        Debug.debugPrint("x:" + fmt(last.x,last.x+diffX) + " y:" + fmt(last.y,last.y+diffY) + " r:" + fmt(last.r,last.r+diffR));
+        //Debug.debugPrint("x:" + fmt(last.x,last.x+diffX) + " y:" + fmt(last.y,last.y+diffY) + " r:" + fmt(last.r,last.r+diffR));
 
     }
     String fmt(double num1, double num2) {

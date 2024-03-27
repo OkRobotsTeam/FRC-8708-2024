@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "PickUpAmpRing"
+            "pathName": "PickUpSourceRing"
           }
         },
         {
@@ -62,7 +62,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Leave Ring"
+            "pathName": "Source Leave Stage"
           }
         }
       ]

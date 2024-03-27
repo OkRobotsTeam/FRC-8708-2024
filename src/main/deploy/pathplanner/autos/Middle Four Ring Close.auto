@@ -12,21 +12,45 @@
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "MiddlePickUpMiddleRing"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "stopIntakeAndFoldWrist"
+            "waitTime": 0.5
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "autoShoot"
+            "name": "shoot20"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {
@@ -44,13 +68,13 @@
         {
           "type": "named",
           "data": {
-            "name": "stopIntakeAndFoldWrist"
+            "name": "shoot22"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "autoShoot"
+            "waitTime": 0.25
           }
         },
         {
@@ -68,13 +92,19 @@
         {
           "type": "named",
           "data": {
-            "name": "stopIntakeAndFoldWrist"
+            "name": "shoot22"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "autoShoot"
+            "name": "lowerShooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source Leave Stage"
           }
         }
       ]

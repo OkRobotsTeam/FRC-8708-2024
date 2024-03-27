@@ -18,6 +18,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "shoot"
@@ -26,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "PickUpAmpRing"
+            "pathName": "AmpPickUpAmpRing"
           }
         },
         {
@@ -38,61 +44,37 @@
         {
           "type": "named",
           "data": {
-            "name": "stopIntakeAndFoldWrist"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoShoot"
+            "name": "shoot18"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "AmpPickUpMiddleRing"
+            "pathName": "Amp Pick Up 3"
           }
         },
         {
           "type": "wait",
           "data": {
             "waitTime": 0.25
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stopIntakeAndFoldWrist"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoShoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "PickUpSourceRing"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
+            "pathName": "Amp Return From 3"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "stopIntakeAndFoldWrist"
+            "name": "shoot"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "autoShoot"
+            "name": "lowerShooter"
           }
         }
       ]

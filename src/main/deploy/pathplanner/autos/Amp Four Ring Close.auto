@@ -18,57 +18,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp Pick Up Amp Ring"
-          }
-        },
-        {
           "type": "wait",
           "data": {
             "waitTime": 0.25
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stopIntakeAndFoldWrist"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoShoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp Pick Up 1"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stopIntakeAndFoldWrist"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp Return From 1"
           }
         },
         {
@@ -80,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Pick Up 2"
+            "pathName": "AmpPickUpAmpRing"
           }
         },
         {
@@ -92,19 +44,55 @@
         {
           "type": "named",
           "data": {
-            "name": "stopIntakeAndFoldWrist"
+            "name": "shoot18"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Return From 2"
+            "pathName": "AmpPickUpMiddleRing"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "shoot18"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "PickUpSourceRing"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot18"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "lowerShooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source Leave Stage"
           }
         }
       ]

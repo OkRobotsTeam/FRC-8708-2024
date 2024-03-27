@@ -3,37 +3,59 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.25,
-        "y": 4.35
+        "x": 2.75,
+        "y": 6.84
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2390225992352755,
-        "y": 2.6369626082906716
+        "x": 3.254003527799404,
+        "y": 6.87100276865486
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.003849084621248,
-        "y": 0.75
+        "x": 5.655516695648776,
+        "y": 6.7
       },
       "prevControl": {
-        "x": 5.73878777613974,
-        "y": 0.6347534852041135
+        "x": 3.9430919186337103,
+        "y": 7.1569133611626805
+      },
+      "nextControl": {
+        "x": 7.875578828080734,
+        "y": 6.107637599890586
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.151853226783379,
+        "y": 4.09478126648561
+      },
+      "prevControl": {
+        "x": 6.632344033918838,
+        "y": 4.134249037728845
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.65,
+      "name": "Pick Up Ring",
+      "waypointRelativePos": 1.35,
       "command": {
         "type": "parallel",
         "data": {
@@ -57,13 +79,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -40.0,
+    "rotation": 38.11,
     "velocity": 0
   },
   "useDefaultConstraints": true

@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.fasterxml.jackson.core.sym.Name;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.networktables.GenericEntry;
@@ -14,8 +15,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AutoAngle;
+import frc.robot.commands.PickupRing;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootFromFarther;
+import frc.robot.commands.ShootWithAngle;
 import frc.robot.subsystems.*;
 
 
@@ -26,7 +29,7 @@ public class RobotContainer {
 
     // Subsystems
 
-    //    private final Climber climber = new Climber();
+    private final Climber climber = new Climber(manipulatorController.getHID());
     private final Intake intake = new Intake();
     private Shooter shooter;
     
@@ -60,7 +63,15 @@ public class RobotContainer {
 
         // Register Named Commands
         NamedCommands.registerCommand("shoot", new Shoot(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
+        NamedCommands.registerCommand("pickupRing", new PickupRing(intake));
         NamedCommands.registerCommand("shootFromFarther", new ShootFromFarther(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
+        NamedCommands.registerCommand("shoot18", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 18, poseEstimator));
+        NamedCommands.registerCommand("shoot19", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 19, poseEstimator));
+
+        NamedCommands.registerCommand("shoot20", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 20, poseEstimator));
+        NamedCommands.registerCommand("shoot21", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 21, poseEstimator));
+        NamedCommands.registerCommand("shoot22", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 22, poseEstimator));
+        NamedCommands.registerCommand("shoot23", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 23, poseEstimator));
         NamedCommands.registerCommand("extendWrist", new InstantCommand(intake::extendWrist));
         NamedCommands.registerCommand("foldWrist", new InstantCommand(intake::foldWrist));
         NamedCommands.registerCommand("runIntakeIn", new InstantCommand(intake::runIntakeIn));
@@ -76,8 +87,10 @@ public class RobotContainer {
         NamedCommands.registerCommand("shooterManualAdjustUp", new InstantCommand(shooter::shooterManualAdjustUp));
         NamedCommands.registerCommand("shooterManualAdjustDown", new InstantCommand(shooter::shooterManualAdjustDown));
         NamedCommands.registerCommand("done", new InstantCommand(() -> System.out.println("Done autonomous")));
-        NamedCommands.registerCommand("pickupRing", new InstantCommand(intake::extendWrist).alongWith(new InstantCommand(intake::runIntakeIn)));
-         NamedCommands.registerCommand("stopIntakeAndFoldWrist", new InstantCommand(intake::stopIntake).alongWith(new InstantCommand(intake::foldWrist)));
+        NamedCommands.registerCommand("pickupRingOld", new InstantCommand(intake::extendWrist).alongWith(new InstantCommand(intake::runIntakeIn)));
+        NamedCommands.registerCommand("stopIntakeAndFoldWrist", new InstantCommand(intake::stopIntake).alongWith(new InstantCommand(intake::foldWrist)));
+        NamedCommands.registerCommand("lowerShooter", new InstantCommand(shooter::lowerShooter));
+
         autonomousSelector = AutoBuilder.buildAutoChooser();
 
         // drivingTab.add( new HttpCamera("limelight",
@@ -175,7 +188,7 @@ public class RobotContainer {
 
     public Command getSwerveDriveCommand() {
         XboxController controller = driveController.getHID();
-        return new InstantCommand(() -> swerveDrivetrain.driveWithController(controller, driveSpeed.getSelected(), turnSpeed.getSelected(), driveController.rightBumper().getAsBoolean()), swerveDrivetrain);
+        return new InstantCommand(() -> swerveDrivetrain.driveWithController(controller, driveSpeed.getSelected(), turnSpeed.getSelected(), driveController.rightTrigger().getAsBoolean()), swerveDrivetrain);
     }
 
     public Command getAutonomousCommand() {
@@ -200,7 +213,10 @@ public class RobotContainer {
 
 
         // Reset the braking state in case autonomous exited uncleanly
-        System.out.println("Starting teleop");
+        System.out.println("=======================================================");
+        System.out.println("==================Starting teleop======================");
+        System.out.println("=======================================================");
+
         swerveDrivetrain.init();
         swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());
 
@@ -219,6 +235,9 @@ public class RobotContainer {
     }
 
     public void autonomousInit() {
+        System.out.println("=======================================================");
+        System.out.println("================Starting Autonomous=====  ===============");
+        System.out.println("=======================================================");
         shooter.init();
         intake.init();
     }

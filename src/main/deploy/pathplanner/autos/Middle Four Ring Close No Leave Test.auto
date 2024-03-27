@@ -5,12 +5,18 @@
       "x": 1.35,
       "y": 5.55
     },
-    "rotation": 0
+    "rotation": 0.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
         {
           "type": "named",
           "data": {
@@ -18,15 +24,15 @@
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "MiddlePickUpMiddleRing"
+            "waitTime": 0.25
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0.5
+            "pathName": "MiddlePickUpMiddleRing"
           }
         },
         {
@@ -42,27 +48,21 @@
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0.5
+            "pathName": "PickUpSourceRing Test"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot20"
+            "name": "shoot22"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "lowerShooter"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp Leave Ring"
           }
         }
       ]

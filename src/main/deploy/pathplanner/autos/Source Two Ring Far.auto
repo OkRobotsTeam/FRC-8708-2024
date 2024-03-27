@@ -2,15 +2,21 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.35,
-      "y": 5.55
+      "x": 0.7,
+      "y": 6.7
     },
-    "rotation": 0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source Move To Shoot Preload"
+          }
+        },
         {
           "type": "named",
           "data": {
@@ -20,13 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "MiddlePickUpMiddleRing"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
+            "pathName": "SourcePickUpSourceRing"
           }
         },
         {
@@ -38,19 +38,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "PickUpAmpRing"
+            "pathName": "Source Pick Up 1"
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0.5
+            "pathName": "Source Return From 1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot20"
+            "name": "shoot"
           }
         },
         {
@@ -62,7 +62,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Leave Ring"
+            "pathName": "Source Leave"
           }
         }
       ]

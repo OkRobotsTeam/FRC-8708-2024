@@ -36,12 +36,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "stopIntakeAndFoldWrist"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Source Return From 1"
@@ -50,7 +44,7 @@
         {
           "type": "named",
           "data": {
-            "name": "autoShoot"
+            "name": "shoot"
           }
         },
         {
@@ -66,12 +60,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "stopIntakeAndFoldWrist"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Source Return From 2"
@@ -80,7 +68,19 @@
         {
           "type": "named",
           "data": {
-            "name": "autoShoot"
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "lowerShooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source Leave"
           }
         }
       ]

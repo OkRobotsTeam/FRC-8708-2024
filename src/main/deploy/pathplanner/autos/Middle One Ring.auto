@@ -12,15 +12,15 @@
     "data": {
       "commands": [
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 1.0
+            "name": "shoot"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "lowerShooter"
           }
         }
       ]

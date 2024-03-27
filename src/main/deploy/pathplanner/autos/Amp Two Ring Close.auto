@@ -2,15 +2,27 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.35,
-      "y": 5.55
+      "x": 0.7,
+      "y": 6.7
     },
-    "rotation": 0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Move To Shoot Preload"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
         {
           "type": "named",
           "data": {
@@ -20,37 +32,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "MiddlePickUpMiddleRing"
+            "pathName": "AmpPickUpAmpRing"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 0.25
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot20"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "PickUpAmpRing"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot20"
+            "name": "shoot18"
           }
         },
         {
