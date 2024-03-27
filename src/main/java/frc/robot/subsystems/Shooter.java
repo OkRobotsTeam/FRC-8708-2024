@@ -1,6 +1,11 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
+import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -39,6 +44,12 @@ public class Shooter extends SubsystemBase {
     private InitHelper initHelper = new InitHelper("Shooter", -0.001, 80, 3000, 100);
     private DigitalInput shooterLimitSwitch = new DigitalInput(8);
     private boolean disabled = true;
+    private double shooterSpeed = 0;
+    private boolean shooting;
+    private final double[] angleByDistanceInFeet = {40,40,40,40,40,32,25,20,15,20,25,30,35,40,45,45};
+
+//    private enum calibrationStates {}
+//    private boolean calibrationState = 0
 
     public Shooter(GenericEntry shooterAngleEntry) {
         this.shooterAngleEntry = shooterAngleEntry;
@@ -46,6 +57,9 @@ public class Shooter extends SubsystemBase {
         topShooter.setInverted(SHOOTER_TOP_INVERTED);
         bottomShooter.setInverted(SHOOTER_BOTTOM_INVERTED);
         shooterRotation.setInverted(SHOOTER_ROTATION_INVERTED);
+
+        topShooter.setNeutralMode(NeutralModeValue.Coast);
+        bottomShooter.setNeutralMode(NeutralModeValue.Coast);
 
         shooterRotationEncoder.setPositionConversionFactor(SHOOTER_ROTATION_GEAR_RATIO);
         shooterRotationEncoder.setVelocityConversionFactor(SHOOTER_ROTATION_GEAR_RATIO);
@@ -60,26 +74,49 @@ public class Shooter extends SubsystemBase {
 
     public void init() {
         disabled = false;
+        stopShooter();
         adjustment = -1;
         setTargetShooterDegreesFromHorizon(0.0);
         shooterRotationPID.reset();
         shooterRotationPID.setSetpoint(SHOOTER_ROTATION_STARTUP_POSITION);
-        
+
         shooterRotation.set(-0.03);
         initHelper.start(shooterRotationEncoder.getPosition());
 
     }
+
+//    public void calibrate() {
+//
+//
+//        while (shooterLimitSwitch.get()) {
+//
+//        }
+//    }
 
     public double getShooterRotationPositionInRotations() {
         return shooterRotationEncoder.getPosition();
     }
 
     public void setTopShooterSpeed(double speed) {
+        // if (speed == 0){
+        //     topShooter.setControl(new NeutralOut());
+        // } else {
+        //     //topShooter.setControl(new VelocityVoltage(speed * 16));
+        //     topShooter.set(1);
+
+        // }
         topShooter.set(speed);
+
     }
 
     public void setBottomShooterSpeed(double speed) {
+        // if (speed == 0){
+        //     bottomShooter.setControl(new NeutralOut());
+        // } else {
+        //     bottomShooter.setControl(new VoltageOut(speed * 16));
+        // }
         bottomShooter.set(speed);
+
     }
 
     public void setShooterSpeed(double speed) {
@@ -88,7 +125,9 @@ public class Shooter extends SubsystemBase {
     }
 
     public void runShooterForward() {
-        setShooterSpeed(SHOOTER_FORWARD_SPEED);
+        shooting = true;
+        shooterSpeed = 0.1;
+        //setShooterSpeed(SHOOTER_FORWARD_SPEED);
         System.out.println("Info: Running shooter forward");
     }
 
@@ -103,6 +142,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void stopShooter() {
+        shooting = false;
         setShooterSpeed(0.0);
         System.out.println("Info: Stopping shooter");
     }
@@ -113,7 +153,7 @@ public class Shooter extends SubsystemBase {
         }
 
         double output = angle / 360.0 + SHOOTER_ROTATION_STARTUP_POSITION;
-        System.out.println("Setting setpoint to: " + output);
+        //System.out.println("Setting setpoint to: " + output);
 
         shooterRotationPID.setSetpoint(output);
         // SmartDashboard.putNumber("Shooter Angle",
@@ -147,8 +187,13 @@ public class Shooter extends SubsystemBase {
         if (adjustment == -1) {
             setTargetShooterDegreesFromHorizon(0.0);
         } else {
-            setTargetShooterDegreesFromHorizon(SHOOTER_ROTATION_MANUAL_ADJUST_START_DEGREES + (adjustment * 5.0));
+            setTargetShooterDegreesFromHorizon(SHOOTER_ROTATION_MANUAL_ADJUST_START_DEGREES + (adjustment));
         }
+    }
+
+    public void lowerShooter() {
+        adjustment = -1;
+        setTargetShooterDegreesFromHorizon(0);
     }
 
     public void setShooterRotationBraking(boolean braking) {
@@ -161,12 +206,12 @@ public class Shooter extends SubsystemBase {
 
     public void disable() {
         disabled = true;
+        setShooterSpeed(0);
         shooterRotation.set(0);
-        topShooter.set(0);
-        bottomShooter.set(0);
     }
 
     public boolean limitSwitchPressed() {
+        //System.out.println("Limit Switch:" + shooterLimitSwitch.get());
         return shooterLimitSwitch.get();
     }
 
@@ -175,30 +220,36 @@ public class Shooter extends SubsystemBase {
     }
 
     public void update() {
+        if (shooting) {
+            if (shooterSpeed < SHOOTER_FORWARD_SPEED) {
+                shooterSpeed = shooterSpeed + 0.05;
+            }
+            setShooterSpeed(shooterSpeed);
+        }
 
-        if (initHelper.initializing(shooterRotationEncoder.getPosition())) {
-            if (limitSwitchPressed()) {
-                initHelper.setDone();
-            } else {
-                return;
-            }
-        }
-        if (initHelper.justFinishedInit()) {
-            shooterRotation.set(0);
-            if (limitSwitchPressed()) {
-                System.out.println("Setting shooter encoder position to " + SHOOTER_ROTATION_STARTUP_POSITION);
-                shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION);
-            } else {
-                System.out.println("Setting shooter encoder position to " + (SHOOTER_ROTATION_STARTUP_POSITION - 0.02));
-                shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION - 0.02);
-            }
-            shooterRotationPID.reset();  
-            shooterRotationPID.calculate(SHOOTER_ROTATION_STARTUP_POSITION);
-            return;
-        }
-        if (disabled) {
-            return;
-        }
+       if (initHelper.isInitializing(shooterRotationEncoder.getPosition())) {
+           if (limitSwitchPressed()) {
+               initHelper.setDone();
+           } else {
+               return;
+           }
+       }
+       if (initHelper.justFinishedInit()) {
+           shooterRotation.set(0);
+           if (limitSwitchPressed()) {
+               System.out.println("Setting shooter encoder position to " + SHOOTER_ROTATION_STARTUP_POSITION);
+               shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION);
+           } else {
+               System.out.println("Setting shooter encoder position to " + (SHOOTER_ROTATION_STARTUP_POSITION - 0.02));
+               shooterRotationEncoder.setPosition(SHOOTER_ROTATION_STARTUP_POSITION - 0.02);
+           }
+           shooterRotationPID.reset();
+           shooterRotationPID.calculate(SHOOTER_ROTATION_STARTUP_POSITION);
+           return;
+       }
+       if (disabled) {
+           return;
+       }
         setShooterRotationBraking(false);
         double PIDOutput = shooterRotationPID.calculate(getShooterRotationPositionInRotations());
         shooterRotation.set(PIDOutput);
@@ -218,33 +269,68 @@ public class Shooter extends SubsystemBase {
         return Debug.fourPlaces(number);
     }
 
+    private double interpolate(double start_value, double end_value, double t) {
+        /*
+        Perform linear interpolation between two values.
+        Args:
+            start_value: The value to start at.
+            end_value: The value to end at.
+            t: How far between the two values to interpolate. With zero corresponding to start_value and 1 corresponding to end_value.
+            This is clamped to the range [0, 1].
+
+        Returns:
+            The interpolated value.
+        */
+
+        return start_value + (end_value - start_value) * MathUtils.clamp(t, 0, 1);
+    }
+
     public void autoAngle(BetterPoseEstimator poseEstimator) {
         Translation2d goalOffset = poseEstimator.getOffsetFromGoalInMeters();
-        Debug.debugPrint("GDM: " + goalOffset.getNorm());
-        SmartDashboard.putString("Offset from Goal (in): ", goalOffset.times(39.3701).toString());
+        double offsetInFeet = Units.metersToFeet(goalOffset.getNorm());
+        int below = (int) Math.floor(offsetInFeet);
+        int above = (int) Math.ceil(offsetInFeet);
+        below = MathUtils.clamp(below, 0, angleByDistanceInFeet.length - 1);
+        above = MathUtils.clamp(above, 0, angleByDistanceInFeet.length - 1);
+        double factor = offsetInFeet - below;
+        
 
-        double goalDistanceInMeters = MathUtils.clamp(goalOffset.getNorm(),0,5);
-        Rotation2d angleFromRobotToGoal = goalOffset.getAngle();
+        double angle = interpolate(angleByDistanceInFeet[below], angleByDistanceInFeet[above], factor);
+        
+        
+        Debug.debugPrint("autoAngle", " Distance from goal in feet: " + fmt(offsetInFeet) 
+            + " below: " + below 
+            + " above: " + above 
+            + " factor " + factor 
+            + " Resulting Angle: " + angle);
+        
+        setTargetShooterDegreesFromHorizon(angle);
 
-        double GOAL_HEIGHT_METERS = 2.2;
-        double SHOOTER_HEIGHT = 0.4826;
 
-        Rotation2d angleFromShooterToGoal = Rotation2d
-                .fromRadians(Math.atan((GOAL_HEIGHT_METERS - SHOOTER_HEIGHT) / goalDistanceInMeters))
-                .minus(Rotation2d.fromDegrees(12));
+        //SmartDashboard.putString("Offset from Goal (in): ", goalOffset.times(39.3701).toString());
 
-        if (goalDistanceInMeters > 80) {
-            angleFromRobotToGoal.times(goalDistanceInMeters / 80);
-        }
-        if (angleFromRobotToGoal.getDegrees() < 0) {
-            angleFromRobotToGoal = new Rotation2d(0);
-        }
+        // double goalDistanceInMeters = MathUtils.clamp(goalOffset.getNorm(),0,5);
+        // Rotation2d angleFromRobotToGoal = goalOffset.getAngle();
 
-        SmartDashboard.putNumber("Distance from Goal (in): ", Units.metersToInches(goalDistanceInMeters));
-        SmartDashboard.putNumber("Angle to goal from robot (deg): ", angleFromRobotToGoal.getDegrees());
-        SmartDashboard.putNumber("Shooter angle (deg): ", angleFromShooterToGoal.getDegrees());
+        // double GOAL_HEIGHT_METERS = 2.2;
+        // double SHOOTER_HEIGHT = 0.4826;
 
-        setTargetShooterDegreesFromHorizon(angleFromShooterToGoal.getDegrees());
+        // Rotation2d angleFromShooterToGoal = Rotation2d
+        //         .fromRadians(Math.atan((GOAL_HEIGHT_METERS - SHOOTER_HEIGHT) / goalDistanceInMeters))
+        //         .minus(Rotation2d.fromDegrees(12));
+
+        // if (goalDistanceInMeters > 80) {
+        //     angleFromRobotToGoal.times(goalDistanceInMeters / 80);
+        // }
+        // if (angleFromRobotToGoal.getDegrees() < 0) {
+        //     angleFromRobotToGoal = new Rotation2d(0);
+        // }
+
+        // SmartDashboard.putNumber("Distance from Goal (in): ", Units.metersToInches(goalDistanceInMeters));
+        // SmartDashboard.putNumber("Angle to goal from robot (deg): ", angleFromRobotToGoal.getDegrees());
+        // SmartDashboard.putNumber("Shooter angle (deg): ", angleFromShooterToGoal.getDegrees());
+
+        // setTargetShooterDegreesFromHorizon(angleFromShooterToGoal.getDegrees());
     }
 
 }

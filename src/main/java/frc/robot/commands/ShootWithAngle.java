@@ -5,12 +5,13 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.*;
 
-public class ShootFromFarther extends SequentialCommandGroup {
-    public ShootFromFarther(
+public class ShootWithAngle extends SequentialCommandGroup {
+    public ShootWithAngle(
             SwerveDrivetrain drivetrain,
             Intake intake,
             Limelight limelight,
             Shooter shooter,
+            double angle,
             BetterPoseEstimator poseEstimator
     ) {
         addCommands(

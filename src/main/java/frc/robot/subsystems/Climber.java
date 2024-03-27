@@ -3,11 +3,13 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.Climber.*;
 
 
-public class Climber {
+public class Climber  extends SubsystemBase {
     private final TalonFX leftClimber = new TalonFX(CANIds.LEFT_CLIMBER, "CTRE");
     private final TalonFX rightClimber = new TalonFX(CANIds.RIGHT_CLIMBER, "CTRE");
     private final ProfiledPIDController leftClimberPID = new ProfiledPIDController(CLIMBER_PID_KP, CLIMBER_PID_KI, CLIMBER_PID_KD, new TrapezoidProfile.Constraints(CLIMBER_PID_MAX_SPEED_IN_ROTATIONS_PER_SECOND, CLIMBER_PID_MAX_ACCELERATION_IN_ROTATIONS_PER_SECOND_SQUARED));
@@ -16,9 +18,11 @@ public class Climber {
     private boolean leftClimberMotorCalibrated = false;
     private boolean rightClimberMotorCalibrated = false;
     private double climberCalibrationStartTime = 0.0;
+    private XboxController controller;
 
 
-    public Climber() {
+    public Climber(XboxController controller) {
+        this.controller = controller;
         leftClimber.setInverted(CLIMBER_LEFT_INVERTED);
         rightClimber.setInverted(CLIMBER_RIGHT_INVERTED);
     }
@@ -42,6 +46,11 @@ public class Climber {
 
     public boolean climberStillCalibrating() {
         return !climberDoneCalibrating;
+    }
+
+    public void periodic() {
+        leftClimber.set(controller.getLeftY());
+        rightClimber.set(controller.getRightY());
     }
 
     public void tickClimber() {

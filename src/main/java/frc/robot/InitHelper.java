@@ -51,7 +51,7 @@ public class InitHelper {
         this.justFinishedInit = true;
     }
 
-    public boolean initializing(double value) {
+    public boolean isInitializing(double value) {
         if (initialized) { 
             return false;
         }

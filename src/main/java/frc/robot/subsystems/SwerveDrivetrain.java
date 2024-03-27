@@ -98,8 +98,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public ChassisSpeeds getRobotRelativeSpeeds() {
-        System.out.println(
-                "getRobotRelativeSpeeds returning:" + kinematics.toChassisSpeeds(getModuleStates()).toString());
+        // System.out.println(
+        //         "getRobotRelativeSpeeds returning:" + kinematics.toChassisSpeeds(getModuleStates()).toString());
         return kinematics.toChassisSpeeds(getModuleStates());
     }
 
@@ -229,6 +229,7 @@ public class SwerveDrivetrain extends SubsystemBase {
             ySpeed *= 2;
         }
         if (straightenWheels) { 
+            System.out.println("Straightening Wheels?");
             frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
             frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
             backLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
@@ -302,8 +303,8 @@ public class SwerveDrivetrain extends SubsystemBase {
         // Math.min(Math.max(swerveModuleStates[2].speedMetersPerSecond, -0.1), 0.1);
         // swerveModuleStates[3].speedMetersPerSecond =
         // Math.min(Math.max(swerveModuleStates[3].speedMetersPerSecond, -0.1), 0.1);
-        Debug.debugPrint("S", "FLS: " + fmt(frontLeft.getState().speedMetersPerSecond) + " FLDS: "
-                + fmt(swerveModuleStates[0].speedMetersPerSecond));
+        // Debug.debugPrint("S", "FLS: " + fmt(frontLeft.getState().speedMetersPerSecond) + " FLDS: "
+        //         + fmt(swerveModuleStates[0].speedMetersPerSecond));
 
         frontLeft.setDesiredState(swerveModuleStates[0]);
 
