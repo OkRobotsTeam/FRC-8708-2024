@@ -72,6 +72,12 @@ public class RobotContainer {
         NamedCommands.registerCommand("shoot21", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 21, poseEstimator));
         NamedCommands.registerCommand("shoot22", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 22, poseEstimator));
         NamedCommands.registerCommand("shoot23", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 23, poseEstimator));
+        NamedCommands.registerCommand("shoot24", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 24, poseEstimator));
+        NamedCommands.registerCommand("shoot25", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 25, poseEstimator));
+        NamedCommands.registerCommand("shoot26", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 26, poseEstimator));
+        NamedCommands.registerCommand("shoot27", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 27, poseEstimator));
+        NamedCommands.registerCommand("shoot28", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 28, poseEstimator));
+
         NamedCommands.registerCommand("extendWrist", new InstantCommand(intake::extendWrist));
         NamedCommands.registerCommand("foldWrist", new InstantCommand(intake::foldWrist));
         NamedCommands.registerCommand("runIntakeIn", new InstantCommand(intake::runIntakeIn));
@@ -161,7 +167,7 @@ public class RobotContainer {
         manipulatorController.rightBumper().onTrue(Commands.runOnce(intake::halfExtendWrist));
         manipulatorController.rightBumper().onFalse(Commands.runOnce(intake::foldWrist));
 
-        manipulatorController.leftBumper().onTrue(Commands.runOnce(shooter::runShooterSlow));
+        //manipulatorController.leftBumper().onTrue(Commands.runOnce(shooter::runShooterSlow));
         manipulatorController.leftBumper().onFalse(Commands.runOnce(shooter::stopShooter));
 
         manipulatorController.povUp().onTrue(Commands.runOnce(shooter::shooterManualAdjustUp));
@@ -169,8 +175,10 @@ public class RobotContainer {
         manipulatorController.povRight().onFalse(Commands.runOnce(shooter::shooterRotationReset));
         manipulatorController.back().onTrue(Commands.runOnce(shooter::init));
         
+        manipulatorController.leftBumper().onTrue(new InstantCommand(() -> climber.raiseClimber()));
+        manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> climber.lowerClimber()));
 
-        manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> shooter.adjustment = 8).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
+        manipulatorController.povLeft().onTrue(new InstantCommand(() -> shooter.adjustment = 8).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
 
         // manipulatorController.rightTrigger().whileTrue(Commands.repeatingSequence(new InstantCommand(() -> shooter.autoAngle(poseEstimator)), new WaitCommand(0.1)));
         
@@ -223,6 +231,7 @@ public class RobotContainer {
 //        climber.recalibrateClimber();
         shooter.init();
         intake.init();
+        climber.init();
     }
 
     public void testInit() {
@@ -230,16 +239,19 @@ public class RobotContainer {
         swerveDrivetrain.setDefaultCommand(test);
         // Reset the braking state in case autonomous exited uncleanly
         System.out.println("Starting test");
-        
         swerveDrivetrain.init();
+        climber.init();
     }
 
     public void autonomousInit() {
         System.out.println("=======================================================");
         System.out.println("================Starting Autonomous=====  ===============");
         System.out.println("=======================================================");
+        swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());
+
         shooter.init();
         intake.init();
+        climber.init();
     }
 
 
@@ -267,6 +279,7 @@ public class RobotContainer {
     public void disable() {
         shooter.disable();
         intake.disable();
+        climber.disable();
         swerveDrivetrain.stop();
     }
 }

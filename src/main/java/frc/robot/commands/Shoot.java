@@ -14,7 +14,7 @@ public class Shoot extends SequentialCommandGroup {
             BetterPoseEstimator poseEstimator
     ) {
         addCommands(
-                new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(40)),
+                new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(42)),
                 new InstantCommand(shooter::runShooterForward),
                 new WaitCommand(1),
                 new InstantCommand(intake::runIntakeOut),
@@ -23,7 +23,7 @@ public class Shoot extends SequentialCommandGroup {
                 // new WaitCommand(1),
                 // new InstantCommand(intake::runIntakeOut),
                 // new WaitCommand(2),
-                new InstantCommand(shooter::stopShooter),
+                //new InstantCommand(shooter::stopShooter),
                 new InstantCommand(intake::stopIntake)
         );
     }

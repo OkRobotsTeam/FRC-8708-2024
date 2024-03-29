@@ -76,12 +76,6 @@
           "data": {
             "name": "lowerShooter"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp Leave Ring"
-          }
         }
       ]
     }

@@ -28,8 +28,8 @@ public class Constants {
 
 
         // Robot speed and acceleration limiters
-        public static final double MOVEMENT_MAX_SPEED_IN_METERS_PER_SECOND = 3.0;  // Max ~3.0
-        public static final double MOVEMENT_MAX_ACCELERATION_IN_METERS_PER_SECOND_SQUARED = 3.0;  // 1 second to full speed
+        public static final double MOVEMENT_MAX_SPEED_IN_METERS_PER_SECOND = 6.0;  // Max ~3.0
+        public static final double MOVEMENT_MAX_ACCELERATION_IN_METERS_PER_SECOND_SQUARED = 12.0;  // 1 second to full speed
         public static final double TURNING_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND = Math.toRadians(360);  // 1 rotation per second
         public static final double TURNING_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED = Math.toRadians(720);  // one half second to full turn speed
 
@@ -131,26 +131,29 @@ public class Constants {
     }
 
     public static class Climber {
-        public static final double LEFT_CLIMBER_GEAR_RATIO = (8.0 / 54.0);
-        public static final double RIGHT_CLIMBER_GEAR_RATIO = (8.0 / 54.0);
+        public static final double LEFT_CLIMBER_GEAR_RATIO  = 1;//(8.0 / 54.0);
+        public static final double RIGHT_CLIMBER_GEAR_RATIO = 1;//(8.0 / 54.0);
 
         public static final boolean CLIMBER_LEFT_INVERTED = false;
-        public static final boolean CLIMBER_RIGHT_INVERTED = false;
+        public static final boolean CLIMBER_RIGHT_INVERTED = true;
 
         public static final double CALIBRATION_DELAY_MS = 500;
 
+        public static final int RIGHT_CLIMBER_DIGITAL_SWITCH_PORT = 1;
+        public static final int LEFT_CLIMBER_DIGITAL_SWITCH_PORT = 0;
 
-        public static final double CLIMBER_PID_KP = 0.2;
+
+        public static final double CLIMBER_PID_KP = 0.1;
         public static final double CLIMBER_PID_KI = 0.0;
         public static final double CLIMBER_PID_KD = 0.0;
-        public static final double CLIMBER_PID_MAX_SPEED_IN_ROTATIONS_PER_SECOND = 5.0;
-        public static final double CLIMBER_PID_MAX_ACCELERATION_IN_ROTATIONS_PER_SECOND_SQUARED = 10.0;
+        public static final double CLIMBER_PID_MAX_SPEED_IN_ROTATIONS_PER_SECOND = 100.0;
+        public static final double CLIMBER_PID_MAX_ACCELERATION_IN_ROTATIONS_PER_SECOND_SQUARED = 100.0;
 
         public static final double LEFT_CLIMBER_STARTUP_POSITION = 0.0;
         public static final double RIGHT_CLIMBER_STARTUP_POSITION = 0.0;
 
         public static final double CLIMBER_DOWN_POSITION = 0.0;
-        public static final double CLIMBER_UP_POSITION = 10.0;
+        public static final double CLIMBER_UP_POSITION = 120.0;
 
         public static class CANIds {
             public static final int LEFT_CLIMBER = 11;  // On can bus "CTRE"

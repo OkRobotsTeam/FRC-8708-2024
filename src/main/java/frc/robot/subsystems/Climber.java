@@ -1,10 +1,14 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Debug;
+import frc.robot.InitHelper;
 
 import static frc.robot.Constants.Climber.*;
 
@@ -19,12 +23,35 @@ public class Climber  extends SubsystemBase {
     private boolean rightClimberMotorCalibrated = false;
     private double climberCalibrationStartTime = 0.0;
     private XboxController controller;
+    private boolean enabled = false;
+    private InitHelper leftInitHelper = new InitHelper("Left Climber",-0.01,50,50000);
+    private InitHelper rightInitHelper = new InitHelper("Left Climber", -0.01, 50, 50000);
+    private DigitalInput leftClimberLimitSwitch = new DigitalInput(LEFT_CLIMBER_DIGITAL_SWITCH_PORT);
+    private DigitalInput rightClimberLimitSwitch = new DigitalInput(RIGHT_CLIMBER_DIGITAL_SWITCH_PORT);
 
+    private final double CLIMBER_TRAVEL_LIMIT = 121;
 
     public Climber(XboxController controller) {
         this.controller = controller;
         leftClimber.setInverted(CLIMBER_LEFT_INVERTED);
         rightClimber.setInverted(CLIMBER_RIGHT_INVERTED);
+    }
+
+    public void init() {
+        System.out.println("Left Climber Starting Initialzing " + leftClimber.getPosition().getValueAsDouble());
+        leftInitHelper.start(leftClimber.getPosition().getValueAsDouble());
+        leftClimber.set(-0.05);
+        rightInitHelper.start(leftClimber.getPosition().getValueAsDouble());
+        rightClimber.set(-0.05);
+        leftClimberPID.reset(0);
+        rightClimberPID.reset(0);
+        enabled=true;
+        lowerClimber();
+
+    }
+
+    public void disable() {
+        enabled = false;
     }
 
     private double getLeftEncoderPosition() {
@@ -43,42 +70,74 @@ public class Climber  extends SubsystemBase {
         rightClimber.setPosition(position * RIGHT_CLIMBER_GEAR_RATIO);
     }
 
-
-    public boolean climberStillCalibrating() {
-        return !climberDoneCalibrating;
+    private boolean climberStillCalibrating() {
+        return leftInitHelper.isInitializing() || rightInitHelper.isInitializing();
     }
 
     public void periodic() {
-        leftClimber.set(controller.getLeftY());
-        rightClimber.set(controller.getRightY());
+
+        double left = 0;
+        double right = 0;
+        //System.out.println("Switches: " + leftClimberLimitSwitch.get() +  " : " + rightClimberLimitSwitch.get());
+        if (!enabled) {
+            leftClimber.set(0);
+            rightClimber.set(0);
+            return;
+        }
+        if (leftInitHelper.isInitializing(leftClimber.getPosition().getValueAsDouble())) {
+            if (leftClimberLimitSwitch.get() ) {
+                leftInitHelper.setDone();
+            } else {
+                System.out.println("Initializing Left Climber:" + leftClimber.getPosition().getValueAsDouble() + " C: "
+                        + leftClimber.getSupplyCurrent());
+            }
+        } else if (leftInitHelper.justFinishedInit()) {
+            System.out.println("Left Climber Done Initialzing");
+            if (leftClimberLimitSwitch.get()) {
+                leftClimber.setPosition(-1);
+            } else {
+                leftClimber.setPosition(-5);
+            } 
+        } else {
+            left = leftClimberPID.calculate(getLeftEncoderPosition());
+            leftClimber.set(left);
+        }
+        if (rightInitHelper.isInitializing(rightClimber.getPosition().getValueAsDouble())) {
+            if (rightClimberLimitSwitch.get() ) {
+                rightInitHelper.setDone();
+            } else {
+                System.out.println("Initializing Right Climber:" + rightClimber.getPosition().getValueAsDouble()
+                        + " C: " + rightClimber.getSupplyCurrent());
+            }
+        } else if (rightInitHelper.justFinishedInit()) {
+            System.out.println("Right Climber Done Initialzing");
+            if (rightClimberLimitSwitch.get()) {
+                rightClimber.setPosition(-1);
+            } else {
+                rightClimber.setPosition(-5);
+            } 
+        } else {
+            right = rightClimberPID.calculate(getRightEncoderPosition());
+            rightClimber.set(right);
+        }
+
+        // Debug.debugPrint("Climber",
+        //         "Left Power: " + fmt(left)
+        //                 + " Right Power" + fmt(right)
+        //                 + " leftPosition: " + fmt(leftClimber.getPosition())
+        //                 + " rightPosition: " + fmt(rightClimber.getPosition())
+        //                 + " leftCurrent: " + fmt(leftClimber.getSupplyCurrent())
+        //                 + " rightCurrent: " + fmt(rightClimber.getSupplyCurrent())
+        //                 );
+
     }
 
-    public void tickClimber() {
-        if (!climberDoneCalibrating) {
-            if (System.currentTimeMillis() - climberCalibrationStartTime > CALIBRATION_DELAY_MS) {
-                if (!leftClimberMotorCalibrated && rightClimber.getStatorCurrent().getValueAsDouble() > 4.0) {
-                    setLeftEncoderPosition(LEFT_CLIMBER_STARTUP_POSITION);
-                    leftClimberPID.setGoal(LEFT_CLIMBER_STARTUP_POSITION);
-                    leftClimber.set(0);
-                    leftClimberMotorCalibrated = true;
-                    System.out.println("Info: Left climber calibrated");
-                }
-                if (!rightClimberMotorCalibrated && rightClimber.getStatorCurrent().getValueAsDouble() > 4.0) {
-                    setRightEncoderPosition(RIGHT_CLIMBER_STARTUP_POSITION);
-                    rightClimberPID.setGoal(RIGHT_CLIMBER_STARTUP_POSITION);
-                    rightClimber.set(0);
-                    rightClimberMotorCalibrated = true;
-                    System.out.println("Info: Right climber calibrated");
-                }
-                if (leftClimberMotorCalibrated && rightClimberMotorCalibrated) {
-                    climberDoneCalibrating = true;
-                    System.out.println("Info: Climber calibrated");
-                }
-            }
-        } else {
-            leftClimber.set(leftClimberPID.calculate(getLeftEncoderPosition()));
-            rightClimber.set(rightClimberPID.calculate(getRightEncoderPosition()));
-        }
+    public String fmt(StatusSignal<Double> num) {
+        return fmt(num.getValueAsDouble());
+    }
+
+    public String fmt(double num) {
+        return Debug.fourPlaces(num);
     }
 
     public void raiseClimber() {
