@@ -46,7 +46,7 @@ public class Shooter extends SubsystemBase {
     private boolean disabled = true;
     private double shooterSpeed = 0;
     private boolean shooting;
-    private final double[] angleByDistanceInFeet = {40,40,40,40,40,32,25,20,15,20,25,30,35,40,45,45};
+    private final double[] angleByDistanceInFeet = {44,44,44,40,33,25,21,20,20,16,14};
 
 //    private enum calibrationStates {}
 //    private boolean calibrationState = 0

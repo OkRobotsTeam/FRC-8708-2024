@@ -76,12 +76,6 @@
           "data": {
             "waitTime": 3.0
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Go Back To Middle"
-          }
         }
       ]
     }
