@@ -231,7 +231,7 @@ public class Shooter extends SubsystemBase {
     public void update() {
         if (shooting) {
             if (shooterSpeed < SHOOTER_FORWARD_SPEED) {
-                shooterSpeed = shooterSpeed + 0.05;
+                shooterSpeed = shooterSpeed + 0.1;
             }
             setShooterSpeed(shooterSpeed);
         }
