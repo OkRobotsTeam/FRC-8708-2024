@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.65,
-      "y": 4.35
+      "x": 0.7,
+      "y": 6.7
     },
-    "rotation": -60.0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Move To Shoot Preload"
+            "pathName": "Amp Move To Shoot Preload"
           }
         },
         {
@@ -24,9 +24,27 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "AmpPickUpAmpRing"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot17"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "lowerShooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Leave Ring"
           }
         }
       ]

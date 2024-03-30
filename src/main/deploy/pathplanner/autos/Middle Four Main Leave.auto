@@ -2,27 +2,15 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7,
-      "y": 6.7
+      "x": 1.35,
+      "y": 5.55
     },
-    "rotation": 60.0
+    "rotation": 0.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp Move To Shoot Preload"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
-          }
-        },
         {
           "type": "named",
           "data": {
@@ -32,19 +20,43 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AmpPickUpAmpRing"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
+            "pathName": "MiddlePickUpMiddleRing"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot18"
+            "name": "shoot19"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "PickUpAmpRing"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot17"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "PickUpSourceRingSlow"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot23"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
           }
         },
         {
@@ -54,9 +66,15 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "stopShooter"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Amp Leave Ring"
+            "pathName": "Source Leave Stage"
           }
         }
       ]

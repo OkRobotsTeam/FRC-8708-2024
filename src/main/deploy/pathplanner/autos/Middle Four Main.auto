@@ -26,7 +26,7 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot22"
+            "name": "shoot18"
           }
         },
         {
@@ -38,13 +38,13 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot21"
+            "name": "shoot17"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "PickUpSourceRing"
+            "pathName": "PickUpSourceRingSlow"
           }
         },
         {
@@ -69,12 +69,6 @@
           "type": "named",
           "data": {
             "name": "stopShooter"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 3.0
           }
         }
       ]

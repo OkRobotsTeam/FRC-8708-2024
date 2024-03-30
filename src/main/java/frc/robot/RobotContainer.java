@@ -65,9 +65,10 @@ public class RobotContainer {
         NamedCommands.registerCommand("shoot", new Shoot(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
         NamedCommands.registerCommand("pickupRing", new PickupRing(intake));
         NamedCommands.registerCommand("shootFromFarther", new ShootFromFarther(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
+        NamedCommands.registerCommand("shoot16", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 16, poseEstimator));
+        NamedCommands.registerCommand("shoot17", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 17, poseEstimator));
         NamedCommands.registerCommand("shoot18", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 18, poseEstimator));
         NamedCommands.registerCommand("shoot19", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 19, poseEstimator));
-
         NamedCommands.registerCommand("shoot20", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 20, poseEstimator));
         NamedCommands.registerCommand("shoot21", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 21, poseEstimator));
         NamedCommands.registerCommand("shoot22", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 22, poseEstimator));
@@ -178,7 +179,7 @@ public class RobotContainer {
         manipulatorController.leftBumper().onTrue(new InstantCommand(() -> climber.raiseClimber()));
         manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> climber.lowerClimber()));
 
-        manipulatorController.povLeft().onTrue(new InstantCommand(() -> shooter.adjustment = 8).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
+        manipulatorController.povLeft().onTrue(new InstantCommand(() -> shooter.adjustment = 3).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
 
         // manipulatorController.rightTrigger().whileTrue(Commands.repeatingSequence(new InstantCommand(() -> shooter.autoAngle(poseEstimator)), new WaitCommand(0.1)));
         

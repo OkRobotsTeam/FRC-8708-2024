@@ -140,6 +140,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     public Rotation2d getGoalAngle(BetterPoseEstimator poseEstimator) {
         Translation2d goalOffset = poseEstimator.getOffsetFromGoalInMeters();
+        
         Rotation2d angleFromRobotToGoal = goalOffset.getAngle();
         return angleFromRobotToGoal;
     }
@@ -191,13 +192,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
 
             if (ally.isPresent()) {
-                if (ally.get() == DriverStation.Alliance.Red) {
-                    rotation = currentRotation;
-                }
-                if (ally.get() == DriverStation.Alliance.Blue) {
-                    rotation = currentRotation.rotateBy(Rotation2d.fromRotations(0.5));
-                }
-                
+                rotation = currentRotation;
                 Rotation2d difference = targetRotation.minus(rotation);
 
                 rot = difference.getDegrees() * 0.13;

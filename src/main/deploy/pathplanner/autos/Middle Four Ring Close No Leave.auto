@@ -80,7 +80,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "PickUpSourceRing"
+            "pathName": "PickUpSourceRingSlow"
           }
         },
         {

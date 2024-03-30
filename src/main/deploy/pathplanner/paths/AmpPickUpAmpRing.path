@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.751893389772529,
-        "y": 6.844330268232984
+        "x": 2.88,
+        "y": 6.92
       },
       "prevControl": {
-        "x": 2.2839049953634363,
-        "y": 6.5128384888598765
+        "x": 2.4120116055909073,
+        "y": 6.588508220626893
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "pickupRing",
-      "waypointRelativePos": 0.2,
+      "waypointRelativePos": 0.15,
       "command": {
         "type": "parallel",
         "data": {
@@ -57,7 +57,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 38.107576877514816,
+    "rotation": 40.06,
     "rotateFast": false
   },
   "reversed": false,
