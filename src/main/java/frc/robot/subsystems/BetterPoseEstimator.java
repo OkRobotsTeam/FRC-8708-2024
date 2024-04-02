@@ -11,61 +11,74 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Debug;
 
-public class BetterPoseEstimator extends SubsystemBase{
-    
+public class BetterPoseEstimator extends SubsystemBase {
+
     private class OdometryHistoryEntry {
-        OdometryHistoryEntry(long time,double x,double y,Rotation2d r) {
-            this.time=time;
-this.x=x;
-            this.y=y;
-            this.r=r;   
-    }
-    public long time;
+        public long time;
         public double x;
         public double y;
-        public Rotation2d r;      
+        public Rotation2d r;
+        OdometryHistoryEntry(long time, double x, double y, Rotation2d r) {
+            this.time = time;
+            this.x = x;
+            this.y = y;
+            this.r = r;
+        }
     }
-        public double diffX;
+    private class VisionHistoryEntry {
+        public OdometryHistoryEntry o;
+        public double x;
+        public double y;
+        public Rotation2d r;
+        public double speedDiff;
+        public VisionHistoryEntry(double x, double y, Rotation2d r, OdometryHistoryEntry o, double speedDiff) {
+            this.x = x;
+            this.y = y;
+            this.r = r;
+            this.o = o;
+            this.speedDiff = speedDiff;
+        }
+    }
+
+    public double diffX;
     public double diffY;
     public Rotation2d diffR = Rotation2d.fromDegrees(0);
 
-
     public BetterPoseEstimator() {
-        odometryHistory.add(0,new OdometryHistoryEntry(System.currentTimeMillis(),0,0,Rotation2d.fromDegrees(0)));
+        odometryHistory.add(0, new OdometryHistoryEntry(System.currentTimeMillis(), 0, 0, Rotation2d.fromDegrees(0)));
     }
 
     ArrayList<OdometryHistoryEntry> odometryHistory = new ArrayList<OdometryHistoryEntry>();
-    
+
     public void newOdometryEntry(Pose2d pose) {
-        final OdometryHistoryEntry newEntry =  new OdometryHistoryEntry(System.currentTimeMillis(), pose.getX() ,pose.getY(), pose.getRotation());
-        odometryHistory.add(0,newEntry);
+        final OdometryHistoryEntry newEntry = new OdometryHistoryEntry(System.currentTimeMillis(), pose.getX(),
+                pose.getY(), pose.getRotation());
+        odometryHistory.add(0, newEntry);
         if (odometryHistory.size() > 100) {
-            odometryHistory.remove(odometryHistory.size() -1);
+            odometryHistory.remove(odometryHistory.size() - 1);
         }
         Translation2d adjustedLocation = translateHistoryToAdjusted(newEntry);
-        
 
     }
-
-    
-
 
     public Translation2d translateHistoryToAdjusted(OdometryHistoryEntry entry) {
         Translation2d translation = new Translation2d(entry.x, entry.y);
         Translation2d newTransation = translation.rotateBy(diffR);
-        //Debug.debugPrint("Translation. x " + entry.x + ":" + newTransation.getX() + " y " + entry.y + " : " + newTransation.getY() + " rot:" + Units.radiansToDegrees(diffR));
+        // Debug.debugPrint("Translation. x " + entry.x + ":" + newTransation.getX() + "
+        // y " + entry.y + " : " + newTransation.getY() + " rot:" +
+        // Units.radiansToDegrees(diffR));
         return newTransation;
     }
 
     public Pose2d getAdjustedOdometryPose() {
-        Translation2d translated = translateHistoryToAdjusted( odometryHistory.get(0));
+        Translation2d translated = translateHistoryToAdjusted(odometryHistory.get(0));
         Rotation2d angle = odometryHistory.get(0).r.rotateBy(diffR);
         return new Pose2d(translated, angle);
     }
 
     public void newVisionEntry(Pose2d visionPose, long visionTime) {
-        int matching=0;
-        for (int i = 0;  i < odometryHistory.size() ; i++ ) {
+        int matching = 0;
+        for (int i = 0; i < odometryHistory.size(); i++) {
             if (odometryHistory.get(i).time <= visionTime) {
                 matching = i;
                 break;
@@ -74,46 +87,53 @@ this.x=x;
         if (matching == 0) {
             return;
         }
-        //matching contains the index of the entry matching the time the camera saw the targets
+        // matching contains the index of the entry matching the time the camera saw the
+        // targets
         Translation2d historyEntry = translateHistoryToAdjusted(odometryHistory.get(matching));
         double newX = visionPose.getX() - historyEntry.getX();
         double newY = visionPose.getY() - historyEntry.getY();
         double newR = visionPose.getRotation().minus(odometryHistory.get(matching).r).getRadians();
 
-        //Adjust all odometry histories since the match by the same difference.  Maybe divided by something to remove noise. 
+        // Adjust all odometry histories since the match by the same difference. Maybe
+        // divided by something to remove noise.
         double weighting = 3;
         OdometryHistoryEntry last = odometryHistory.get(0);
-        //System.out.println("Munging:  x:" + fmt(diffX,newX) + " y:" + fmt(diffY,newY) + " r:" + fmt(diffR,newR));
-        // Debug.debugPrint("Rot:" + fmt(visionPose.getRotation().getDegrees()) +  " : " 
-        //     + fmt(Units.radiansToDegrees( odometryHistory.get(matching).r)) + " : " + fmt(Units.radiansToDegrees(diffR)));
+        // System.out.println("Munging: x:" + fmt(diffX,newX) + " y:" + fmt(diffY,newY)
+        // + " r:" + fmt(diffR,newR));
+        // Debug.debugPrint("Rot:" + fmt(visionPose.getRotation().getDegrees()) + " : "
+        // + fmt(Units.radiansToDegrees( odometryHistory.get(matching).r)) + " : " +
+        // fmt(Units.radiansToDegrees(diffR)));
 
-        diffX = ((diffX*weighting) + newX ) / (weighting+1);
-        diffY = ((diffY*weighting) + newY ) / (weighting+1);
-        diffR = diffR.interpolate(Rotation2d.fromRadians(newR), 1.0/weighting);
-        //Debug.debugPrint("x:" + fmt(last.x,last.x+diffX) + " y:" + fmt(last.y,last.y+diffY) + " r:" + fmt(last.r,last.r+diffR));
+        diffX = ((diffX * weighting) + newX) / (weighting + 1);
+        diffY = ((diffY * weighting) + newY) / (weighting + 1);
+        diffR = diffR.interpolate(Rotation2d.fromRadians(newR), 1.0 / weighting);
+        // Debug.debugPrint("x:" + fmt(last.x,last.x+diffX) + " y:" +
+        // fmt(last.y,last.y+diffY) + " r:" + fmt(last.r,last.r+diffR));
     }
 
+    public double calculateSpeedDelta(double llx, double lly, Rotation2d llrot, OdometryHistoryEntry thisOdometry,
+            VisionHistoryEntry lastHistory) {
 
-    public double calculateSpeed(double llx, double lly, double llrot, OdometryHistoryEntry thisOdometry, VisionHistoryEntry lastHistory) {
-        
-        double hSpeed = speedMath(llx,lly,lastHistory.x,lastHistory.y);
-        double rdiff = llrot - lastHistory.r;
-        double combinedSpeed = hSpeed + rdiff;
+        double llMovement = movementMath(llx, lly, lastHistory.x, lastHistory.y);
+        double llRotation = Math.abs(llrot.minus(lastHistory.r).getRadians());
+        double llCombined = llMovement + llRotation;
 
-        OdometryHistoryEntry lastOdometry = lastHistory.matchingOdometry;
-        double ohSpeed = speedMath(thisOdometry.x, thisOdometry.y, lastOdometry.x, lastOdometry.y);
-        double orSpeed = visionPose.getRotation().minus(Rotation2d.fromRadians(odometryHistory.get(matching).r)).getRadians();
-        
-
+        OdometryHistoryEntry lastOdometry = lastHistory.o;
+        double odometryMovement = movementMath(thisOdometry.x, thisOdometry.y, lastOdometry.x, lastOdometry.y);
+        double odometryRotation = thisOdometry.r.minus(lastOdometry.r).getRadians();
+        double odometryCombined = odometryMovement + odometryRotation;
+        return(llCombined - odometryCombined);
     }
 
-    public double speedMath(double x1, double y1, double x2, double y2) {
-        return Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2));
+    public double movementMath(double x1, double y1, double x2, double y2) {
+        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
     }
+
     String fmt(double num1, double num2) {
-        return String.format("%2.2f,%2.2f", num1,num2);
+        return String.format("%2.2f,%2.2f", num1, num2);
 
     }
+
     String fmt(double num) {
         return String.format("%2.2f", num);
     }
@@ -121,14 +141,14 @@ this.x=x;
     public Pose2d getRobotPose() {
         return getCurrentPose();
     }
-    
+
     public Pose2d getCurrentPose() {
         Translation2d adjusted = translateHistoryToAdjusted(odometryHistory.get(0));
 
         return new Pose2d(
-            adjusted.getX() + diffX, 
-            adjusted.getY() + diffY, 
-            odometryHistory.get(0).r.plus(diffR));
+                adjusted.getX() + diffX,
+                adjusted.getY() + diffY,
+                odometryHistory.get(0).r.plus(diffR));
     }
 
     public Translation2d getOffsetFromGoalInMeters() {
@@ -140,10 +160,12 @@ this.x=x;
 
         if (ally.isPresent()) {
             if (ally.get() == DriverStation.Alliance.Red) {
-                targetPosition = new Translation2d(16.788 - (Units.inchesToMeters(26)), 6.013 - (Units.inchesToMeters(20)));
+                targetPosition = new Translation2d(16.788 - (Units.inchesToMeters(26)),
+                        6.013 - (Units.inchesToMeters(20)));
             }
             if (ally.get() == DriverStation.Alliance.Blue) {
-                targetPosition = new Translation2d(1.169 - (Units.inchesToMeters(26)), 6.013 - (Units.inchesToMeters(20)));
+                targetPosition = new Translation2d(1.169 - (Units.inchesToMeters(26)),
+                        6.013 - (Units.inchesToMeters(20)));
             }
         } else {
             System.out.println("Warning: No alliance Selected, please select alliance");
@@ -152,8 +174,5 @@ this.x=x;
         Translation2d robotPose = getRobotPose().getTranslation();
         return robotPose.minus(targetPosition);
     }
-
-
-
 
 }
