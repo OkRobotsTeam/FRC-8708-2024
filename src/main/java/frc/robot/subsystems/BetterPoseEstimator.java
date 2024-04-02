@@ -16,16 +16,16 @@ public class BetterPoseEstimator extends SubsystemBase{
     private class OdometryHistoryEntry {
         OdometryHistoryEntry(long time,double x,double y,Rotation2d r) {
             this.time=time;
-            this.x=x;
+this.x=x;
             this.y=y;
-            this.r=r;
-        }
-        public long time;
+            this.r=r;   
+    }
+    public long time;
         public double x;
         public double y;
         public Rotation2d r;      
     }
-    public double diffX;
+        public double diffX;
     public double diffY;
     public Rotation2d diffR = Rotation2d.fromDegrees(0);
 
@@ -35,7 +35,7 @@ public class BetterPoseEstimator extends SubsystemBase{
     }
 
     ArrayList<OdometryHistoryEntry> odometryHistory = new ArrayList<OdometryHistoryEntry>();
-
+    
     public void newOdometryEntry(Pose2d pose) {
         final OdometryHistoryEntry newEntry =  new OdometryHistoryEntry(System.currentTimeMillis(), pose.getX() ,pose.getY(), pose.getRotation());
         odometryHistory.add(0,newEntry);
@@ -48,6 +48,7 @@ public class BetterPoseEstimator extends SubsystemBase{
     }
 
     
+
 
     public Translation2d translateHistoryToAdjusted(OdometryHistoryEntry entry) {
         Translation2d translation = new Translation2d(entry.x, entry.y);
@@ -90,7 +91,24 @@ public class BetterPoseEstimator extends SubsystemBase{
         diffY = ((diffY*weighting) + newY ) / (weighting+1);
         diffR = diffR.interpolate(Rotation2d.fromRadians(newR), 1.0/weighting);
         //Debug.debugPrint("x:" + fmt(last.x,last.x+diffX) + " y:" + fmt(last.y,last.y+diffY) + " r:" + fmt(last.r,last.r+diffR));
+    }
 
+
+    public double calculateSpeed(double llx, double lly, double llrot, OdometryHistoryEntry thisOdometry, VisionHistoryEntry lastHistory) {
+        
+        double hSpeed = speedMath(llx,lly,lastHistory.x,lastHistory.y);
+        double rdiff = llrot - lastHistory.r;
+        double combinedSpeed = hSpeed + rdiff;
+
+        OdometryHistoryEntry lastOdometry = lastHistory.matchingOdometry;
+        double ohSpeed = speedMath(thisOdometry.x, thisOdometry.y, lastOdometry.x, lastOdometry.y);
+        double orSpeed = visionPose.getRotation().minus(Rotation2d.fromRadians(odometryHistory.get(matching).r)).getRadians();
+        
+
+    }
+
+    public double speedMath(double x1, double y1, double x2, double y2) {
+        return Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2));
     }
     String fmt(double num1, double num2) {
         return String.format("%2.2f,%2.2f", num1,num2);
