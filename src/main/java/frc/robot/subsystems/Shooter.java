@@ -29,6 +29,7 @@ import static frc.robot.Constants.Shooter.*;
 
 
 public class Shooter extends SubsystemBase {
+    private static final int SHOOTER_MANUAL_ADJUST_DEGREES_PER_PRESS = 1;
     private final TalonFX topShooter = new TalonFX(CANIds.TOP_SHOOTER, "CTRE");
     private final TalonFX bottomShooter = new TalonFX(CANIds.BOTTOM_SHOOTER, "CTRE");
     private final CANSparkMax shooterRotation = new CANSparkMax(CANIds.SHOOTER_ROTATION, kBrushless);
@@ -46,7 +47,8 @@ public class Shooter extends SubsystemBase {
     private boolean disabled = true;
     private double shooterSpeed = 0;
     private boolean shooting;
-    private final double[] angleByDistanceInFeet = {40,40,40,40,40,32,25,20,15,20,25,30,35,40,45,45};
+//    private final double[] angleByDistanceInFeet = {44,40,33,25,21,20,20,16,14};
+    private final double[] angleByDistanceInFeet = {43,43,43,38,32,27,20,16,14,13.5,11};
 
 //    private enum calibrationStates {}
 //    private boolean calibrationState = 0
@@ -187,9 +189,16 @@ public class Shooter extends SubsystemBase {
         if (adjustment == -1) {
             setTargetShooterDegreesFromHorizon(0.0);
         } else {
-            setTargetShooterDegreesFromHorizon(SHOOTER_ROTATION_MANUAL_ADJUST_START_DEGREES + (adjustment));
+            setTargetShooterDegreesFromHorizon(SHOOTER_ROTATION_MANUAL_ADJUST_START_DEGREES + (adjustment * SHOOTER_MANUAL_ADJUST_DEGREES_PER_PRESS));
         }
     }
+
+    public void setShooterAngle(double angle) {
+        adjustment = (int) ((angle - SHOOTER_ROTATION_MANUAL_ADJUST_START_DEGREES) / SHOOTER_MANUAL_ADJUST_DEGREES_PER_PRESS);
+        setTargetShooterDegreesFromHorizon(angle);
+    }
+
+
 
     public void lowerShooter() {
         adjustment = -1;
@@ -222,7 +231,7 @@ public class Shooter extends SubsystemBase {
     public void update() {
         if (shooting) {
             if (shooterSpeed < SHOOTER_FORWARD_SPEED) {
-                shooterSpeed = shooterSpeed + 0.05;
+                shooterSpeed = shooterSpeed + 0.1;
             }
             setShooterSpeed(shooterSpeed);
         }
@@ -288,6 +297,8 @@ public class Shooter extends SubsystemBase {
     public void autoAngle(BetterPoseEstimator poseEstimator) {
         Translation2d goalOffset = poseEstimator.getOffsetFromGoalInMeters();
         double offsetInFeet = Units.metersToFeet(goalOffset.getNorm());
+        offsetInFeet = offsetInFeet - 3;
+        Debug.debugPrint("autoAim"+  "Disance to goal in feet " + offsetInFeet); 
         int below = (int) Math.floor(offsetInFeet);
         int above = (int) Math.ceil(offsetInFeet);
         below = MathUtils.clamp(below, 0, angleByDistanceInFeet.length - 1);

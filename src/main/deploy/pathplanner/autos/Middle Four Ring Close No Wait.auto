@@ -56,7 +56,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "PickUpSourceRing"
+            "pathName": "PickUpSourceRingSlow"
           }
         },
         {
@@ -75,12 +75,6 @@
           "type": "named",
           "data": {
             "name": "lowerShooter"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp Leave Ring"
           }
         }
       ]

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7,
-      "y": 6.7
+      "x": 0.65,
+      "y": 4.35
     },
-    "rotation": 60.0
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
@@ -27,12 +27,6 @@
           "type": "named",
           "data": {
             "name": "lowerShooter"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Source Leave"
           }
         }
       ]

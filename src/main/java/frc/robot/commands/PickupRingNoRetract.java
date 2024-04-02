@@ -6,18 +6,14 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.*;
 
-public class PickupRing extends SequentialCommandGroup {
+public class PickupRingNoRetract extends SequentialCommandGroup {
     Intake intake;
-    public PickupRing(Intake intake) {
+    public PickupRingNoRetract(Intake intake) {
         this.intake = intake;
         addCommands(
                 new InstantCommand(intake::extendWrist),
                 new WaitCommand(0.25),
-                new InstantCommand(intake::runIntakeIn) 
-                // new WaitCommand(1.5).handleInterrupt(this::interrupt),
-                // new InstantCommand(intake::foldWrist),
-                // new WaitCommand(0.25).handleInterrupt(this::interrupt),
-                // new InstantCommand(intake::stopIntake)
+                new InstantCommand(intake::runIntakeIn)
         );
         
 

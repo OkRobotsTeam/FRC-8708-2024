@@ -15,16 +15,26 @@ public class ShootWithAngle extends SequentialCommandGroup {
             BetterPoseEstimator poseEstimator
     ) {
         addCommands(
-                new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(18)),
+                new InstantCommand(() -> drivetrain.stop()),
+                
+                new WaitCommand(0.25),
+                new InstantCommand(intake::foldWrist),
+                new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(angle)),
                 new InstantCommand(shooter::runShooterForward),
-                new WaitCommand(1),
+                new InstantCommand(intake::stopIntake),
+
+                new WaitCommand(0.1),
+                new InstantCommand(intake::runIntakeIn),
+                new WaitCommand(0.25),
+                new InstantCommand(intake::stopIntake),
+                new WaitCommand(0.5),
                 new InstantCommand(intake::runIntakeOut),
-                new WaitCommand(1),
+                new WaitCommand(0.5),
                 // new InstantCommand(intake::runIntakeIn),
                 // new WaitCommand(1),
                 // new InstantCommand(intake::runIntakeOut),
                 // new WaitCommand(2),
-                new InstantCommand(shooter::stopShooter),
+                //new InstantCommand(shooter::stopShooter),
                 new InstantCommand(intake::stopIntake)
         );
     }

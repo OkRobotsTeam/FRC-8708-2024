@@ -38,7 +38,7 @@ public class InitHelper {
         lastValue = initialValue;
     }
 
-    public boolean initializing() {
+    public boolean isInitializing() {
         return !initialized;
     }
     public boolean initialized() {
