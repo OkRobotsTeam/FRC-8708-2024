@@ -30,8 +30,8 @@ import static frc.robot.Constants.Shooter.*;
 
 public class Shooter extends SubsystemBase {
     private static final int SHOOTER_MANUAL_ADJUST_DEGREES_PER_PRESS = 1;
-    private final TalonFX topShooter = new TalonFX(CANIds.TOP_SHOOTER, "CTRE");
-    private final TalonFX bottomShooter = new TalonFX(CANIds.BOTTOM_SHOOTER, "CTRE");
+    private final TalonFX topShooter = new TalonFX(CANIds.TOP_SHOOTER);
+    private final TalonFX bottomShooter = new TalonFX(CANIds.BOTTOM_SHOOTER);
     private final CANSparkMax shooterRotation = new CANSparkMax(CANIds.SHOOTER_ROTATION, kBrushless);
 
     private final RelativeEncoder shooterRotationEncoder = shooterRotation.getEncoder();

@@ -44,7 +44,7 @@ public class SwerveModule {
     public SwerveModule(int driveMotorCANID, int turningMotorCANID, int turningEncoderCANID, String name) {
         this.name = name;
 
-        driveMotor = new TalonFX(driveMotorCANID, "CTRE");
+        driveMotor = new TalonFX(driveMotorCANID);
         driveMotor.setInverted(DRIVE_MOTORS_INVERTED);
 
         turningMotor = new CANSparkMax(turningMotorCANID, CANSparkLowLevel.MotorType.kBrushless);
