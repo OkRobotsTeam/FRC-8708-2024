@@ -78,6 +78,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("shoot26", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 26, poseEstimator));
         NamedCommands.registerCommand("shoot27", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 27, poseEstimator));
         NamedCommands.registerCommand("shoot28", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 28, poseEstimator));
+        NamedCommands.registerCommand("shoot42", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 42, poseEstimator));
 
         NamedCommands.registerCommand("extendWrist", new InstantCommand(intake::extendWrist));
         NamedCommands.registerCommand("foldWrist", new InstantCommand(intake::foldWrist));

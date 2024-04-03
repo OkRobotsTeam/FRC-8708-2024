@@ -14,8 +14,8 @@ import static frc.robot.Constants.Climber.*;
 
 
 public class Climber  extends SubsystemBase {
-    private final TalonFX leftClimber = new TalonFX(CANIds.LEFT_CLIMBER, "CTRE");
-    private final TalonFX rightClimber = new TalonFX(CANIds.RIGHT_CLIMBER, "CTRE");
+    private final TalonFX leftClimber = new TalonFX(CANIds.LEFT_CLIMBER);
+    private final TalonFX rightClimber = new TalonFX(CANIds.RIGHT_CLIMBER);
     private final ProfiledPIDController leftClimberPID = new ProfiledPIDController(CLIMBER_PID_KP, CLIMBER_PID_KI, CLIMBER_PID_KD, new TrapezoidProfile.Constraints(CLIMBER_PID_MAX_SPEED_IN_ROTATIONS_PER_SECOND, CLIMBER_PID_MAX_ACCELERATION_IN_ROTATIONS_PER_SECOND_SQUARED));
     private final ProfiledPIDController rightClimberPID = new ProfiledPIDController(CLIMBER_PID_KP, CLIMBER_PID_KI, CLIMBER_PID_KD, new TrapezoidProfile.Constraints(CLIMBER_PID_MAX_SPEED_IN_ROTATIONS_PER_SECOND, CLIMBER_PID_MAX_ACCELERATION_IN_ROTATIONS_PER_SECOND_SQUARED));
     private boolean climberDoneCalibrating = false;

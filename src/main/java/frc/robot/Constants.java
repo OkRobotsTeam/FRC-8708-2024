@@ -29,7 +29,7 @@ public class Constants {
 
         // Robot speed and acceleration limiters
         public static final double MOVEMENT_MAX_SPEED_IN_METERS_PER_SECOND = 6.0;  // Max ~3.0
-        public static final double MOVEMENT_MAX_ACCELERATION_IN_METERS_PER_SECOND_SQUARED = 12.0;  // 1 second to full speed
+        public static final double MOVEMENT_MAX_ACCELERATION_IN_METERS_PER_SECOND_SQUARED = 4.0;  // 1 second to full speed
         public static final double TURNING_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND = Math.toRadians(360);  // 1 rotation per second
         public static final double TURNING_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED = Math.toRadians(720);  // one half second to full turn speed
 
@@ -48,21 +48,21 @@ public class Constants {
 
 
         public static class CANIds {
-            public static final int FRONT_LEFT_DRIVE_MOTOR = 1;  // On can bus "CTRE"
-            public static final int FRONT_LEFT_ROTATION_MOTOR = 2;  // On can bus "rio"
-            public static final int FRONT_LEFT_ROTATION_ENCODER = 2;  // On can bus "CTRE"
+            public static final int FRONT_LEFT_DRIVE_MOTOR = 9;
+            public static final int FRONT_LEFT_ROTATION_MOTOR = 2;
+            public static final int FRONT_LEFT_ROTATION_ENCODER = 10;
 
-            public static final int FRONT_RIGHT_DRIVE_MOTOR = 3;  // On can bus "CTRE"
-            public static final int FRONT_RIGHT_ROTATION_MOTOR = 3;  // On can bus "rio"
-            public static final int FRONT_RIGHT_ROTATION_ENCODER = 4;  // On can bus "CTRE"
+            public static final int FRONT_RIGHT_DRIVE_MOTOR = 11;
+            public static final int FRONT_RIGHT_ROTATION_MOTOR = 3;
+            public static final int FRONT_RIGHT_ROTATION_ENCODER = 12;
 
-            public static final int BACK_LEFT_DRIVE_MOTOR = 5;  // On can bus "CTRE"
-            public static final int BACK_LEFT_ROTATION_MOTOR = 4;  // On can bus "rio"
-            public static final int BACK_LEFT_ROTATION_ENCODER = 6;  // On can bus "CTRE"
+            public static final int BACK_LEFT_DRIVE_MOTOR = 13;
+            public static final int BACK_LEFT_ROTATION_MOTOR = 4;
+            public static final int BACK_LEFT_ROTATION_ENCODER = 14;
 
-            public static final int BACK_RIGHT_DRIVE_MOTOR = 7;  // On can bus "CTRE"
-            public static final int BACK_RIGHT_ROTATION_MOTOR = 5;  // On can bus "rio"
-            public static final int BACK_RIGHT_ROTATION_ENCODER = 8;  // On can bus "CTRE"
+            public static final int BACK_RIGHT_DRIVE_MOTOR = 15;
+            public static final int BACK_RIGHT_ROTATION_MOTOR = 5;
+            public static final int BACK_RIGHT_ROTATION_ENCODER = 16;
         }
     }
 
@@ -94,15 +94,15 @@ public class Constants {
         public static final double INTAKE_OUT_POWER = -0.5;
 
         public static class CANIds {
-            public static final int TOP_INTAKE = 6;  // On can bus "rio"
-            public static final int BOTTOM_INTAKE = 7;  // On can bus "rio"
-            public static final int WRIST = 8;  // On can bus "rio"
+            public static final int TOP_INTAKE = 6;
+            public static final int BOTTOM_INTAKE = 7;
+            public static final int WRIST = 8;
         }
     }
 
     public static class Shooter {
         //public static final double SHOOTER_ROTATION_GEAR_RATIO = (10.0 / 64.0);
-        public static final double SHOOTER_ROTATION_GEAR_RATIO = (1.0/220.0);
+        public static final double SHOOTER_ROTATION_GEAR_RATIO = (1.0/198.0);
         public static final double SHOOTER_WHEELS_GEAR_RATIO = (10.0 / 64.0);
 
 
@@ -124,9 +124,9 @@ public class Constants {
         public static final double SHOOTER_REVERSE_SPEED = -0.2;
 
         public static class CANIds {
-            public static final int TOP_SHOOTER = 9;  // On can bus "CTRE"
-            public static final int BOTTOM_SHOOTER = 10;  // On can bus "CTRE"
-            public static final int SHOOTER_ROTATION = 9;  // On can bus "rio"
+            public static final int TOP_SHOOTER = 17;
+            public static final int BOTTOM_SHOOTER = 18;
+            public static final int SHOOTER_ROTATION = 9;
         }
     }
 
@@ -156,8 +156,8 @@ public class Constants {
         public static final double CLIMBER_UP_POSITION = 120.0;
 
         public static class CANIds {
-            public static final int LEFT_CLIMBER = 11;  // On can bus "CTRE"
-            public static final int RIGHT_CLIMBER = 12;  // On can bus "CTRE"
+            public static final int LEFT_CLIMBER = 19;
+            public static final int RIGHT_CLIMBER = 20;
         }
     }
 

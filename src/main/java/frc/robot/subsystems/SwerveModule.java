@@ -44,13 +44,13 @@ public class SwerveModule {
     public SwerveModule(int driveMotorCANID, int turningMotorCANID, int turningEncoderCANID, String name) {
         this.name = name;
 
-        driveMotor = new TalonFX(driveMotorCANID, "CTRE");
+        driveMotor = new TalonFX(driveMotorCANID);
         driveMotor.setInverted(DRIVE_MOTORS_INVERTED);
 
         turningMotor = new CANSparkMax(turningMotorCANID, CANSparkLowLevel.MotorType.kBrushless);
         turningMotor.setInverted(TURNING_MOTORS_INVERTED);
 
-        turningEncoder = new CANcoder(turningEncoderCANID, "CTRE");
+        turningEncoder = new CANcoder(turningEncoderCANID);
 
         // Limit the PID Controller's input range between -pi and pi and set the input
         // to be continuous.
