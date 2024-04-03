@@ -24,30 +24,6 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Source Pick Up 3"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Source Return From 3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "lowerShooter"

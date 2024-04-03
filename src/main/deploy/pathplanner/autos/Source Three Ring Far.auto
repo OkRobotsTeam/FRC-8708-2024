@@ -36,6 +36,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "foldWrist"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Source Return From 1"
@@ -44,7 +50,7 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "shoot42"
           }
         },
         {
@@ -60,6 +66,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "foldWrist"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Source Return From 2"
@@ -68,7 +80,7 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "shoot42"
           }
         },
         {
