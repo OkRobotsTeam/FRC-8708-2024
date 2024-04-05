@@ -13,6 +13,7 @@ public class Robot extends TimedRobot {
     // This function is run when the robot is first started up
     @Override
     public void robotInit() {
+
         robotContainer = new RobotContainer();
         robotContainer.robotInit();        
     }

@@ -31,6 +31,7 @@ public class RobotContainer {
 
     private final Climber climber = new Climber(manipulatorController.getHID());
     private final Intake intake = new Intake();
+    private Blinkin blinkin;
     private Shooter shooter;
     
     private final BetterPoseEstimator poseEstimator = new BetterPoseEstimator();
@@ -60,6 +61,8 @@ public class RobotContainer {
 
 
         shooter = new Shooter(ShooterAngleEntry);
+        blinkin = new Blinkin(intake, shooter);
+        blinkin.init();
 
         // Register Named Commands
         NamedCommands.registerCommand("shoot", new Shoot(swerveDrivetrain, intake, limelight, shooter, poseEstimator));
@@ -174,7 +177,7 @@ public class RobotContainer {
 
         manipulatorController.povUp().onTrue(Commands.runOnce(shooter::shooterManualAdjustUp));
         manipulatorController.povDown().onFalse(Commands.runOnce(shooter::shooterManualAdjustDown));
-        manipulatorController.povRight().onFalse(Commands.runOnce(shooter::shooterRotationReset));
+        manipulatorController.povRight().onFalse(Commands.runOnce(() -> shooter.setShooterAngle(43)));
         manipulatorController.back().onTrue(Commands.runOnce(shooter::init));
         
         manipulatorController.leftBumper().onTrue(new InstantCommand(() -> climber.raiseClimber()));

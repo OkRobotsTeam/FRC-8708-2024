@@ -15,7 +15,7 @@ public class ShootWithAngle extends SequentialCommandGroup {
             BetterPoseEstimator poseEstimator
     ) {
         addCommands(
-                new InstantCommand(() -> drivetrain.stop()),
+                new InstantCommand(() -> drivetrain.stop(), drivetrain),
                 
                 new WaitCommand(0.25),
                 new InstantCommand(intake::foldWrist),

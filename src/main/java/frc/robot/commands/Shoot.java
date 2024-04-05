@@ -14,6 +14,7 @@ public class Shoot extends SequentialCommandGroup {
             BetterPoseEstimator poseEstimator
     ) {
         addCommands(
+                new InstantCommand(drivetrain::stop),
                 new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(42)),
                 new InstantCommand(shooter::runShooterForward),
                 new WaitCommand(1),

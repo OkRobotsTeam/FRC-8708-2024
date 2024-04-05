@@ -8,6 +8,7 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import frc.robot.Debug;
 import frc.robot.InitHelper;
 import frc.robot.Constants.Intake.CANIds;
@@ -145,7 +146,6 @@ public class Intake {
 
 
         if (disabled) {
-
             return;
         }
         if (initHelper.isInitializing(wristEncoder.getPosition())) {
@@ -160,10 +160,27 @@ public class Intake {
             wristPID.calculate(WRIST_FOLDED_SETPOINT_IN_ROTATIONS);
             return;
         } 
+
+            // System.out.println("Shooter Current:"
+            //         + " TSt:" + fmt(topIntake.getOutputCurrent())
+            //         + " BSt:" + fmt(bottomIntake.getOutputCurrent()));
+        
         double PIDOutput = wristPID.calculate(getWristPositionInRotations());
 
 
         PIDOutput = min(max(-WRIST_MAX_SPEED, PIDOutput), WRIST_MAX_SPEED);
         wrist.set(PIDOutput);
+    }
+    public String fmt(double number) {
+        return Debug.fourPlaces(number);
+    }
+
+    public double getWristPosition() {
+        return wristEncoder.getPosition();
+    }
+
+    public double getBottomOutputCurrent() {
+        // TODO Auto-generated method stub
+        return bottomIntake.getOutputCurrent(); 
     }
 }

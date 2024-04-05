@@ -56,8 +56,8 @@ public class USBCameraVision extends SubsystemBase {
             drivingTab.add("Driver Camera", camera).
                     withPosition(4,0).withSize(2,3).
                     withProperties(
-                            Map.of("showCrosshair", false, "showControls", false, "rotation", "HALF", "showGlyph", false, "title", "Driver Camera")
-                    );
+                            Map.of("showCrosshair", false, "showControls", false, "rotation", "NONE", "showGlyph", false, "title", "Driver Camera")
+                    );  //HALF
         } catch(Exception e) {
             e.printStackTrace();
         }

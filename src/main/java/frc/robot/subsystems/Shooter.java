@@ -48,7 +48,7 @@ public class Shooter extends SubsystemBase {
     private double shooterSpeed = 0;
     private boolean shooting;
 //    private final double[] angleByDistanceInFeet = {44,40,33,25,21,20,20,16,14};
-    private final double[] angleByDistanceInFeet = {43,43,43,38,32,27,20,16,14,13.5,11};
+    private final double[] angleByDistanceInFeet = {43,43,34,28,23,21,20,16,14,13,13};
 
 //    private enum calibrationStates {}
 //    private boolean calibrationState = 0
@@ -229,6 +229,9 @@ public class Shooter extends SubsystemBase {
     }
 
     public void update() {
+
+
+
         if (shooting) {
             if (shooterSpeed < SHOOTER_FORWARD_SPEED) {
                 shooterSpeed = shooterSpeed + 0.1;
@@ -259,6 +262,7 @@ public class Shooter extends SubsystemBase {
        if (disabled) {
            return;
        }
+
         setShooterRotationBraking(false);
         double PIDOutput = shooterRotationPID.calculate(getShooterRotationPositionInRotations());
         shooterRotation.set(PIDOutput);
@@ -298,7 +302,7 @@ public class Shooter extends SubsystemBase {
         Translation2d goalOffset = poseEstimator.getOffsetFromGoalInMeters();
         double offsetInFeet = Units.metersToFeet(goalOffset.getNorm());
         offsetInFeet = offsetInFeet - 3;
-        Debug.debugPrint("autoAim"+  "Disance to goal in feet " + offsetInFeet); 
+        System.out.println("autoAim"+  "Disance to goal in feet " + fmt(offsetInFeet)); 
         int below = (int) Math.floor(offsetInFeet);
         int above = (int) Math.ceil(offsetInFeet);
         below = MathUtils.clamp(below, 0, angleByDistanceInFeet.length - 1);

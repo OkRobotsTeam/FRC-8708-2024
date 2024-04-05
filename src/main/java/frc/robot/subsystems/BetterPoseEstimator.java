@@ -43,12 +43,13 @@ public class BetterPoseEstimator extends SubsystemBase {
     public double diffX;
     public double diffY;
     public Rotation2d diffR = Rotation2d.fromDegrees(0);
-
+    ArrayList<OdometryHistoryEntry> odometryHistory = new ArrayList<OdometryHistoryEntry>();
+    ArrayList<VisionHistoryEntry> visionHistory = new ArrayList<VisionHistoryEntry>();
     public BetterPoseEstimator() {
         odometryHistory.add(0, new OdometryHistoryEntry(System.currentTimeMillis(), 0, 0, Rotation2d.fromDegrees(0)));
+        visionHistory.add(0, new VisionHistoryEntry(0, 0, Rotation2d.fromDegrees(0), odometryHistory.get(0), 0));
     }
 
-    ArrayList<OdometryHistoryEntry> odometryHistory = new ArrayList<OdometryHistoryEntry>();
 
     public void newOdometryEntry(Pose2d pose) {
         final OdometryHistoryEntry newEntry = new OdometryHistoryEntry(System.currentTimeMillis(), pose.getX(),
@@ -58,6 +59,7 @@ public class BetterPoseEstimator extends SubsystemBase {
             odometryHistory.remove(odometryHistory.size() - 1);
         }
         Translation2d adjustedLocation = translateHistoryToAdjusted(newEntry);
+        
 
     }
 
@@ -92,21 +94,41 @@ public class BetterPoseEstimator extends SubsystemBase {
         Translation2d historyEntry = translateHistoryToAdjusted(odometryHistory.get(matching));
         double newX = visionPose.getX() - historyEntry.getX();
         double newY = visionPose.getY() - historyEntry.getY();
-        double newR = visionPose.getRotation().minus(odometryHistory.get(matching).r).getRadians();
+        Rotation2d newR = visionPose.getRotation().minus(odometryHistory.get(matching).r);
 
         // Adjust all odometry histories since the match by the same difference. Maybe
         // divided by something to remove noise.
+
         double weighting = 3;
         OdometryHistoryEntry last = odometryHistory.get(0);
+        double speedDelta = calculateSpeedDelta(newX, newY, newR,odometryHistory.get(matching), visionHistory.get(0));
+        visionHistory.add(0,new VisionHistoryEntry(newX, newY, newR, odometryHistory.get(matching), speedDelta));
+        //System.out.println("Speed delta:" + fmt(speedDelta));
         // System.out.println("Munging: x:" + fmt(diffX,newX) + " y:" + fmt(diffY,newY)
         // + " r:" + fmt(diffR,newR));
         // Debug.debugPrint("Rot:" + fmt(visionPose.getRotation().getDegrees()) + " : "
         // + fmt(Units.radiansToDegrees( odometryHistory.get(matching).r)) + " : " +
         // fmt(Units.radiansToDegrees(diffR)));
+        double totalDiff = 0;
+        if (visionHistory.size() > 10) {
+            for (int i = 0; i < 10; i++) {
 
+                totalDiff += visionHistory.get(i).speedDiff;
+            }
+
+            Debug.debugPrint("TotalDiff: " + fmt(totalDiff));
+
+            if (totalDiff < 100) {
+                for (int i = 0; i < 10; i++) {
+                    var h = visionHistory.get(i);
+                    diffX = h.x - h.o.x;
+
+                }
+            }
+        }
         diffX = ((diffX * weighting) + newX) / (weighting + 1);
         diffY = ((diffY * weighting) + newY) / (weighting + 1);
-        diffR = diffR.interpolate(Rotation2d.fromRadians(newR), 1.0 / weighting);
+        diffR = diffR.interpolate(newR, 1.0 / weighting);
         // Debug.debugPrint("x:" + fmt(last.x,last.x+diffX) + " y:" +
         // fmt(last.y,last.y+diffY) + " r:" + fmt(last.r,last.r+diffR));
     }
@@ -122,7 +144,7 @@ public class BetterPoseEstimator extends SubsystemBase {
         double odometryMovement = movementMath(thisOdometry.x, thisOdometry.y, lastOdometry.x, lastOdometry.y);
         double odometryRotation = thisOdometry.r.minus(lastOdometry.r).getRadians();
         double odometryCombined = odometryMovement + odometryRotation;
-        return(llCombined - odometryCombined);
+        return((llCombined - odometryCombined) * 100);
     }
 
     public double movementMath(double x1, double y1, double x2, double y2) {

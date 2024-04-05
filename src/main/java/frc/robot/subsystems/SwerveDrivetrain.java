@@ -59,7 +59,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     private Shooter shooter;
     private BetterPoseEstimator poseEstimator;
-    private boolean fieldOriented = false;
+    private boolean fieldOriented = true;
     private boolean autoAdjustLastTick = false;
     private boolean lastAutoAdjustTarget = false;
     private int loopCounter = 0;

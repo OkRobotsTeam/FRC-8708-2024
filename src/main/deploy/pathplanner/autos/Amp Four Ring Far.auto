@@ -38,7 +38,7 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot20"
+            "name": "shoot17"
           }
         },
         {
@@ -87,6 +87,12 @@
           "type": "named",
           "data": {
             "name": "shoot42"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopShooter"
           }
         },
         {

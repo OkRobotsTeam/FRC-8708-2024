@@ -1,5 +1,9 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -55,6 +59,12 @@ public class SwerveModule {
         // Limit the PID Controller's input range between -pi and pi and set the input
         // to be continuous.
         turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
+        
+        var currentConfigurator = driveMotor.getConfigurator();
+        var currentLimits = new CurrentLimitsConfigs();
+        currentLimits.StatorCurrentLimit = 60;
+        currentConfigurator.apply(currentLimits);
+
     }
 
 
@@ -156,7 +166,9 @@ public class SwerveModule {
         turnOutput = turnOutput / 4;
         //turningMotor.setVoltage(turnOutput);
         turningMotor.set(turnOutput/12);
-        driveMotor.set( (driveOutput + driveFeedforward) / 12);
+        //driveMotor.set( (driveOutput + driveFeedforward) / 12);
+        driveMotor.setVoltage( (driveOutput + driveFeedforward) );
+
         //driveMotor.setVoltage(driveOutput);
         //System.out.println("Setting turning motor voltage to " + turnOutput);
         
