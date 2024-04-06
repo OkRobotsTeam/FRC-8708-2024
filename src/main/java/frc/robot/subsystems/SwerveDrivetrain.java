@@ -60,7 +60,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     private Shooter shooter;
     private BetterPoseEstimator poseEstimator;
-    private boolean fieldOriented = true;
+    public boolean fieldOriented = true;
     private boolean autoAdjustLastTick = false;
     private boolean lastAutoAdjustTarget = false;
     private int loopCounter = 0;
@@ -119,7 +119,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public void init() {
-        fieldOriented = false;
+        fieldOriented = true;
         setBraking(BRAKING_DURING_TELEOP);
     }
 

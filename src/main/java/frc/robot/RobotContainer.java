@@ -3,6 +3,7 @@ package frc.robot;
 import com.fasterxml.jackson.core.sym.Name;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.networktables.BooleanEntry;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -44,6 +45,7 @@ public class RobotContainer {
     private final SendableChooser<Double> driveSpeed = new SendableChooser<>();
     private final SendableChooser<Double> turnSpeed = new SendableChooser<>();
     private final SendableChooser<Command> autonomousSelector;
+    private GenericEntry fieldOrientedBooleanBox = null;
 
     private final Field2d limelightField = new Field2d();
     private final Field2d odometryField = new Field2d();
@@ -137,9 +139,7 @@ public class RobotContainer {
         driverCamera.addCameraToDrivingTab(drivingTab);
 
 
-        
-        
-
+        fieldOrientedBooleanBox = drivingTab.add("FieldOriented", true).withPosition(4, 1).withSize(2, 2).getEntry();
 
         SmartDashboard.putData("Limelight Position", limelightField);
         SmartDashboard.putData("Odometry Position", odometryField);
@@ -250,7 +250,7 @@ public class RobotContainer {
 
     public void autonomousInit() {
         System.out.println("=======================================================");
-        System.out.println("================Starting Autonomous=====  ===============");
+        System.out.println("================Starting Autonomous====================");
         System.out.println("=======================================================");
         swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());
 
@@ -270,6 +270,7 @@ public class RobotContainer {
         odometryField.setRobotPose(swerveDrivetrain.getOdometryPose());
         poseEstimatorField.setRobotPose(poseEstimator.getCurrentPose());
         adjustedOdometry.setRobotPose(poseEstimator.getAdjustedOdometryPose());
+        fieldOrientedBooleanBox.setBoolean(swerveDrivetrain.fieldOriented);
     }
 
     public void teleopPeriodic() {
