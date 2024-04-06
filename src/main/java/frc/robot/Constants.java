@@ -29,7 +29,7 @@ public class Constants {
 
         // Robot speed and acceleration limiters
         public static final double MOVEMENT_MAX_SPEED_IN_METERS_PER_SECOND = 6.0;  // Max ~3.0
-        public static final double MOVEMENT_MAX_ACCELERATION_IN_METERS_PER_SECOND_SQUARED = 4.0;  // 1 second to full speed
+        public static final double MOVEMENT_MAX_ACCELERATION_IN_METERS_PER_SECOND_SQUARED = 3.0;  // 1 second to full speed
         public static final double TURNING_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND = Math.toRadians(360);  // 1 rotation per second
         public static final double TURNING_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED = Math.toRadians(720);  // one half second to full turn speed
 

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7,
-      "y": 6.7
+      "x": 0.65,
+      "y": 4.35
     },
-    "rotation": 60.0
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Move To Shoot Preload"
+            "pathName": "Source Move To Shoot Preload"
           }
         },
         {
@@ -26,25 +26,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Pick Up Amp Ring"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot17"
+            "pathName": "Source Move"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Pick Up 1"
+            "pathName": "Source Pick Up 2 Far"
           }
         },
         {
@@ -56,19 +44,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Return From 1"
+            "pathName": "Source Return From 2 Far"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot42"
+            "name": "shoot25"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Pick Up 2"
+            "pathName": "Source Pick Up 1 Far"
           }
         },
         {
@@ -80,13 +68,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Return From 2"
+            "pathName": "Source Return From 1 Far"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot42"
+            "name": "shoot25"
           }
         },
         {

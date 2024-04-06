@@ -116,7 +116,7 @@ public class BetterPoseEstimator extends SubsystemBase {
                 totalDiff += visionHistory.get(i).speedDiff;
             }
 
-            Debug.debugPrint("TotalDiff: " + fmt(totalDiff));
+            //Debug.debugPrint("TotalDiff: " + fmt(totalDiff));
 
             if (totalDiff < 100) {
                 for (int i = 0; i < 10; i++) {

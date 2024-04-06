@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.0,
-        "y": 0.75
+        "x": 7.0,
+        "y": 1.8549852484320355
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.731435060992658,
-        "y": 0.8881341876299322
+        "x": 7.490768058459196,
+        "y": 2.0369101815126727
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.25,
-        "y": 4.35
+        "x": 8.15,
+        "y": 2.35
       },
       "prevControl": {
-        "x": 2.370730081827386,
-        "y": 2.7781286623859147
+        "x": 7.670368886891621,
+        "y": 2.131924933080637
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,8 +32,8 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.1,
+      "name": "Pickup Ring",
+      "waypointRelativePos": 0.0,
       "command": {
         "type": "parallel",
         "data": {
@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "foldWrist"
+                "name": "pickupRing"
               }
             }
           ]
@@ -57,13 +57,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -50.0,
+    "rotation": 25.0,
     "rotateFast": true
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 25.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -93,6 +94,8 @@ public class SwerveDrivetrain extends SubsystemBase {
                 },
                 this // Reference to this subsystem to set requirements
         );
+        Shuffleboard.getTab("Swerve").addNumber("gyroRotationDegrees", () -> getGyroAngle().getDegrees());
+
     }
 
     public void stop() {
