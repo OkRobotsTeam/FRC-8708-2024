@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser ;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -50,7 +50,7 @@ public class RobotContainer {
     private final Field2d limelightField = new Field2d();
     private final Field2d odometryField = new Field2d();
     private final Field2d poseEstimatorField = new Field2d();
-    private final Field2d adjustedOdometry = new Field2d();
+    
 
     public RobotContainer() {
 
@@ -144,7 +144,7 @@ public class RobotContainer {
         SmartDashboard.putData("Limelight Position", limelightField);
         SmartDashboard.putData("Odometry Position", odometryField);
         SmartDashboard.putData("Pose Estimator", poseEstimatorField);
-        SmartDashboard.putData("Adjusted Odometry", adjustedOdometry);
+        
 
         Shuffleboard.selectTab("Driving");
         Shuffleboard.update();
@@ -269,7 +269,6 @@ public class RobotContainer {
         limelightField.setRobotPose(limelight.getRobotPose());
         odometryField.setRobotPose(swerveDrivetrain.getOdometryPose());
         poseEstimatorField.setRobotPose(poseEstimator.getCurrentPose());
-        adjustedOdometry.setRobotPose(poseEstimator.getAdjustedOdometryPose());
         fieldOrientedBooleanBox.setBoolean(swerveDrivetrain.fieldOriented);
     }
 
