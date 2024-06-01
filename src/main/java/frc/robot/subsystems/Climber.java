@@ -38,11 +38,13 @@ public class Climber  extends SubsystemBase {
     }
 
     public void init() {
-        System.out.println("Left Climber Starting Initialzing " + leftClimber.getPosition().getValueAsDouble());
+        System.out.println("Left Climber Starting Initializing " + leftClimber.getPosition().getValueAsDouble());
         leftInitHelper.start(leftClimber.getPosition().getValueAsDouble());
-        leftClimber.set(-0.075);
+        // MJB leftClimber.set(-0.075);
+        leftClimber.set(-0.150);
         rightInitHelper.start(leftClimber.getPosition().getValueAsDouble());
-        rightClimber.set(-0.075);
+        // MJB rightClimber.set(-0.075);
+        rightClimber.set(-0.150);
         leftClimberPID.reset(0);
         rightClimberPID.reset(0);
         enabled=true;

@@ -115,7 +115,7 @@ public class Constants {
         public static final double SHOOTER_ROTATION_PID_KD = 0.18;
 
         public static final double SHOOTER_ROTATION_STARTUP_POSITION = 0;
-        public static final double SHOOTER_ROTATION_MANUAL_ADJUST_START_DEGREES = 10.0;
+        public static final double SHOOTER_ROTATION_MANUAL_ADJUST_START_DEGREES = 5.0;
 
 
 
@@ -144,9 +144,11 @@ public class Constants {
 
 
         public static final double CLIMBER_PID_KP = 0.1;
+        // MJB TESTING public static final double CLIMBER_PID_KP = 0.2;
         public static final double CLIMBER_PID_KI = 0.0;
         public static final double CLIMBER_PID_KD = 0.0;
-        public static final double CLIMBER_PID_MAX_SPEED_IN_ROTATIONS_PER_SECOND = 100.0;
+        // MJB WAS public static final double CLIMBER_PID_MAX_SPEED_IN_ROTATIONS_PER_SECOND = 100.0;
+        public static final double CLIMBER_PID_MAX_SPEED_IN_ROTATIONS_PER_SECOND = 200.0;
         public static final double CLIMBER_PID_MAX_ACCELERATION_IN_ROTATIONS_PER_SECOND_SQUARED = 100.0;
 
         public static final double LEFT_CLIMBER_STARTUP_POSITION = 0.0;

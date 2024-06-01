@@ -111,6 +111,10 @@ public class BetterPoseEstimator extends SubsystemBase {
         return getCurrentPose();
     }
 
+    public Pose2d getAnchor() {
+        return anchorVision;
+    }
+
     public Pose2d getCurrentPose() {
         OdometryHistoryEntry currentOdometry = odometryHistory.get(0);
         Transform2d movement = currentOdometry.pose.minus(anchorOdometry);     

@@ -15,7 +15,7 @@ public class Shoot extends SequentialCommandGroup {
     ) {
         addCommands(
                 new InstantCommand(drivetrain::stop),
-                new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(42)),
+                new InstantCommand(() -> shooter.setTargetShooterDegreesFromHorizon(45)),
                 new InstantCommand(shooter::runShooterForward),
                 new WaitCommand(1),
                 new InstantCommand(intake::runIntakeOut),

@@ -50,6 +50,7 @@ public class RobotContainer {
     private final Field2d limelightField = new Field2d();
     private final Field2d odometryField = new Field2d();
     private final Field2d poseEstimatorField = new Field2d();
+    private final Field2d anchorField = new Field2d();
     
 
     public RobotContainer() {
@@ -144,7 +145,7 @@ public class RobotContainer {
         SmartDashboard.putData("Limelight Position", limelightField);
         SmartDashboard.putData("Odometry Position", odometryField);
         SmartDashboard.putData("Pose Estimator", poseEstimatorField);
-        
+        SmartDashboard.putData("Anchor Position", anchorField);
 
         Shuffleboard.selectTab("Driving");
         Shuffleboard.update();
@@ -171,9 +172,8 @@ public class RobotContainer {
 
         manipulatorController.rightBumper().onTrue(Commands.runOnce(intake::halfExtendWrist));
         manipulatorController.rightBumper().onFalse(Commands.runOnce(intake::foldWrist));
-
+       // manipulatorController.().onTrue(Commands.runOnce(swerveDrivetrain::toggleFieldOriented));
         //manipulatorController.leftBumper().onTrue(Commands.runOnce(shooter::runShooterSlow));
-        manipulatorController.leftBumper().onFalse(Commands.runOnce(shooter::stopShooter));
 
         manipulatorController.povUp().onTrue(Commands.runOnce(shooter::shooterManualAdjustUp));
         manipulatorController.povDown().onFalse(Commands.runOnce(shooter::shooterManualAdjustDown));
@@ -269,6 +269,7 @@ public class RobotContainer {
         limelightField.setRobotPose(limelight.getRobotPose());
         odometryField.setRobotPose(swerveDrivetrain.getOdometryPose());
         poseEstimatorField.setRobotPose(poseEstimator.getCurrentPose());
+        anchorField.setRobotPose(poseEstimator.getAnchor());
         fieldOrientedBooleanBox.setBoolean(swerveDrivetrain.fieldOriented);
     }
 
