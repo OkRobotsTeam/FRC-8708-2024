@@ -85,6 +85,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("shoot27", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 27, poseEstimator));
         NamedCommands.registerCommand("shoot28", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 28, poseEstimator));
         NamedCommands.registerCommand("shoot42", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 42, poseEstimator));
+        NamedCommands.registerCommand("shoot46", new ShootWithAngle(swerveDrivetrain, intake, limelight, shooter, 46, poseEstimator));
+
 
         NamedCommands.registerCommand("extendWrist", new InstantCommand(intake::extendWrist));
         NamedCommands.registerCommand("foldWrist", new InstantCommand(intake::foldWrist));
@@ -172,12 +174,11 @@ public class RobotContainer {
 
         manipulatorController.rightBumper().onTrue(Commands.runOnce(intake::halfExtendWrist));
         manipulatorController.rightBumper().onFalse(Commands.runOnce(intake::foldWrist));
-       // manipulatorController.().onTrue(Commands.runOnce(swerveDrivetrain::toggleFieldOriented));
         //manipulatorController.leftBumper().onTrue(Commands.runOnce(shooter::runShooterSlow));
 
         manipulatorController.povUp().onTrue(Commands.runOnce(shooter::shooterManualAdjustUp));
         manipulatorController.povDown().onFalse(Commands.runOnce(shooter::shooterManualAdjustDown));
-        manipulatorController.povRight().onFalse(Commands.runOnce(() -> shooter.setShooterAngle(43)));
+        manipulatorController.povRight().onFalse(Commands.runOnce(() -> shooter.setShooterAngle(45)));
         manipulatorController.back().onTrue(Commands.runOnce(shooter::init));
         
         manipulatorController.leftBumper().onTrue(new InstantCommand(() -> climber.raiseClimber()));
