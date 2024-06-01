@@ -153,7 +153,9 @@ public class SwerveDrivetrain extends SubsystemBase {
         boolean slow = controller.getLeftTriggerAxis() > 0.25;
         boolean wheelsCrossed = controller.getLeftBumper();
         boolean straightenWheels = (controller.getPOV() == 0);
-        boolean autoAdjust = controller.getRightTriggerAxis() > 0.25;
+        boolean aimForSpeaker = controller.getRightTriggerAxis() > 0.25;
+        boolean aimForAmp = controller.getLeftBumper();
+
 
         // debugPrint("Gyro: " + gyro.getAngle() + ":" + gyro.getYaw());
 
@@ -183,8 +185,13 @@ public class SwerveDrivetrain extends SubsystemBase {
         // mathematics). The Xbox controller returns positive values when you pull to
         // the right by default.
         double rot = -rightStickXWithRateLimit * TURNING_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND;
-        
-        if (autoAdjust) {
+        if (aimForAmp) { 
+            Rotation2d targetRotation = Rotation2d.fromDegrees(90);
+            Rotation2d difference = targetRotation.minus(poseEstimator.getRobotPose().getRotation());
+            rot = difference.getDegrees() * 0.13;
+            rot = MathUtil.clamp(rot, -4, 4);
+        } else if (aimForSpeaker) {
+            
             Rotation2d targetRotation = getGoalAngle(poseEstimator);
             Pose2d currentPose = poseEstimator.getRobotPose();
             Rotation2d currentRotation = currentPose.getRotation();
