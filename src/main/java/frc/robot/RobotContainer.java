@@ -34,7 +34,7 @@ public class RobotContainer {
     private final Intake intake = new Intake();
     private Blinkin blinkin;
     private Shooter shooter;
-    
+
     private final BetterPoseEstimator poseEstimator = new BetterPoseEstimator();
     private final SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain(shooter, poseEstimator);
     private final Limelight limelight = new Limelight(poseEstimator);
@@ -51,7 +51,7 @@ public class RobotContainer {
     private final Field2d odometryField = new Field2d();
     private final Field2d poseEstimatorField = new Field2d();
     private final Field2d anchorField = new Field2d();
-    
+
 
     public RobotContainer() {
 
@@ -180,15 +180,15 @@ public class RobotContainer {
         manipulatorController.povDown().onFalse(Commands.runOnce(shooter::shooterManualAdjustDown));
         manipulatorController.povRight().onFalse(Commands.runOnce(() -> shooter.setShooterAngle(45)));
         manipulatorController.back().onTrue(Commands.runOnce(shooter::init));
-        
-        manipulatorController.leftBumper().onTrue(new InstantCommand(() -> climber.raiseClimber()));
-        manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> climber.lowerClimber()));
+
+        manipulatorController.leftBumper().onTrue(new InstantCommand(climber::raiseClimber));
+        manipulatorController.leftTrigger().onTrue(new InstantCommand(climber::lowerClimber));
 
         manipulatorController.povLeft().onTrue(new InstantCommand(() -> shooter.adjustment = 3).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
 
         // manipulatorController.rightTrigger().whileTrue(Commands.repeatingSequence(new InstantCommand(() -> shooter.autoAngle(poseEstimator)), new WaitCommand(0.1)));
-        
-        
+
+
         manipulatorController.rightTrigger().whileTrue(new AutoAngle(poseEstimator,shooter));
         driveController.a().onTrue(
                 Commands.runOnce(swerveDrivetrain::resetGyro).andThen(
@@ -197,6 +197,29 @@ public class RobotContainer {
         );
 
         driveController.rightBumper().onTrue(Commands.runOnce(swerveDrivetrain::toggleFieldOriented));
+
+        // Single controller stuff
+        driveController.rightTrigger().onTrue(
+                Commands.runOnce(() -> shooter.setShooterAngle(30)).andThen(
+                Commands.runOnce(shooter::runShooterForward)).andThen(
+                Commands.waitSeconds(1).andThen(Commands.runOnce(intake::runIntakeOut))
+        ));
+        driveController.rightTrigger().onFalse(
+                Commands.runOnce(shooter::stopShooter).andThen(
+                Commands.runOnce(intake::stopIntake)
+        ));
+
+        driveController.leftTrigger().onTrue(
+                Commands.runOnce(intake::extendWrist).andThen(
+                Commands.runOnce(intake::runIntakeIn)
+                )
+        );
+
+        driveController.leftTrigger().onFalse(
+                Commands.runOnce(intake::foldWrist).andThen(
+                Commands.runOnce(intake::stopIntake)
+                )
+        );
 
     }
 
