@@ -10,6 +10,7 @@ public class Robot extends TimedRobot {
     private RobotContainer robotContainer;
 
 
+
     // This function is run when the robot is first started up
     @Override
     public void robotInit() {
@@ -22,6 +23,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+        robotContainer.robotPeriodic();
     }
 
     // This function is called once each time the robot enters Disabled mode.

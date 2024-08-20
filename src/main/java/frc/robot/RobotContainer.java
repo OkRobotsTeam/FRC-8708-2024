@@ -6,12 +6,14 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.networktables.BooleanEntry;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser ;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -51,6 +53,13 @@ public class RobotContainer {
     private final Field2d odometryField = new Field2d();
     private final Field2d poseEstimatorField = new Field2d();
     private final Field2d anchorField = new Field2d();
+    final static int PARADE_CONTROLS = 0;
+    final static int NORMAL_CONTROLS = 1;
+    private int previousControlStyle = RobotContainer.NORMAL_CONTROLS;
+    final SendableChooser<Integer> controlStyle = new SendableChooser();
+    EventLoop normalEventLoop = CommandScheduler.getInstance().getDefaultButtonLoop();
+    EventLoop paradeEventLoop = new EventLoop();
+
 
 
     public RobotContainer() {
@@ -118,6 +127,9 @@ public class RobotContainer {
 
         setupShuffleboard(drivingTab);
         swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());
+
+ 
+
         configureControllerBindings();
     }
 
@@ -143,6 +155,10 @@ public class RobotContainer {
 
 
         fieldOrientedBooleanBox = drivingTab.add("FieldOriented", true).withPosition(4, 1).withSize(2, 2).getEntry();
+        
+        controlStyle.setDefaultOption("Parade Mode", PARADE_CONTROLS);
+        controlStyle.addOption("Normal Mode", NORMAL_CONTROLS);
+        drivingTab.add(controlStyle).withPosition(3, 0).withSize(2, 1);
 
         SmartDashboard.putData("Limelight Position", limelightField);
         SmartDashboard.putData("Odometry Position", odometryField);
@@ -198,24 +214,33 @@ public class RobotContainer {
 
         driveController.rightBumper().onTrue(Commands.runOnce(swerveDrivetrain::toggleFieldOriented));
 
+
+
         // Single controller stuff
-        driveController.rightTrigger().onTrue(
+        driveController.a(paradeEventLoop).onTrue(
+                Commands.runOnce(swerveDrivetrain::resetGyro).andThen(
+                Commands.runOnce(swerveDrivetrain::resetOdometry)
+                )
+        );
+        driveController.rightBumper(paradeEventLoop).onTrue(Commands.runOnce(swerveDrivetrain::toggleFieldOriented));
+
+        driveController.rightTrigger(0.5,paradeEventLoop).onTrue(
                 Commands.runOnce(() -> shooter.setShooterAngle(30)).andThen(
                 Commands.runOnce(shooter::runShooterForward)).andThen(
                 Commands.waitSeconds(1).andThen(Commands.runOnce(intake::runIntakeOut))
         ));
-        driveController.rightTrigger().onFalse(
+        driveController.rightTrigger(0.5,paradeEventLoop).onFalse(
                 Commands.runOnce(shooter::stopShooter).andThen(
                 Commands.runOnce(intake::stopIntake)
         ));
 
-        driveController.leftTrigger().onTrue(
+        driveController.leftTrigger(0.5,paradeEventLoop).onTrue(
                 Commands.runOnce(intake::extendWrist).andThen(
                 Commands.runOnce(intake::runIntakeIn)
                 )
         );
 
-        driveController.leftTrigger().onFalse(
+        driveController.leftTrigger(0.5,paradeEventLoop).onFalse(
                 Commands.runOnce(intake::foldWrist).andThen(
                 Commands.runOnce(intake::stopIntake)
                 )
@@ -245,6 +270,36 @@ public class RobotContainer {
         swerveDrivetrain.resetGyro();
 
     }
+
+    public void robotPeriodic() {
+        if (controlStyle.getSelected() != previousControlStyle) {
+            System.out.println("==Detected controlstyle interface change.  Updating control style.");
+            updateControlStyle();
+            previousControlStyle = controlStyle.getSelected();
+          }
+    }
+
+        void updateControlStyle() {
+        if (controlStyle.getSelected() == null) {
+            System.out.println("==control style is null, defaulting to demo mode");
+            CommandScheduler.getInstance().setActiveButtonLoop(normalEventLoop);
+            return;
+        }
+        switch(controlStyle.getSelected()) {
+            case PARADE_CONTROLS: {
+                System.out.println("==Setting active button loop to parade mode");
+
+                CommandScheduler.getInstance().setActiveButtonLoop(paradeEventLoop);
+                break;
+            } case NORMAL_CONTROLS: {
+                System.out.println("==Setting active button loop to demo (normal) mode");
+                CommandScheduler.getInstance().setActiveButtonLoop(normalEventLoop);
+                break;
+            } default: {};
+        }        
+    }
+
+ 
 
     public void teleopInit() {
 
