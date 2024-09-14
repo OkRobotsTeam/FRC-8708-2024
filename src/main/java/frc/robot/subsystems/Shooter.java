@@ -100,24 +100,25 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setTopShooterSpeed(double speed) {
-        // if (speed == 0){
-        //     topShooter.setControl(new NeutralOut());
-        // } else {
-        //     //topShooter.setControl(new VelocityVoltage(speed * 16));
-        //     topShooter.set(1);
+         if (speed == 0){
+             topShooter.setControl(new NeutralOut());
+         } else {
+             //topShooter.setControl(new VelocityVoltage(speed * 16));
+             topShooter.set(speed * 0.95);
 
-        // }
-        topShooter.set(speed);
+         }
+//        topShooter.set(speed);
 
     }
 
     public void setBottomShooterSpeed(double speed) {
-        // if (speed == 0){
-        //     bottomShooter.setControl(new NeutralOut());
-        // } else {
-        //     bottomShooter.setControl(new VoltageOut(speed * 16));
-        // }
-        bottomShooter.set(speed);
+         if (speed == 0){
+             bottomShooter.setControl(new NeutralOut());
+         } else {
+//             bottomShooter.setControl(new VoltageOut(speed * 16));
+             bottomShooter.set(speed);
+         }
+//        bottomShooter.set(speed);
 
     }
 
