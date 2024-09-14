@@ -125,14 +125,18 @@ public class RobotContainer {
 
 
         driveSpeed.setDefaultOption("100%", 1.0);
+        driveSpeed.addOption("80%", 0.8);
         driveSpeed.addOption("50%", 0.5);
         driveSpeed.addOption("25%", 0.25);
+        driveSpeed.addOption("15%", 0.15);
         driveSpeed.addOption("10%", 0.1);
 
 
         turnSpeed.setDefaultOption("100%", 1.0);
+        turnSpeed.setDefaultOption("80%", 0.8);
         turnSpeed.addOption("50%", 0.5);
         turnSpeed.addOption("25%", 0.25);
+        turnSpeed.addOption("15%", 0.15);
         turnSpeed.addOption("10%", 0.1);
 
 
