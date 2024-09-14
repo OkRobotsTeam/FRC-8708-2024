@@ -131,6 +131,7 @@ public class Constants {
     }
 
     public static class Climber {
+        public static final double CLIMBER_INIT_MOTOR_POWER = -0.25;
         public static final double LEFT_CLIMBER_GEAR_RATIO  = 1;//(8.0 / 54.0);
         public static final double RIGHT_CLIMBER_GEAR_RATIO = 1;//(8.0 / 54.0);
 
