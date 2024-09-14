@@ -86,8 +86,8 @@ public class Constants {
 
         public static final int TOP_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS = 8;
         public static final int TOP_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS = 8;
-        public static final int BOTTOM_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS = 15;
-        public static final int BOTTOM_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS = 15;
+        public static final int BOTTOM_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS = 8;
+        public static final int BOTTOM_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS = 8;
 
         public static final double INTAKE_IN_TOP_POWER = 0.55;
         public static final double INTAKE_IN_BOTTOM_POWER = 0.4;
