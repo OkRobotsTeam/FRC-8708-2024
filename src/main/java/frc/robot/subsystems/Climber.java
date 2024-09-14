@@ -11,6 +11,7 @@ import frc.robot.Debug;
 import frc.robot.InitHelper;
 
 import static frc.robot.Constants.Climber.*;
+import static java.lang.Double.max;
 
 
 public class Climber  extends SubsystemBase {
@@ -102,7 +103,11 @@ public class Climber  extends SubsystemBase {
             } 
         } else {
             left = leftClimberPID.calculate(getLeftEncoderPosition());
-            leftClimber.set(left);
+            if (leftClimberLimitSwitch.get()) {
+                leftClimber.set(max(left, 0.0));
+            } else {
+                leftClimber.set(left);
+            }
         }
         if (rightInitHelper.isInitializing(rightClimber.getPosition().getValueAsDouble())) {
             if (rightClimberLimitSwitch.get() ) {
@@ -120,7 +125,11 @@ public class Climber  extends SubsystemBase {
             } 
         } else {
             right = rightClimberPID.calculate(getRightEncoderPosition());
-            rightClimber.set(right);
+            if (rightClimberLimitSwitch.get()) {
+                rightClimber.set(max(right, 0.0));
+            } else {
+                rightClimber.set(right);
+            }
         }
 
         // Debug.debugPrint("Climber",
