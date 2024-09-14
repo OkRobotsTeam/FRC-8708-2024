@@ -82,10 +82,10 @@ public class Constants {
 
         public static final double WRIST_FOLDED_SETPOINT_IN_ROTATIONS = 0.0;
         public static final double WRIST_HALF_EXTENDED_SETPOINT_IN_ROTATIONS = 0.297 * (2.0 / 5.0);
-        public static final double WRIST_EXTENDED_SETPOINT_IN_ROTATIONS = 0.305;
+        public static final double WRIST_EXTENDED_SETPOINT_IN_ROTATIONS = 0.29;
 
-        public static final int TOP_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS = 15;
-        public static final int TOP_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS = 15;
+        public static final int TOP_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS = 8;
+        public static final int TOP_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS = 8;
         public static final int BOTTOM_INTAKE_CURRENT_LIMIT_FREE_IN_AMPS = 15;
         public static final int BOTTOM_INTAKE_CURRENT_LIMIT_STALLED_IN_AMPS = 15;
 
