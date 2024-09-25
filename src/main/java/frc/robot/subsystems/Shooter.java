@@ -29,8 +29,8 @@ import static frc.robot.Constants.Shooter.*;
 
 
 public class Shooter extends SubsystemBase {
-    private static final int SHOOTER_MANUAL_ADJUST_DEGREES_PER_PRESS = 1;
-    private final TalonFX topShooter = new TalonFX(CANIds.TOP_SHOOTER);
+    private static final int SHOOTER_MANUAL_ADJUST_DEGREES_PER_PRESS = 3;
+    public final TalonFX topShooter = new TalonFX(CANIds.TOP_SHOOTER);
     private final TalonFX bottomShooter = new TalonFX(CANIds.BOTTOM_SHOOTER);
     private final CANSparkMax shooterRotation = new CANSparkMax(CANIds.SHOOTER_ROTATION, kBrushless);
 
@@ -99,12 +99,16 @@ public class Shooter extends SubsystemBase {
         return shooterRotationEncoder.getPosition();
     }
 
+    public double getShooterRotationPositionInDegreesFromHorizon() {
+        return shooterRotationEncoder.getPosition() / 360.0 + SHOOTER_ROTATION_STARTUP_POSITION;
+    }
+
     public void setTopShooterSpeed(double speed) {
          if (speed == 0){
              topShooter.setControl(new NeutralOut());
          } else {
              //topShooter.setControl(new VelocityVoltage(speed * 16));
-             topShooter.set(speed * 0.95);
+             topShooter.set(speed);
 
          }
 //        topShooter.set(speed);
@@ -266,7 +270,7 @@ public class Shooter extends SubsystemBase {
 
         setShooterRotationBraking(false);
         double PIDOutput = shooterRotationPID.calculate(getShooterRotationPositionInRotations());
-        shooterRotation.set(PIDOutput);
+        shooterRotation.set(MathUtils.clamp(PIDOutput, -0.2, 0.2));
         // Debug.debugPrint("ShooterPID Status "
         //         + " Position: " + fmt(getShooterRotationPositionInRotations())
         //         + " Setpoint: " + fmt(shooterRotationPID.getSetpoint())

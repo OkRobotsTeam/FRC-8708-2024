@@ -164,7 +164,7 @@ public class RobotContainer {
         manipulatorController.a().onFalse(Commands.runOnce(intake::stopIntake));
 
         // If the B button is pressed while the wrist should be all the way out, run the intake out at the normal speed
-        manipulatorController.b().and(manipulatorController.rightBumper().negate()).onTrue(Commands.runOnce(intake::runIntakeOut));
+        manipulatorController.b().and(manipulatorController.rightBumper().negate()).onTrue(Commands.runOnce(intake::runIntakeOut).andThen(Commands.runOnce(() -> intake.logShooterPositionAndSpeed(shooter.getTargetShooterDegreesFromHorizon(), shooter.getShooterRotationPositionInDegreesFromHorizon(), shooter.topShooter.get()))));
         // If the B button is pressed while the wrist should be halfway out, run the intake out at full speed
         manipulatorController.b().and(manipulatorController.rightBumper()).onTrue(Commands.runOnce(intake::fullSpeedOut));
         // If the B button is released, stop the intake

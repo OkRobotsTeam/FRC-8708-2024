@@ -106,6 +106,12 @@ public class Intake {
         System.out.println("Info: Running intake out");
     }
 
+    public void logShooterPositionAndSpeed(double target, double angle, double speed) {
+        System.out.println("Info: shooter target angle:" + target);
+        System.out.println("Info: shooter actual angle:" + angle);
+        System.out.println("Info: shooter actual speed:" + speed);
+    }
+
     public void fullSpeedOut() {
         runTopIntake(-1);
         runBottomIntake(-1);
