@@ -130,6 +130,7 @@ public class RobotContainer {
         driveSpeed.addOption("25%", 0.25);
         driveSpeed.addOption("15%", 0.15);
         driveSpeed.addOption("10%", 0.1);
+        driveSpeed.addOption("5%", 0.05);
 
 
         turnSpeed.setDefaultOption("100%", 1.0);
@@ -138,6 +139,7 @@ public class RobotContainer {
         turnSpeed.addOption("25%", 0.25);
         turnSpeed.addOption("15%", 0.15);
         turnSpeed.addOption("10%", 0.1);
+        turnSpeed.addOption("5%", 0.05);
 
 
         drivingTab.add("Autonomous", autonomousSelector).withPosition(2, 0).withSize(2, 1);
@@ -182,7 +184,7 @@ public class RobotContainer {
 
         manipulatorController.povUp().onTrue(Commands.runOnce(shooter::shooterManualAdjustUp));
         manipulatorController.povDown().onFalse(Commands.runOnce(shooter::shooterManualAdjustDown));
-        manipulatorController.povRight().onFalse(Commands.runOnce(() -> shooter.setShooterAngle(45)));
+        manipulatorController.povRight().onFalse(Commands.runOnce(() -> shooter.setShooterAngle(40)));
         manipulatorController.back().onTrue(Commands.runOnce(shooter::init));
         
         manipulatorController.leftBumper().onTrue(new InstantCommand(() -> climber.raiseClimber()));
