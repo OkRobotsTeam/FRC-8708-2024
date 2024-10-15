@@ -118,7 +118,8 @@ public class RobotContainer {
 
         setupShuffleboard(drivingTab);
         swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());
-        configureControllerBindings();
+        // configureControllerBindings();
+        configureControllerBindingsTeddy();
     }
 
     private void setupShuffleboard(ShuffleboardTab drivingTab) {
@@ -130,7 +131,6 @@ public class RobotContainer {
         driveSpeed.addOption("25%", 0.25);
         driveSpeed.addOption("15%", 0.15);
         driveSpeed.addOption("10%", 0.1);
-        driveSpeed.addOption("5%", 0.05);
 
 
         turnSpeed.setDefaultOption("100%", 1.0);
@@ -139,7 +139,6 @@ public class RobotContainer {
         turnSpeed.addOption("25%", 0.25);
         turnSpeed.addOption("15%", 0.15);
         turnSpeed.addOption("10%", 0.1);
-        turnSpeed.addOption("5%", 0.05);
 
 
         drivingTab.add("Autonomous", autonomousSelector).withPosition(2, 0).withSize(2, 1);
@@ -166,7 +165,7 @@ public class RobotContainer {
         manipulatorController.a().onFalse(Commands.runOnce(intake::stopIntake));
 
         // If the B button is pressed while the wrist should be all the way out, run the intake out at the normal speed
-        manipulatorController.b().and(manipulatorController.rightBumper().negate()).onTrue(Commands.runOnce(intake::runIntakeOut).andThen(Commands.runOnce(() -> intake.logShooterPositionAndSpeed(shooter.getTargetShooterDegreesFromHorizon(), shooter.getShooterRotationPositionInDegreesFromHorizon(), shooter.topShooter.get()))));
+        manipulatorController.b().and(manipulatorController.rightBumper().negate()).onTrue(Commands.runOnce(intake::runIntakeOut));
         // If the B button is pressed while the wrist should be halfway out, run the intake out at full speed
         manipulatorController.b().and(manipulatorController.rightBumper()).onTrue(Commands.runOnce(intake::fullSpeedOut));
         // If the B button is released, stop the intake
@@ -184,11 +183,58 @@ public class RobotContainer {
 
         manipulatorController.povUp().onTrue(Commands.runOnce(shooter::shooterManualAdjustUp));
         manipulatorController.povDown().onFalse(Commands.runOnce(shooter::shooterManualAdjustDown));
-        manipulatorController.povRight().onFalse(Commands.runOnce(() -> shooter.setShooterAngle(40)));
+        manipulatorController.povRight().onFalse(Commands.runOnce(() -> shooter.setShooterAngle(45)));
         manipulatorController.back().onTrue(Commands.runOnce(shooter::init));
         
         manipulatorController.leftBumper().onTrue(new InstantCommand(() -> climber.raiseClimber()));
         manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> climber.lowerClimber()));
+
+        manipulatorController.povLeft().onTrue(new InstantCommand(() -> shooter.adjustment = 3).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
+
+        // manipulatorController.rightTrigger().whileTrue(Commands.repeatingSequence(new InstantCommand(() -> shooter.autoAngle(poseEstimator)), new WaitCommand(0.1)));
+        
+        
+        manipulatorController.rightTrigger().whileTrue(new AutoAngle(poseEstimator,shooter));
+        driveController.a().onTrue(
+                Commands.runOnce(swerveDrivetrain::resetGyro).andThen(
+                Commands.runOnce(swerveDrivetrain::resetOdometry)
+                )
+        );
+
+        driveController.rightBumper().onTrue(Commands.runOnce(swerveDrivetrain::toggleFieldOriented));
+
+    }
+
+      private void configureControllerBindingsTeddy() {
+        swerveDrivetrain.setDefaultCommand(getSwerveDriveCommand());
+
+        manipulatorController.a().onTrue(Commands.runOnce(intake::runIntakeIn));
+        manipulatorController.a().onFalse(Commands.runOnce(intake::stopIntake));
+
+        // If the B button is pressed while the wrist should be all the way out, run the intake out at the normal speed
+        manipulatorController.b().and(manipulatorController.rightBumper().negate()).onTrue(Commands.runOnce(intake::runIntakeOut).andThen(Commands.runOnce(() -> intake.logShooterPositionAndSpeed(shooter.getTargetShooterDegreesFromHorizon(), shooter.getShooterRotationPositionInDegreesFromHorizon(), shooter.topShooter.get()))));
+        // If the B button is pressed while the wrist should be halfway out, run the intake out at full speed
+        manipulatorController.b().and(manipulatorController.rightBumper()).onTrue(Commands.runOnce(intake::fullSpeedOut));
+        // If the B button is released, stop the intake
+        manipulatorController.b().onFalse(Commands.runOnce(intake::stopIntake));
+
+        manipulatorController.leftTrigger().onTrue(Commands.runOnce(intake::extendWrist));
+        manipulatorController.leftTrigger().onFalse(Commands.runOnce(intake::foldWrist));
+
+        manipulatorController.y().onTrue(Commands.runOnce(shooter::runShooterForward));
+        manipulatorController.y().onFalse(Commands.runOnce(shooter::stopShooter));
+
+        manipulatorController.rightBumper().onTrue(Commands.runOnce(intake::halfExtendWrist));
+        manipulatorController.rightBumper().onFalse(Commands.runOnce(intake::foldWrist));
+        //manipulatorController.leftBumper().onTrue(Commands.runOnce(shooter::runShooterSlow));
+
+        manipulatorController.povUp().onTrue(Commands.runOnce(shooter::shooterManualAdjustUp));
+        manipulatorController.povDown().onFalse(Commands.runOnce(shooter::shooterManualAdjustDown));
+        manipulatorController.povRight().onFalse(Commands.runOnce(() -> shooter.setShooterAngle(40)));
+        manipulatorController.back().onTrue(Commands.runOnce(shooter::init));
+        
+        manipulatorController.leftBumper().onTrue(new InstantCommand(() -> climber.raiseClimber()));
+        manipulatorController.leftBumper().onFalse(new InstantCommand(() -> climber.lowerClimber()));
 
         manipulatorController.povLeft().onTrue(new InstantCommand(() -> shooter.adjustment = 3).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
 
