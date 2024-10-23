@@ -18,8 +18,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-
 import frc.robot.Constants;
 import frc.robot.Debug;
 
@@ -53,14 +51,6 @@ public class SwerveModule {
 
         driveMotor = new TalonFX(driveMotorCANID);
         driveMotor.setInverted(DRIVE_MOTORS_INVERTED);
-        var currentLimits = new CurrentLimitsConfigs();
-		currentLimits.SupplyCurrentLimit = 35;
-		currentLimits.SupplyCurrentLimitEnable = true; 
-		currentLimits.SupplyCurrentThreshold = 85;
-		currentLimits.SupplyTimeThreshold = 0.01;
-		currentLimits.StatorCurrentLimit = 75;
-		currentLimits.StatorCurrentLimitEnable = true;
-		driveMotor.getConfigurator().apply(currentLimits);
 
         turningMotor = new CANSparkMax(turningMotorCANID, CANSparkLowLevel.MotorType.kBrushless);
         turningMotor.setInverted(TURNING_MOTORS_INVERTED);
@@ -71,6 +61,10 @@ public class SwerveModule {
         // to be continuous.
         turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
         
+        var currentConfigurator = driveMotor.getConfigurator();
+        var currentLimits = new CurrentLimitsConfigs();
+        currentLimits.StatorCurrentLimit = 60;
+        currentConfigurator.apply(currentLimits);
 
         Shuffleboard.getTab("Swerve").addNumber("Module-"+ name + "/rotationDegrees", () -> getRotation().getDegrees());
     }
