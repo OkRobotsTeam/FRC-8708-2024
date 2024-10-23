@@ -186,7 +186,8 @@ public class RobotContainer {
         manipulatorController.povRight().onFalse(Commands.runOnce(() -> shooter.setShooterAngle(45)));
         manipulatorController.back().onTrue(Commands.runOnce(shooter::init));
         
-        manipulatorController.leftBumper().onTrue(new InstantCommand(() -> climber.toggleClimber()));
+        manipulatorController.leftBumper().onTrue(new InstantCommand(() -> climber.raiseClimber()));
+        manipulatorController.leftTrigger().onTrue(new InstantCommand(() -> climber.lowerClimber()));
 
         manipulatorController.povLeft().onTrue(new InstantCommand(() -> shooter.adjustment = 3).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
 
@@ -232,10 +233,8 @@ public class RobotContainer {
         manipulatorController.povRight().onFalse(Commands.runOnce(() -> shooter.setShooterAngle(40)));
         manipulatorController.back().onTrue(Commands.runOnce(shooter::init));
         
-        manipulatorController.leftBumper().onTrue(new InstantCommand(() -> climber.toggleClimber()));
-
-        //manipulatorController.leftBumper().onTrue(new InstantCommand(() -> climber.raiseClimber()));
-        //      manipulatorController.leftBumper().onFalse(new InstantCommand(() -> climber.lowerClimber()));
+        manipulatorController.leftBumper().onTrue(new InstantCommand(() -> climber.raiseClimber()));
+        manipulatorController.leftBumper().onFalse(new InstantCommand(() -> climber.lowerClimber()));
 
         manipulatorController.povLeft().onTrue(new InstantCommand(() -> shooter.adjustment = 3).andThen(new InstantCommand(shooter::updateShooterManualAdjustment)));
 

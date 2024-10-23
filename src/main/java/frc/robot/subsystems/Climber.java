@@ -26,12 +26,11 @@ public class Climber  extends SubsystemBase {
     private XboxController controller;
     private boolean enabled = false;
     private InitHelper leftInitHelper = new InitHelper("Left Climber",-0.01,50,50000);
-    private InitHelper rightInitHelper = new InitHelper("Right Climber", -0.01, 50, 50000);
+    private InitHelper rightInitHelper = new InitHelper("Left Climber", -0.01, 50, 50000);
     private DigitalInput leftClimberLimitSwitch = new DigitalInput(LEFT_CLIMBER_DIGITAL_SWITCH_PORT);
     private DigitalInput rightClimberLimitSwitch = new DigitalInput(RIGHT_CLIMBER_DIGITAL_SWITCH_PORT);
 
     private final double CLIMBER_TRAVEL_LIMIT = 121;
-    private boolean isClimberUp = false;
 
     public Climber(XboxController controller) {
         this.controller = controller;
@@ -44,7 +43,7 @@ public class Climber  extends SubsystemBase {
         leftInitHelper.start(leftClimber.getPosition().getValueAsDouble());
         // MJB leftClimber.set(-0.075);
         leftClimber.set(CLIMBER_INIT_MOTOR_POWER);
-        rightInitHelper.start(rightClimber.getPosition().getValueAsDouble());
+        rightInitHelper.start(leftClimber.getPosition().getValueAsDouble());
         // MJB rightClimber.set(-0.075);
         rightClimber.set(CLIMBER_INIT_MOTOR_POWER);
         leftClimberPID.reset(0);
@@ -90,7 +89,6 @@ public class Climber  extends SubsystemBase {
         }
         if (leftInitHelper.isInitializing(leftClimber.getPosition().getValueAsDouble())) {
             if (leftClimberLimitSwitch.get() ) {
-                System.out.println("Left Climber Limit Switch Triggered");
                 leftInitHelper.setDone();
             } else {
                 System.out.println("Initializing Left Climber:" + leftClimber.getPosition().getValueAsDouble() + " C: "
@@ -113,7 +111,6 @@ public class Climber  extends SubsystemBase {
         }
         if (rightInitHelper.isInitializing(rightClimber.getPosition().getValueAsDouble())) {
             if (rightClimberLimitSwitch.get() ) {
-                System.out.println("Right Climber Limit Switch Triggered");
                 rightInitHelper.setDone();
             } else {
                 System.out.println("Initializing Right Climber:" + rightClimber.getPosition().getValueAsDouble()
@@ -154,25 +151,11 @@ public class Climber  extends SubsystemBase {
         return Debug.fourPlaces(num);
     }
 
-    public void toggleClimber() {
-        System.out.println("Toggleing Climber");
-        if (isClimberUp()) {
-            lowerClimber();
-        } else {
-            raiseClimber();
-        }
-    
-    }
-
-    public boolean isClimberUp() {
-        return isClimberUp;
-    }
-
     public void raiseClimber() {
         if (climberStillCalibrating()) {
             System.out.println("Warning: Climber will not move until it is calibrated!");
         }
-        isClimberUp=true;
+
         leftClimberPID.setGoal(CLIMBER_UP_POSITION);
         rightClimberPID.setGoal(CLIMBER_UP_POSITION);
         System.out.println("Info: Raising climber");
@@ -182,7 +165,7 @@ public class Climber  extends SubsystemBase {
         if (climberStillCalibrating()) {
             System.out.println("Warning: Climber will not move until it is calibrated!");
         }
-        isClimberUp=false;
+
         leftClimberPID.setGoal(CLIMBER_DOWN_POSITION);
         rightClimberPID.setGoal(CLIMBER_DOWN_POSITION);
         System.out.println("Info: Lowering climber");
