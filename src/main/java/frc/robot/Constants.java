@@ -74,11 +74,11 @@ public class Constants {
 
         public static final double WRIST_STARTUP_POSITION = -0.01;
 
-        public static final double WRIST_PID_KP = 8;
+        public static final double WRIST_PID_KP = 6; // 8
         public static final double WRIST_PID_KI = 0.0;
-        public static final double WRIST_PID_KD = 0.2;
+        public static final double WRIST_PID_KD = 0.3; // 0.2
 
-        public static final double WRIST_MAX_SPEED = 0.6;
+        public static final double WRIST_MAX_SPEED = 0.3;  // 0.6
 
         public static final double WRIST_FOLDED_SETPOINT_IN_ROTATIONS = 0.0;
         public static final double WRIST_HALF_EXTENDED_SETPOINT_IN_ROTATIONS = 0.297 * (2.0 / 5.0);
